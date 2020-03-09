@@ -9,7 +9,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.0)
-Depends: AER, BH, R (>= 3.0.0)
+Depends: BH, R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen, RcppNumerical
 RoxygenNote: 7.0.0
 

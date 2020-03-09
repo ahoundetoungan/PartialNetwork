@@ -8,7 +8,7 @@ ddevtools::install_github("PartialNetwork")
 
 ## Instrumental Variable procedure
 
-We provide the function *instrument(distr,X,Y,S,pow)* where *distr* is the network linking probabilities, *X* is a matrix of covariates, *Y* (optional) is the vector of outcome, *S* (optional, default=2) is the number of network draws used, and *pow* is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for Gy and simulated instruments. See the help file of the function for details. The following code provides an example using a single group.
+We provide the function *instrument(distr,X,Y,S,pow)* where *distr* is the network linking probabilities, *X* is a matrix of covariates, *Y* (optional) is the vector of outcome, *S* (optional, default=2) is the number of network draws used, and *pow* (optional) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for Gy and simulated instruments. See the help file of the function for details. The following code provides an example using a single group.
 
 ```{c}
 # initialize parameters

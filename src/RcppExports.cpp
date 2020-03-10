@@ -7,52 +7,57 @@
 
 using namespace Rcpp;
 
-// rvMF
-arma::mat rvMF(const int& size, const arma::vec& theta);
-RcppExport SEXP _PartialNetwork_rvMF(SEXP sizeSEXP, SEXP thetaSEXP) {
+// rvMFcpp
+arma::mat rvMFcpp(const int& size, const arma::vec& theta);
+RcppExport SEXP _PartialNetwork_rvMFcpp(SEXP sizeSEXP, SEXP thetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int& >::type size(sizeSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
-    rcpp_result_gen = Rcpp::wrap(rvMF(size, theta));
+    rcpp_result_gen = Rcpp::wrap(rvMFcpp(size, theta));
     return rcpp_result_gen;
 END_RCPP
 }
-// logCpvMF
-double logCpvMF(const int& p, const double& k);
-RcppExport SEXP _PartialNetwork_logCpvMF(SEXP pSEXP, SEXP kSEXP) {
+// logCpvMFcpp
+double logCpvMFcpp(const int& p, const double& k);
+RcppExport SEXP _PartialNetwork_logCpvMFcpp(SEXP pSEXP, SEXP kSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
     Rcpp::traits::input_parameter< const double& >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(logCpvMF(p, k));
+    rcpp_result_gen = Rcpp::wrap(logCpvMFcpp(p, k));
     return rcpp_result_gen;
 END_RCPP
 }
-// dvMF
-NumericVector dvMF(const arma::mat& z, const arma::vec& theta, const bool& logp);
-RcppExport SEXP _PartialNetwork_dvMF(SEXP zSEXP, SEXP thetaSEXP, SEXP logpSEXP) {
+// dvMFcpp
+NumericVector dvMFcpp(const arma::mat& z, const arma::vec& theta, const bool& logp);
+RcppExport SEXP _PartialNetwork_dvMFcpp(SEXP zSEXP, SEXP thetaSEXP, SEXP logpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< const bool& >::type logp(logpSEXP);
-    rcpp_result_gen = Rcpp::wrap(dvMF(z, theta, logp));
+    rcpp_result_gen = Rcpp::wrap(dvMFcpp(z, theta, logp));
     return rcpp_result_gen;
 END_RCPP
 }
 // updateGP
-List updateGP(const arma::mat& Y, const arma::mat& trait, List& start, const arma::uvec& fixv, const arma::uvec& consb, const double& nsimul, const bool& fdegrees, const bool& fzeta, const NumericVector& hyperparms, const NumericVector& target, const NumericVector& jumpmin, const NumericVector& jumpmax, const double& c);
-RcppExport SEXP _PartialNetwork_updateGP(SEXP YSEXP, SEXP traitSEXP, SEXP startSEXP, SEXP fixvSEXP, SEXP consbSEXP, SEXP nsimulSEXP, SEXP fdegreesSEXP, SEXP fzetaSEXP, SEXP hyperparmsSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP) {
+List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, const arma::mat& v0, const arma::vec& d0, const arma::rowvec& b0, const arma::rowvec& eta0, const double& zeta0, const arma::uvec& fixv, const arma::uvec& consb, const double& nsimul, const bool& fdegrees, const bool& fzeta, const NumericVector& hyperparms, const NumericVector& target, const NumericVector& jumpmin, const NumericVector& jumpmax, const int& c, const bool& progress);
+RcppExport SEXP _PartialNetwork_updateGP(SEXP YSEXP, SEXP traitSEXP, SEXP z0SEXP, SEXP v0SEXP, SEXP d0SEXP, SEXP b0SEXP, SEXP eta0SEXP, SEXP zeta0SEXP, SEXP fixvSEXP, SEXP consbSEXP, SEXP nsimulSEXP, SEXP fdegreesSEXP, SEXP fzetaSEXP, SEXP hyperparmsSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type trait(traitSEXP);
-    Rcpp::traits::input_parameter< List& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type z0(z0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type v0(v0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type d0(d0SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type b0(b0SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type eta0(eta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type fixv(fixvSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type consb(consbSEXP);
     Rcpp::traits::input_parameter< const double& >::type nsimul(nsimulSEXP);
@@ -62,23 +67,47 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type target(targetSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type jumpmin(jumpminSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type jumpmax(jumpmaxSEXP);
-    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
-    rcpp_result_gen = Rcpp::wrap(updateGP(Y, trait, start, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c));
+    Rcpp::traits::input_parameter< const int& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(updateGP(Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, progress));
     return rcpp_result_gen;
 END_RCPP
 }
-// dnetwork
-arma::mat dnetwork(List& Gparms, const arma::mat& traitard, const Nullable<NumericMatrix&> traitnonard, Nullable<unsigned int> m, Nullable<unsigned int> metrostart);
-RcppExport SEXP _PartialNetwork_dnetwork(SEXP GparmsSEXP, SEXP traitardSEXP, SEXP traitnonardSEXP, SEXP mSEXP, SEXP metrostartSEXP) {
+// dnetwork1
+arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const unsigned int Metrostart, const bool& progress);
+RcppExport SEXP _PartialNetwork_dnetwork1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP MetrostartSEXP, SEXP progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List& >::type Gparms(GparmsSEXP);
+    Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
+    Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type traitard(traitardSEXP);
-    Rcpp::traits::input_parameter< const Nullable<NumericMatrix&> >::type traitnonard(traitnonardSEXP);
-    Rcpp::traits::input_parameter< Nullable<unsigned int> >::type m(mSEXP);
-    Rcpp::traits::input_parameter< Nullable<unsigned int> >::type metrostart(metrostartSEXP);
-    rcpp_result_gen = Rcpp::wrap(dnetwork(Gparms, traitard, traitnonard, m, metrostart));
+    Rcpp::traits::input_parameter< const unsigned int >::type Metrostart(MetrostartSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(dnetwork1(T, P, z, d, zeta, traitard, Metrostart, progress));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dnetwork2
+arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const arma::mat& traitnonard, const unsigned int& M, const unsigned int& Metrostart, const bool& progress);
+RcppExport SEXP _PartialNetwork_dnetwork2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP traitnonardSEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP progressSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
+    Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type traitard(traitardSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type traitnonard(traitnonardSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type Metrostart(MetrostartSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(dnetwork2(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, progress));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -220,11 +249,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PartialNetwork_rvMF", (DL_FUNC) &_PartialNetwork_rvMF, 2},
-    {"_PartialNetwork_logCpvMF", (DL_FUNC) &_PartialNetwork_logCpvMF, 2},
-    {"_PartialNetwork_dvMF", (DL_FUNC) &_PartialNetwork_dvMF, 3},
-    {"_PartialNetwork_updateGP", (DL_FUNC) &_PartialNetwork_updateGP, 13},
-    {"_PartialNetwork_dnetwork", (DL_FUNC) &_PartialNetwork_dnetwork, 5},
+    {"_PartialNetwork_rvMFcpp", (DL_FUNC) &_PartialNetwork_rvMFcpp, 2},
+    {"_PartialNetwork_logCpvMFcpp", (DL_FUNC) &_PartialNetwork_logCpvMFcpp, 2},
+    {"_PartialNetwork_dvMFcpp", (DL_FUNC) &_PartialNetwork_dvMFcpp, 3},
+    {"_PartialNetwork_updateGP", (DL_FUNC) &_PartialNetwork_updateGP, 19},
+    {"_PartialNetwork_dnetwork1", (DL_FUNC) &_PartialNetwork_dnetwork1, 8},
+    {"_PartialNetwork_dnetwork2", (DL_FUNC) &_PartialNetwork_dnetwork2, 10},
     {"_PartialNetwork_Prob", (DL_FUNC) &_PartialNetwork_Prob, 4},
     {"_PartialNetwork_Graph", (DL_FUNC) &_PartialNetwork_Graph, 1},
     {"_PartialNetwork_invmodij", (DL_FUNC) &_PartialNetwork_invmodij, 4},

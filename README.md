@@ -32,9 +32,9 @@ rs<-rowSums(G)
 rs[rs==0]<-1
 W<-G/rs # row-normalize
 X <- cbind(rnorm(N,0,5),rpois(N,6)) # covariates
-Y <- solve(diag(rep(1,N))-alpha*W)%*%(cbind(rep(1,N), X)%*%beta + rnorm(N,0,se)) # endogenous variable
+Y <- solve(diag(rep(1,N))-alpha*W)%*%(cbind(rep(1,N), X)%*%beta + rnorm(N,0,se)) # endogenous variable, no contextual effect
 
-# generate instruments
+# generate instruments ### ARISTIDE ???? Could you check this is correct?
 instr1 <- instruments(Probabilities, X, Y, S=2, pow=2)
 GY1c <- instr1$GY  # proxy for Gy (draw 1)
 GXc0 <-instr1$GX[[1]][,,1] # proxy for GX (draw 1)
@@ -42,7 +42,12 @@ G2Xc0 <-instr1$GX[[1]][,,2]  # proxy for GGX (draw 1)
 GXc <- instr1$GX[[2]][,,1]  # proxy for GX (draw 2)
 G2Xc <- instr1$GX[[2]][,,2]  # proxy for GGX (draw 2)
 ```
-Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the AER package (required by PartialNetwork).
+Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the AER package (required by PartialNetwork). For example:
+```{r}
+dataset <- cbind(Y,X,GY1c,GXc0,G2Xc0,GXc,G2Xc)
+colnames(dataset) <- c("Y","X1","X2","Gy1","GX11","GX21","G2X11","G2X21","GX12","GX22","G2X12","G2X22")
+results <- ivreg(Y~ X1 + X2 + Gy1 | X1 + X2 + GX12 + GX22, data=dataset)
+```
 
 ## Bayesian estimator
 

@@ -488,7 +488,7 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   arma::vec logd = log(d);
   arma::rowvec b = b0, eta = eta0;
   arma::rowvec logb     = log(b);
-  double zeta=zeta0;
+  double zeta=zeta0 ;
   const double n=Y.n_rows;        // Nrow in ARD 
   const double K=Y.n_cols;        // Number of traits 
   const double p=z.n_cols;        // Hypersphere dimension 

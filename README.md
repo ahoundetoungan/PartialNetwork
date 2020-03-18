@@ -5,7 +5,7 @@ This package includes all functions for the replication of the results in Bouche
 
 ## How to install
 ```R
-ddevtools::install_github("PartialNetwork")
+devtools::install_github("PartialNetwork")
 ```
 
 ## Instrumental Variable procedure
@@ -27,7 +27,7 @@ Probabilities <- matrix(exp(c / lambda) / (1 + exp(c / lambda)), N) # generate l
 diag(Probabilities) <- 0 # no self-link
 
 # generate data
-G<-Graph(Probabilities) # generate the 'observed network'
+G<-sim.network(Probabilities) # generate the 'observed network'
 rs<-rowSums(G)
 rs[rs==0]<-1
 W<-G/rs # row-normalize
@@ -145,7 +145,7 @@ gend <- N * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * (CpvMF(P, 0) / CpvMF(P, gen
 
 #Network
 Probabilities <- Prob(gennu, gend, genzeta, genz) 
-G <- Graph(Probabilities)
+G <- sim.network(Probabilities)
 
 #4a Generate vk
 genv <- rvMF(K, rep(0, P))

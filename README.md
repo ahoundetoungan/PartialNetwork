@@ -70,73 +70,82 @@ results           <- ivreg(Y~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, dat
 
 ## Bayesian estimator
 
-The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contextual = TRUE, start, G0 = NULL, hyperparms, iteration = 2000, ctrl.mcmc = list(), data)`, where `formula` is the model equation, `contextual` indicates if the model has contextual effects, `G0` (optional) is the starting of the network,  `hyperparam` specify the prior distributions, including the network linking probabilities, `iterations` is the number of MCMC steps to be performed, `ctrl.mcmc` set some controls for the MCMC and `data` contains the data (if not specified R will search the variables in the global environment). See the help (`? mcmcSAR`) file for a complete description. Below, we provide a simple example using simulated data.
+The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contextual = TRUE, start, G0 = NULL, hyperparms, iteration = 2000, ctrl.mcmc = list(), data)`, where `formula` is the model equation, `contextual` indicates if the model has contextual effects, `start` (optional) is the parameter initialization, `G0` (optional) is the starting of the network,  `hyperparam` specify the prior distributions, including the network linking probabilities, `iterations` is the number of MCMC steps to be performed, `ctrl.mcmc` set some controls for the MCMC and `data` contains the data (if not specified R will search the variables in the global environment). See the help (`? mcmcSAR`) file for a complete description. Below, we provide a simple example using simulated data.
 
 ### Simulate data
 ```{r}
 
-## initialize
-M <- 100 #Number of groups
-N <- rep(50,M) # size of each group
-lambda <- 1 # precision parameter for the network formation process
-bayesian.estimate <- matrix(0,0,7)
-colnames(bayesian.estimate) <- c("Intercept", paste0("X",1:2), paste0("GX",1:2), "alpha", "sigma^2")
-MCMC.iteration <- 2000
+#Number of groups
+M             <- 100
+# size of each group
+N             <- rep(50,M)
+# precision parameter for the network formation process
+lambda        <- 1 
 
-G<-list()
-X<-list()
-y<-list()
+G             <- list()
 
-beta <- c(2,1,1.5) # individual effects
-gamma <- c(5,-3) # contextual effects
-alpha <- 0.4 # endogenous effect
-se <- 1 # std-dev errors
+# individual effects
+beta          <- c(2,1,1.5) 
+# contextual effects
+gamma         <- c(5,-3) 
+# endogenous effect
+alpha         <- 0.4
+# std-dev errors
+se            <- 1 
 
-out   <- list()
-prior <-list()
-  
+prior         <-list()
+
 ## generate network probabilities
 for (m in 1:M) {
-  c <- rnorm(N[m]*N[m],0,1)
-  Probabilities <- matrix(exp(c/lambda)/(1+exp(c/lambda)),N[m]) # linking probabilities
-  diag(Probabilities) <- 0 # no self-link
-  prior[[m]]<-Probabilities
+  Nm          <- N[m]
+  c           <- rnorm(Nm*Nm,0,1)
+  # linking probabilities
+  Prob        <- matrix(exp(c/lambda)/(1+exp(c/lambda)),Nm) 
+  # no self-link
+  diag(Prob)  <- 0 
+  prior[[m]]  <-Prob
 }
-  
+
 ## generate data
+# covariates
+X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
+# dependent variable
+y             <- c()
+
 for (m in 1:M) {
-  Gm <- matrix(runif(N[m]^2),N[m],N[m]) < prior[[m]] # observed network
-  diag(Gm) <- rep(0,N[m]) # no self-link
-  G[[m]] <- Gm
-  rsm <- rowSums(Gm)
-  rsm[rsm==0] = 1
-  Gm = Gm/rsm # normalize
-  Xm <- cbind(rnorm(N[m],0,5),rpois(N[m],7)) # covariates
-  if (m %% 2 == 0) Xm[,1] <- 0  ## ARISTIDE ???
-  if (m %% 2 == 1) Xm[,2] <- 7  ## ARISTIDE ???
-  X[[m]] <- Xm
-  GXm <- Gm%*%Xm # contextual effect
-  y[[m]] <- solve(diag(rep(1,N[m]))-alpha*Gm)%*%(cbind(rep(1,N[m]),Xm)%*%beta+GXm%*%gamma+rnorm(N[m],0,se)) # endogenous variable
+  Nm          <- N[m]
+  # true network
+  Gm          <- matrix(runif(Nm^2),Nm,Nm) < prior[[m]] 
+  # no self-link
+  diag(Gm)    <- rep(0,Nm) 
+  G[[m]]      <- Gm
+  rsm         <- rowSums(Gm)
+  rsm[rsm==0] <- 1
+  # normalize
+  Gm          <- Gm/rsm 
+  # rows index of group m
+  r2          <- sum(N[1:m])
+  r1          <- r2 - Nm + 1
+  # contextual effect
+  Xm          <- X[r1:r2,]
+  GXm         <- Gm %*% Xm
+  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm) %*% (cbind(rep(1,Nm),Xm) %*% beta + GXm %*% gamma + rnorm(Nm,0,se)) 
 }
 ```
 
 ### Estimate the model on simulated data
 ```{r}
-Kv <- 2*ncol(X[[1]]) + 1 # number of parameters
+# number of parameters
+Kv            <- 2*ncol(X) + 1 
 
-## set the model's options
-hyperparms <- list("network" = prior, # network prior distribution
-                     "theta0" = rep(0,Kv), # ARISTIDE ???
-                     "invsigmatheta" = diag(Kv)/100, # ARISTIDE ???
-                     "zeta0" = 0, # ARISTIDE ???
-                     "insigma2zeta" = 2, # ARISTIDE ???
-                     "a" = 4.2, #ARISTIDE ???
-                     "b" = (4.2 - 2))  #ARISTIDE ???
-  
-### launch the MCMC
-out <- peerMCMC(y, X, c(beta,gamma,0.4,se), hyperparms, iteration = MCMC.iteration)
+# set the hyperparameter
+# the hyperparameter is a list
+hyperparms    <- list("dnetwork" = prior) 
+
+
+# launch the MCMC
+out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
 ```
-
 ## ARD, Breza et al. (2020)
 
 ### Simulation procedure
@@ -232,4 +241,3 @@ Iter = 5000
 #Update the parameters
 Gparmsupdate <- updateGP(ARD, trait, Begin, vfixcolumn, bfixcolumn, Iter)
 ```
-$h$

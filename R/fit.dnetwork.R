@@ -1,6 +1,7 @@
 #' @title Fitting Network Distribution
 #' @description \code{fit.dnetwork} compute the network distribution from the simulations of the posterior distribution of the 
-#' network formation model.
+#' network formation model. The linking probabilities are also computed for indicidual without ARD if their traits are abserved.
+#' The degree and the gregariousness of theses individuals are computed from the sample with ARD using m-nearest neighbours method.
 #' @param object is an `estim.ARD` object returned by \code{\link{mcmcARD}}
 #' @param traitARD is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.
 #' @param traitnonARD is the matrix of traits for individuals without ARD. The entry (j, k) is 1 if j has the trait k and 0 otherwise.
@@ -8,7 +9,6 @@
 #' @param burnin is the number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
 #' used the simulation from the iteration \code{burnin + 1}.
 #' @param print is logical; if TRUE, the progression will be printed in the console.
-#' @details --- VINCENT Any details? ---
 #' @return a matrix of the network distribution
 #' @examples 
 #' \donotrun{

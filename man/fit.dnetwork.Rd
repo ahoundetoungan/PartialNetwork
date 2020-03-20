@@ -32,10 +32,8 @@ a matrix of the network distribution
 }
 \description{
 \code{fit.dnetwork} compute the network distribution from the simulations of the posterior distribution of the 
-network formation model.
-}
-\details{
---- VINCENT Any details? ---
+network formation model. The linking probabilities are also computed for indicidual without ARD if their traits are abserved.
+The degree and the gregariousness of theses individuals are computed from the sample with ARD using m-nearest neighbours method.
 }
 \examples{
 \\donotrun{

@@ -1,6 +1,6 @@
 #' @importFrom Formula as.Formula
 #' @importFrom stats model.frame
-formula.to.data <- function(formula, contextual, data, ...) {
+formula.to.data <- function(formula, contextual, data) {
   
   ## Extract data from the formula
   cl               <- match.call()

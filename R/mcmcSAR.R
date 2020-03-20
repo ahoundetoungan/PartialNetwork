@@ -4,6 +4,7 @@
 #' @importFrom Formula as.Formula
 #' @importFrom stats model.frame
 #' @seealso \code{\link{sim.IV}}
+#' @export
 mcmcSAR <- function(formula,
                     contextual = TRUE,
                     start,
@@ -18,7 +19,6 @@ mcmcSAR <- function(formula,
   jumpmax      <- ctrl.mcmc$jumpmax
   print        <- ctrl.mcmc$print
   block.max    <- ctrl.mcmc$block.max
-  block.max    <- round(block.max)
   c            <- ctrl.mcmc$c
   
   if (is.null(target)) {
@@ -66,6 +66,7 @@ mcmcSAR <- function(formula,
   Xone         <- f.t.data$Xone
   X            <- f.t.data$X
   y            <- f.t.data$y
+  block.max    <- round(block.max)
   
   kbeta        <- ncol(Xone)
   kgamma       <- 0

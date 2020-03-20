@@ -967,7 +967,7 @@ private:
   const int& M;
   const List& y;
   const List& X;
-  const int& kz; //  number of parameters expected sigma2
+  const int& kz; //  number of parameters excepted sigma2
 public:
   Peer(List& listG_, const Rcpp::IntegerVector& N_, const int& M_, const List& y_, const List& X_, const int& kz_) : 
   listG(listG_), N(N_), M(M_), y(y_), X(X_), kz(kz_){}
@@ -1088,13 +1088,13 @@ List estimatepeerML(List& listG,
 // Starting point
 // [[Rcpp::export]] 
 arma::vec sartpoint (List& Gnorm,
-                         const int& M,
-                         const IntegerVector& N,
-                         const int& kbeta,
-                         const int& kgamma,
-                         const List& y,
-                         const List& X, 
-                         const List& Xone) {
+                     const int& M,
+                     const IntegerVector& N,
+                     const int& kbeta,
+                     const int& kgamma,
+                     const List& y,
+                     const List& X, 
+                     const List& Xone) {
   
   
   int kz = kbeta + kgamma; // number of exogenous variables

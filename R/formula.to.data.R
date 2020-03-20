@@ -36,15 +36,17 @@ formula.to.data <- function(formula, contextual, data) {
     mtX            <- delete.response(terms(formula, data = data, rhs = 2))
     X              <- model.matrix(mtX, mf)
   }
-  Colnames.x       <- colnames(X)
-  intercept        <- "(Intercept)" %in% Colnames.x
   
   if (contextual) {
     X              <- Xone
-    if (intercept.one) {
-      X            <- X[,-1]
-    } 
-  }
+  } 
+  
+  Colnames.x       <- colnames(X)
+  intercept        <- "(Intercept)" %in% Colnames.x
+  
+  if (intercept) {
+    X              <- X[,-1]
+  } 
   
   list("formula" = formula, 
        "Xone" = Xone,

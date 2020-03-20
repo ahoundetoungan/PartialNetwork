@@ -43,7 +43,7 @@ the starting value of `zeta` in the argument `start` is set fixed along the proc
 \eqn{\mu_b}{mub}, \eqn{\sigma_b}{sigmab}, \eqn{\alpha_{\eta}}{alphaeta}, \eqn{\beta_{\eta}}{betaeta}, 
 \eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_zeta}{betazeta} (see details).}
 
-\item{ctrl.mcmc}{is a list of MCMC controls (See details)}
+\item{ctrl.mcmc}{is a list of MCMC controls (See details).}
 }
 \value{
 A list consisting of:
@@ -77,7 +77,7 @@ For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to set fi
 to set the desired \eqn{\mathbf{v}_k}{vk} and `fixb` to set the desired \eqn{b_k}{bk}. The parameter will be set
 around the given starting value (see McCormick and Zheng, 2015 for more details).\cr
 
-During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to `target` values. This
+During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
 requires to set minimal and maximal jumpings scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 \itemize{
 \item{`target`}: The default value is \code{rep(0.44, 5)}. 

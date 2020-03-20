@@ -59,7 +59,7 @@ GXc2        <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 G2Xc2       <- instr[[1]]$G2X[,,2]  # proxy for GGX (draw 2)
 ```
 Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the AER package (required by PartialNetwork). For example:
-```{R}
+```R
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy
 dataset           <- as.data.frame(cbind(Y,X,GY1c1,GX2,G2X2)) 
@@ -73,7 +73,7 @@ results           <- ivreg(Y~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, dat
 The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contextual = TRUE, start, G0 = NULL, hyperparms, iteration = 2000, ctrl.mcmc = list(), data)`, where `formula` is the model equation, `contextual` indicates if the model has contextual effects, `start` (optional) is the parameter initialization, `G0` (optional) is the starting of the network,  `hyperparam` specify the prior distributions, including the network linking probabilities, `iterations` is the number of MCMC steps to be performed, `ctrl.mcmc` set some controls for the MCMC and `data` contains the data (if not specified R will search the variables in the global environment). See the help (`? mcmcSAR`) file for a complete description. Below, we provide a simple example using simulated data.
 
 ### Simulate data
-```{R}
+```R
 # Number of groups
 M             <- 100
 # size of each group
@@ -133,7 +133,7 @@ for (m in 1:M) {
 ```
 
 ### Estimate the model on simulated data
-```{R}
+```R
 # number of exogenoua variables
 Kv            <- 2*ncol(X) + 1 
 
@@ -150,7 +150,7 @@ out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
 ### Simulation procedure
 The data is simulated following a procedure similar to the one in Breza et al. (2020). One notable exception is how we attribute traits to individuals. The code uses the functions `rvMF` (random variable generator vonMises-Fisher (vMF)), `dvMF` (density vMF), `CpvMF` (Normalizing constant, vMF), `sim.dnetwork` (linking probabilities) and `sim.network` (drawn network from probabilities). See the associated help files for details. Below, we provide an example using only one group.
 
-```{R}
+```R
 # Sample size
 N       <- 500 
 
@@ -215,7 +215,7 @@ for(k in 1:K){
 
 We present a simple function wrapping, `updateGP`, for the estimation procedure proposed by Breza et al. (2020). For specific information on the function, see the help file.
 
-```{R}
+```R
 # initianalization 
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)

@@ -2,7 +2,8 @@
 #' @description  \code{mcmcARD} estimate the network model proposed by McCormick and Zheng (2015).
 #' @param Y is a matrix of ARD. The entry (i, k) is the number of i's friends having the trait k.
 #' @param traitARD is the matrix of traits for induviduals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.
-#' @param start is a list containing starting values of `z`, `v`, `d`, `b`, `eta` and `zeta`
+#' @param start is a list containing starting values of `z` (matrix of dimension \eqn{N \times p}), `v` (matrix of dimension \eqn{K \times p}),
+#'  `d` (vector of dimension \eqn{N}), `b` (vector of dimension \eqn{K}), `eta` (vector of dimension \eqn{K}) and `zeta` (scalar).
 #' @param fixv is a vector of which location parameters among the \eqn{p} will be set fixed for identifiability.
 #' These fixed positions are used to rotate the latent surface back to a common orientation at each iteration using
 #' a Procrustes transformation (see McCormick and Zheng, 2015; Breza et al., 2017 and details).
@@ -15,13 +16,10 @@
 #' @param hyperparms is an 8-dimensional vector of hyperparameters containing \eqn{\mu_d}{mud},  \eqn{\sigma_d}{sigmad},
 #' \eqn{\mu_b}{mub}, \eqn{\sigma_b}{sigmab}, \eqn{\alpha_{\eta}}{alphaeta}, \eqn{\beta_{\eta}}{betaeta}, 
 #' \eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_zeta}{betazeta} (see details).
-#' @param target is a 6-dimensional vector of  targeted acceptance rates for  `z`, `v`, `d`, `b`, `eta` and `zeta`. 
-#' @param jumpmin is a 6-dimensional vector of the minimal jumping scales for  `z`, `v`, `d`, `b`, `eta` and `zeta`. 
-#' @param jumpmax is a 6-dimensional vector of the miximal jumping scales for  `z`, `v`, `d`, `b`, `eta` and `zeta`. 
-#' @param progress is logical; if TRUE, the progression will be printed in the console.
-#' @details ---- VINCENT could you plz describe breafly the story behind the model (before we put the formula)? And any usefull information should be in the details.
-#' For example why should we fixed set some traits location and some bk and how to set them. -----
-#' \deqn{P_{ij} \propto \nu_i + \nu_j + \zeta\mathbf{z}_i\mathbf{z}_j}{Pij propto nui + nuj + zeta * zi * zj}
+#' @param ctrl.mcmc is a list of MCMC controls (See details)
+#' 
+#' @details The linking probability is given by
+#' \deqn{P_{ij} \propto \nu_i + \nu_j + \zeta\mathbf{z}_i\mathbf{z}_j.}{Pij is proportional to (nui + nuj + zeta * zi * zj).}
 #' McCormick and Zheng (2015) write the likelihood of the model with respect to the spherical coordinate \eqn{\mathbf{z}_i}{zi},
 #' the trait locations \eqn{\mathbf{v}_k}{vk}, the degree \eqn{d_i}{di}, the fraction of ties in the network that are
 #' made with members of group k \eqn{b_k}{bk}, the trait intensity parameter \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta}. The following
@@ -31,8 +29,22 @@
 #' \deqn{d_i \sim log-\mathcal{N}(\mu_d, \sigma_d)}{di ~ log-Normal(mud, sigmad)}
 #' \deqn{b_k \sim log-\mathcal{N}(\mu_b, \sigma_b)}{bk ~ log-Normal(mub, sigmab)}
 #' \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
-#' \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)}
-#' During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to `target`.
+#' \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \cr
+#' 
+#' For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to set fixed. The parameter `fixv` can be used
+#' to set the desired \eqn{\mathbf{v}_k}{vk} and `fixb` to set the desired \eqn{b_k}{bk}. The parameter will be set
+#' around the given starting value (see McCormick and Zheng, 2015 for more details).\cr
+#' 
+#' During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to `target` values. This
+#' requires to set minimal and maximal jumpings scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
+#' \itemize{
+#' \item{`target`}: The default value is \code{rep(0.44, 5)}. 
+#' The target of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is  0.44.
+#' \item{`jumpmin`}: The default value is \code{rep(1e-12, 5)}. 
+#' The minimal jumping of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is \eqn{10^{-12}}{1e-12}.
+#' \item{`jumpmax`}: The default value is \code{c(10, 1, 1, 1, ,1)*20)}. The maximal jumping scale is 10 except for \eqn{\mathbf{z}_i}{zi} which is set to 200.
+#' \item{`print`}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is `TRUE`.
+#' }
 #' @return A list consisting of:
 #'     \item{n}{dimension of the sample with ARD}
 #'     \item{K}{number of traits}
@@ -44,30 +56,160 @@
 #'     \item{Acceptance.rate}{list of acceptance rate}
 #' @examples 
 #' \donotrun{
-#' EXAMPLE HERE, BUT AS THE EXAMPLE IS LONG WHITH HOW WE GENERATE THE DATA, 
-#' WE COULD ALSO DIRECT USERS TO THE READEME PAGE ONLINE WHICH GIVE MORE DETAILS. WHAT DO YOU THINK (VINCENT)} 
-#' @references Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. Bernoulli, 11(5), 815-828.
+#' set.seed(123)
+#' 
+#' # Sample size
+#' N  <- 500 
+#' 
+#' # ARD parameters
+#' genzeta <- 1
+#' mu      <- -1.35
+#' sigma   <- 0.37
+#' K       <- 12    # number of traits
+#' P       <- 3     # Sphere dimension 
+#' 
+#' 
+#' # Generate z (spherical coordinates)
+#' genz    <- rvMF(N,rep(0,P))
+#' 
+#' # Genetate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
+#' gennu   <- rnorm(N,mu,sigma)
+#' 
+#' # compute degrees
+#' gend <- N*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
+#' 
+#' # Link probabilities
+#' Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz) 
+#' 
+#' # Adjacency matrix
+#' G <- sim.network(Probabilities)
+#' 
+#' # Generate vk, the trait location
+#' genv <- rvMF(K,rep(0,P))
+#' 
+#' # set fixed some vk  distant
+#' genv[1,] <- c(1,0,0)
+#' genv[2,] <- c(0,1,0)
+#' genv[3,] <- c(0,0,1)
+#' 
+#' # eta, the intensity parameter
+#' geneta   <-abs(rnorm(K,2,1))
+#' 
+#' # Build traits matrix
+#' densityatz       <- matrix(0,N,K)
+#' for(k in 1:K){
+#'   densityatz[,k] <- dvMF(genz,genv[k,]*geneta[k])
+#' }
+#' trait       <- matrix(0,N,K)
+#' 
+#' for(k in 1:K){
+#'   trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
+#' }
+#' # print a percentage of peaople having a trait
+#' colSums(trait)*100/N
+#'   
+#' # Build ADR
+#' ARD         <- G %*% trait
+#'   
+#' # generate b
+#' genb        <- numeric(K)
+#' for(k in 1:K){
+#'    genb[k]   <- sum(G[,trait[,k]==1])/sum(G)
+#' }
+#'   
+#' ############ ARD Posterior distribution ################### 
+#' # initianalization 
+#' d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
+#' zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
+#'   
+#' # We should fix one bk
+#' vfixcolumn      <- 1:5
+#' bfixcolumn      <- c(3, 5)
+#' b0[bfixcolumn]  <- genb[bfixcolumn]
+#' v0[vfixcolumn,] <- genv[vfixcolumn,]
+#' start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
+#'   
+#' # MCMC
+#' out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
+#'                 consb = bfixcolumn, iteration = 5000)
+#'                    
+#' # plot simulations
+#' # plot d
+#' plot(out$simulations$d[,4], type = "l", col = "blue", ylab = "")
+#' abline(h = gend[4], col = "red")
+#'   
+#' # plot coordinates of individuals
+#' i <- 123 # individual 123
+#' {
+#'   par(mfrow = c(3, 1))
+#'   lapply(1:3, function(x) {
+#'       plot(unlist(lapply(1:5000, function(w)
+#'             out$simulations$z[[w]][i, x])) , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+#'                  abline(h = genz[i, x], col = "red")
+#'   })
+#'   par(mfrow = c(1, 1))
+#' }
+#' 
+#' # plot coordinates of traits
+#' k <- 8
+#' {
+#'   par(mfrow = c(3, 1))
+#'     lapply(1:3, function(x) {
+#'         plot(unlist(lapply(1:5000, function(w)
+#'               out$simulations$v[[w]][k, x])) , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+#'                   abline(h = genv[k, x], col = "red")
+#'     })
+#'   par(mfrow = c(1, 1))
+#' }} 
+#' @references Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
-#'  identify network structure without network data (No. w23491). National Bureau of Economic Research.
+#'  identify network structure without network data (No. w23491). \emph{National Bureau of Economic Research}. \url{https://www.nber.org/papers/w23491}.
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
-#' Journal of the American Statistical Association, 110(512), 1684-1695.
+#' \emph{Journal of the American Statistical Association}, 110(512), 1684-1695. \url{https://amstat.tandfonline.com/doi/full/10.1080/01621459.2014.991395}.
 #' @export
-mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000, sim.d = TRUE, sim.zeta = TRUE, hyperparms = NULL, target = NULL, jumpmin = NULL, jumpmax = NULL, progress = TRUE) {
+mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000, sim.d = TRUE, sim.zeta = TRUE, hyperparms = NULL, ctrl.mcmc = list()) {
   t1           <- Sys.time()
   if (is.null(hyperparms)) {
     hyperparms <- c(0,1,0,1,5,0.5,1,1)
   }
+  
+  
+  
+  target       <- ctrl.mcmc$target
+  jumpmin      <- ctrl.mcmc$jumpmin
+  jumpmax      <- ctrl.mcmc$jumpmax
+  print        <- ctrl.mcmc$print
+  c            <- ctrl.mcmc$c
+  
   if (is.null(target)) {
     target     <- c(1,1,1,1,1)*0.44
+  } else {
+    if(length(target) != 5) {
+      stop("target in ctrl.mcmc should be a 5-dimensional vector")
+    }
   }
   if (is.null(jumpmin)) {
     jumpmin    <- c(1,1,1,1,1)*1e-12
+  } else {
+    if(length(jumpmin) != 5) {
+      stop("jumpmin in ctrl.mcmc should be a 5-dimensional vector")
+    }
   }
   if (is.null(jumpmax)) {
     jumpmax    <- c(10,1,1,1,1)*20
+  } else {
+    if(length(jumpmax) != 5) {
+      stop("jumpmax in ctrl.mcmc should be a 5-dimensional vector")
+    }
   }
-  
-  c            <- 0.6
+  if (is.null(c)) {
+    c          <- 0.6
+  } else {
+    if(length(c) != 1) {
+      stop("c in ctrl.mcmc should be a scalar")
+    }
+  }
+
   
   
   z0           <- start$z
@@ -85,7 +227,7 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000, si
   p            <- ncol(z0)
     
   out          <- updateGP(Y, traitARD, z0, v0, d0, b0, eta0, zeta0, fixv, consb, iteration, !sim.d, !sim.zeta,
-                           hyperparms, target, jumpmin, jumpmax,  c, progress)
+                           hyperparms, target, jumpmin, jumpmax,  c, print)
   
   zaccept     <- out$`Acceptance rate`$z
   daccept     <- out$`Acceptance rate`$d

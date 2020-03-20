@@ -23,6 +23,14 @@ Eddelbuettel, D., François, R., Allaire, J., Ushey, K., Kou, Q., Russel, N., ..
 McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 Journal of the American Statistical Association, 110(512), 1684-1695.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/ahoundetoungan/PartialNetwork}
+  \item Report bugs at \url{https://github.com/ahoundetoungan/PartialNetwork/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Elysée Aristide Houndetoungan \email{ariel92and@gmail.com}
 

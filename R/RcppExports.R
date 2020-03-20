@@ -25,6 +25,18 @@ dnetwork2 <- function(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, pr
     .Call(`_PartialNetwork_dnetwork2`, T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, progress)
 }
 
+peerMCMC <- function(y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress) {
+    .Call(`_PartialNetwork_peerMCMC`, y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress)
+}
+
+peerMCMCblock <- function(y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress) {
+    .Call(`_PartialNetwork_peerMCMCblock`, y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress)
+}
+
+sartpoint <- function(Gnorm, M, N, kbeta, kgamma, y, X, Xone) {
+    .Call(`_PartialNetwork_sartpoint`, Gnorm, M, N, kbeta, kgamma, y, X, Xone)
+}
+
 Prob <- function(nu, d, zeta, z) {
     .Call(`_PartialNetwork_Prob`, nu, d, zeta, z)
 }
@@ -33,31 +45,27 @@ Graph <- function(prob) {
     .Call(`_PartialNetwork_Graph`, prob)
 }
 
-invmodij <- function(invM, i, j, eps_) {
-    .Call(`_PartialNetwork_invmodij`, invM, i, j, eps_)
+instruments1 <- function(dnetwork, X, y, S, pow) {
+    .Call(`_PartialNetwork_instruments1`, dnetwork, X, y, S, pow)
 }
 
-invmodijk <- function(invM, i, j, k, eps_1, eps_2) {
-    .Call(`_PartialNetwork_invmodijk`, invM, i, j, k, eps_1, eps_2)
+instruments2 <- function(dnetwork, X, S, pow) {
+    .Call(`_PartialNetwork_instruments2`, dnetwork, X, S, pow)
 }
 
-detmodij <- function(detM, invM, i, j, eps_) {
-    .Call(`_PartialNetwork_detmodij`, detM, invM, i, j, eps_)
+flistGnorm1 <- function(dnetwork, y, Xone, X, M) {
+    .Call(`_PartialNetwork_flistGnorm1`, dnetwork, y, Xone, X, M)
 }
 
-detmodijk <- function(detM, invM, i, j, k, eps_1, eps_2) {
-    .Call(`_PartialNetwork_detmodijk`, detM, invM, i, j, k, eps_1, eps_2)
+flistGnorm2 <- function(dnetwork, Gnorm, y, Xone, X, M) {
+    .Call(`_PartialNetwork_flistGnorm2`, dnetwork, Gnorm, y, Xone, X, M)
 }
 
-peerMCMC <- function(y, X, parms0, hyperparms, iteration = 1L, intercept = TRUE, target = 0.44, jumpmin = 1e-12, jumpmax = 100, c = 0.6) {
-    .Call(`_PartialNetwork_peerMCMC`, y, X, parms0, hyperparms, iteration, intercept, target, jumpmin, jumpmax, c)
+flistGnorm1nc <- function(dnetwork, y, Xone, M) {
+    .Call(`_PartialNetwork_flistGnorm1nc`, dnetwork, y, Xone, M)
 }
 
-sartpoint <- function(prior, y, X, intercept = TRUE) {
-    .Call(`_PartialNetwork_sartpoint`, prior, y, X, intercept)
-}
-
-instruments <- function(distr, X, y = NULL, S = 2L, pow = 1L) {
-    .Call(`_PartialNetwork_instruments`, distr, X, y, S, pow)
+flistGnorm2nc <- function(dnetwork, Gnorm, y, Xone, M) {
+    .Call(`_PartialNetwork_flistGnorm2nc`, dnetwork, Gnorm, y, Xone, M)
 }
 

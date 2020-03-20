@@ -33,7 +33,7 @@ arma::vec Fmvnorm(const double& dim, arma::vec u, arma::mat sigma) {
   return arma::chol(sigma).t()*x + u;
 }
 
-//[[Rcpp::export]]
+// Update invV if (i, j) is modified
 Eigen::MatrixXd invmodij (const Eigen::MatrixXd& invM,
                           const unsigned int& i,
                           const unsigned int& j,
@@ -41,7 +41,7 @@ Eigen::MatrixXd invmodij (const Eigen::MatrixXd& invM,
   return invM - eps_*invM.col(i)*invM.row(j)/(1. + eps_*invM(j,i));
 }
 
-//[[Rcpp::export]]
+// Update invV if (i, j) and (i, k) are modified
 Eigen::MatrixXd invmodijk (const Eigen::MatrixXd& invM,
                            const unsigned int& i,
                            const unsigned int& j,
@@ -52,7 +52,7 @@ Eigen::MatrixXd invmodijk (const Eigen::MatrixXd& invM,
   return tmp - eps_2*tmp.col(i)*tmp.row(k)/(1 + eps_2*tmp(k,i));
 }
 
-//[[Rcpp::export]]
+// Update detM if (i, j) is modified
 double detmodij (const double& detM,
                  const Eigen::MatrixXd& invM,
                  const unsigned int& i,
@@ -61,7 +61,7 @@ double detmodij (const double& detM,
   return (1 + eps_*invM(j,i))*detM;
 }
 
-//[[Rcpp::export]]
+// Update detM if (i, j) and (i, k) are modified
 double detmodijk (const double& detM,
                   const Eigen::MatrixXd& invM,
                   const unsigned int& i,
@@ -72,6 +72,8 @@ double detmodijk (const double& detM,
   return (1 + eps_2*invM(k,i) - eps_1*eps_2*invM(k,i)*invM(j,i))*(1 + eps_1*invM(j,i))*detM;
 }
 
+
+// remove row and col from Eigen matrix
 void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove)
 {
   unsigned int numRows = matrix.rows()-1;
@@ -93,6 +95,74 @@ void removeColumn(Eigen::MatrixXd& matrix, unsigned int colToRemove)
   
   matrix.conservativeResize(numRows,numCols);
 }
+
+// given a number of entries, 
+// return all the possibilities of entries
+arma::mat possentries(int& nupdate, const int& pow_nupdate) 
+{ 
+  /*nupdate of power set of a set with nupdate 
+   n is (2**n -1)*/
+  int counter, j; 
+  
+  arma::mat output(pow_nupdate, nupdate);
+  
+  
+  for(counter = 0; counter < pow_nupdate; counter++) 
+  { 
+    arma::uvec temp(nupdate);
+    int i = 0;
+    
+    for(j = 0; j < nupdate; j++) 
+    { 
+      /* Check if jth bit in the counter is set 
+       If set then print jth element from set */
+      if(counter & (1<<j)){
+        temp(i) = j;
+        i ++;
+      } 
+    }
+    arma::rowvec outputc = arma::zeros<arma::rowvec>(nupdate); 
+    outputc.elem(temp.head(i))  = arma::ones<arma::rowvec>(i);
+    output.row(counter) = outputc;
+  }
+  
+  return output;
+} 
+
+// update ligne i and col in index_col by newvalue
+void updselel (
+    Eigen::MatrixXd& Gmnorm,
+    double& prior_blockl,
+    const Eigen::MatrixXd priorm,
+    const int& i,
+    const arma::vec& index_col,
+    const arma::rowvec& newval,
+    const int& nupdate
+){
+  
+  for (int j(0); j < nupdate; ++ j) {
+    Gmnorm(i, index_col(j)) = newval(j);
+    prior_blockl *= (priorm(i, index_col(j))*newval(j) + (1-priorm(i, index_col(j)))*(1-newval(j)));
+  }
+}
+
+// compute the block of the line
+arma::vec cBlock(
+    const int& nupmax, 
+    const int& NJ, 
+    int& NJeff) {
+  arma::vec out = cumsum(Rcpp::RcppArmadillo::sample(arma::linspace(1,nupmax,nupmax), NJ, true)) - 1;
+  out = out.elem(arma::find(out <= (NJ - 1)));
+  out = arma::join_cols(-arma::ones(1), out);
+  NJeff = out.n_elem - 1;
+  if(out(NJeff) != (NJ - 1)){
+    out = arma::join_cols(out, arma::ones(1)*(NJ - 1));
+    NJeff += 1;
+  }
+  
+  return out;
+}
+
 
 // Return one G from G|y one step of MCMC
 
@@ -162,7 +232,7 @@ void updGnorm (List& Gnorm,
         Am1.row(i)               /= Aii1;
         invAm1.col(i)            *= Aii1; 
         detAm1                   /= Aii1;
-          
+        
         Eigen::MatrixXd Gmnorm1   = Gmnorm;
         Gmnorm1(i,j)              = gij1;
         Gmnorm1.row(i)            = Gmnorm1.row(i).array().ceil();
@@ -214,6 +284,113 @@ void updGnorm (List& Gnorm,
   }
 }
 
+void updGnormblock (List& Gnorm,
+                    const List& prior,
+                    const List& ListIndex,
+                    const Rcpp::IntegerVector& N,
+                    const int& M,
+                    const List& y,
+                    List& A,
+                    List& Ay,
+                    const List& Xb,
+                    const List& Xgamma,
+                    const double& alpha,
+                    const double& sigma2,
+                    const double& kbeta,
+                    const double& kv,
+                    const int& nupmax) {
+  for(int m(0); m<M; ++m){
+    int Nm = N(m);
+    Eigen::MatrixXd eyeM = Eigen::MatrixXd::Identity(Nm,Nm);
+    Eigen::VectorXd ym = y[m];
+    Eigen::VectorXd Xmb = Xb[m];  
+    Eigen::VectorXd Xmgamma = Xgamma[m];
+    Eigen::MatrixXd priorm = prior(m);
+    
+    //Copy G[m]
+    
+    Eigen::MatrixXd Gmnorm = Gnorm(m);
+    List IndexM = ListIndex[m];
+    arma::vec IndexMI = IndexM[0];
+    List IndexMIJ = IndexM[1];
+    
+    int NI = IndexMI.n_elem;
+    for(int ci(0); ci<NI; ++ci){ // line
+      int i = IndexMI(ci);
+      // compute N cofactor for row i
+      Eigen::VectorXd Cofator(N(m));
+      Eigen::MatrixXd Am = eyeM-alpha*Gmnorm;
+      removeRow(Am,i);
+      
+      arma::vec IndexMJ = IndexMIJ[ci];
+      int NJ = IndexMJ.n_elem;
+      
+      for(int j(0); j < N(m); ++j) {
+        Eigen::MatrixXd Amtemp = Am;
+        removeColumn(Amtemp,j);
+        Cofator(j) = Amtemp.determinant()*pow(-1,i+j);
+      }
+      
+      // permutations and blocks
+      int NJeff;
+      IndexMJ = Rcpp::RcppArmadillo::sample(IndexMJ, NJ, false);
+      arma::vec Blocks  = cBlock(nupmax,  NJ,  NJeff);
+      
+      
+      for(int cj(0); cj<NJeff; ++cj){
+        arma::vec index_col = IndexMJ.subvec(Blocks(cj) + 1, Blocks(cj+1));
+        int nupdate         = Blocks(cj+1) - Blocks(cj);
+        int poss            = pow(2, nupdate);          // number of possibility
+        arma::mat cposs     = possentries(nupdate, poss); // the possibility 
+        
+        arma::vec PROB(poss), prior_block(poss);
+        
+        for (int l(0); l < poss; ++ l) {
+          double prior_blockl = 1;
+          updselel(Gmnorm, prior_blockl, priorm, i, index_col, cposs.row(l), nupdate);
+          
+          Gmnorm.row(i)=Gmnorm.row(i).array().ceil();
+          double rs = Gmnorm.row(i).sum();
+          if(rs>0){
+            Gmnorm.row(i) /= rs;
+          }
+          
+          Eigen::MatrixXd Am = eyeM-alpha*Gmnorm;
+          Eigen::VectorXd Amy = Am*ym;
+          Eigen::VectorXd GmXmgamma = Gmnorm*Xmgamma;
+          PROB(l) =  ((Am.row(i)*Cofator).log()  - (0.5/sigma2)*((Amy.transpose()*(Amy - 2*Xmb - 2*GmXmgamma) + GmXmgamma.transpose()*(2*Xmb + GmXmgamma))))(0);
+          prior_block(l) = prior_blockl;
+        }
+        
+        //Normalization and prior
+        PROB = exp(PROB - max(PROB));
+        PROB = PROB%prior_block;
+        PROB = PROB / sum(PROB);
+        
+        
+        int l = sum(Rcpp::RcppArmadillo::sample_main(arma::linspace(0, poss - 1, poss), 1, true, PROB));
+        double prior_blockl = 1;
+        updselel(Gmnorm, prior_blockl, priorm, i, index_col, cposs.row(l), nupdate);
+        
+        Gmnorm.row(i)=Gmnorm.row(i).array().ceil();
+        double rs = Gmnorm.row(i).sum();
+        if(rs>0){
+          Gmnorm.row(i) /= rs;
+        }       
+      }
+    }
+    //Gnorm
+    Gnorm[m] = Gmnorm;
+    
+    // A
+    Eigen::MatrixXd Am = eyeM-alpha*Gmnorm;
+    A[m] = Am;
+    
+    // Ay
+    Eigen::VectorXd Amy = Am*ym;
+    Ay[m] = Amy;
+  }
+}
 
 // update theta
 void updtheta (arma::vec& theta,
@@ -251,7 +428,7 @@ void updtheta (arma::vec& theta,
     arma::mat Xonem = Xone[m];
     arma::mat Xm = X[m];
     arma::vec Vmtheta = Vm*theta;
-      
+    
     // Vtheta
     Vtheta[m] = Vmtheta;
     
@@ -312,14 +489,12 @@ void updzeta (double& zeta,
               const List& Vtheta,
               const double& jumpzeta,
               double& zetaaccept,
-              double& zeta0,
-              double& invsigma2zeta,
+              const double& zeta0,
+              const double& invsigma2zeta,
               const Rcpp::IntegerVector N,
               const double M) {
   
-  NumericVector zetatemp = rnorm(1, zeta, jumpzeta);
-  
-  double zetastart = zetatemp(0);
+  double zetastart =  R::rnorm(zeta, jumpzeta);
   double expzetastart = exp(zetastart);
   double alphastart = expzetastart/(1+expzetastart);
   
@@ -380,51 +555,38 @@ void updzeta (double& zeta,
 
 
 // [[Rcpp::export]]
-NumericMatrix peerMCMC (const List& y,
-                        const List& X,
-                        const arma::vec parms0,
-                        const List& hyperparms,
-                        const int& iteration = 1,
-                        const bool& intercept = true,
-                        const double& target = 0.44,
-                        const double& jumpmin = 1e-12,
-                        const double& jumpmax = 100,
-                        const double& c = 0.6){
-  
-  clock_t begintime=clock();  
-  List Xone = clone(X); // Clone X
-  
-  // hyper parameters
-  const List prior = hyperparms(0);
-  arma::vec theta0 = hyperparms(1);
-  const arma::mat invsigmatheta = hyperparms(2);
-  double zeta0 = hyperparms(3);
-  double invsigma2zeta = hyperparms(4);
-  double a = hyperparms(5);
-  double b = hyperparms(6);
+List peerMCMC (const List& y,
+               const List& X,
+               const List& Xone,
+               List& Gnorm,
+               const int& M,
+               const IntegerVector& N,
+               const int& kbeta,
+               const int& kgamma,
+               const List& prior,
+               const arma::vec& theta0,
+               const arma::mat& invsigmatheta,
+               const double& zeta0,
+               const double& invsigma2zeta,
+               const double& a, 
+               const double& b,
+               const arma::vec parms0,
+               int iteration,
+               const double& target,
+               const double& jumpmin,
+               const double& jumpmax,
+               const double& c,
+               const bool& progress){
   const arma::vec& invsigmathetatheta0 = invsigmatheta*theta0;
   
-  //M
-  int M = y.length();
-  
   //N and Xshed, ListIndex
-  Rcpp::IntegerVector N(M);
   List ListIndex(M);
   
   
   for(int m(0); m<M; ++m){
-    arma::mat Xm = Xone(m);
-    N(m) = Xm.n_rows;
-    
-    int Nm = N(m);
-    if(intercept){
-      Xm = arma::join_rows(arma::ones(Nm),Xm);
-      Xone(m) = Xm;
-    }
-    
     // check prior 0 and 1;
     arma::mat priorm = prior[m];
-    
+    int Nm = N(m);
     arma::vec ListI(Nm);
     List ListIJ(Nm);
     int ci = 0;
@@ -454,17 +616,6 @@ NumericMatrix peerMCMC (const List& y,
   
   int sumN = sum(N);
   
-  //kz
-  int kbeta, kgamma;
-  arma::mat X0 = Xone(0);
-  kbeta = X0.n_cols;
-  
-  kgamma = kbeta;
-  
-  if(intercept){
-    kgamma -= 1;
-  }
-  
   int kv = kbeta + kgamma; // number of exogenous variables
   
   //initialize parameters
@@ -476,15 +627,12 @@ NumericMatrix peerMCMC (const List& y,
   // Other parameters
   double jumpzeta = 1;
   double zetaaccept = 0;
-  List Gnorm(M), V(M), Vtheta(M), Xb(M), Xgamma(M), A(M), Ay(M);
+  List V(M), Vtheta(M), Xb(M), Xgamma(M), A(M), Ay(M);
   double sumlogdetA = 0.0;
   for(int m(0); m<M; ++m){
     //Gnorm
     int Nm = N(m);
-    arma::mat priorm = prior[m];
-    mat matunif(Nm,Nm,fill::randu);
-    arma::mat Gm = arma::normalise(arma::conv_to<arma::mat>::from(matunif < priorm),1,1);
-    Gnorm[m] = Gm;
+    arma::mat Gm = Gnorm[m];
     
     // V
     arma::mat Xonem = Xone[m];
@@ -515,20 +663,20 @@ NumericMatrix peerMCMC (const List& y,
     // sumlogdetA
     sumlogdetA += log(abs(det(Am)));
   }
-
   
-
+  
   
   //Save 
   arma::mat saveparms(kv+2,iteration);
-
+  NumericVector parmscpp;
   // loop
-  for(int t(0); t<iteration; ++t){
-    cout<<"Iteration "<<t+1<<"/"<<iteration<<endl;
-    
-    // Update G
-    updGnorm (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv,t);
-    for(int m(0); m<M; ++m){
+  if (progress) {
+    for(int t(0); t<iteration; ++t){
+      cout<<"Iteration "<<t+1<<"/"<<iteration<<endl;
+      
+      // Update G
+      updGnorm (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv,t);
+      for(int m(0); m<M; ++m){
         //Gnorm
         arma::mat Gm = Gnorm[m];
         
@@ -540,55 +688,279 @@ NumericMatrix peerMCMC (const List& y,
         V[m] = Vm;
       }
       
-    // Update theta
-    updtheta (theta, Vtheta, Xb, Xgamma, sigma2, kv, kbeta, Xone, X, Ay, V, invsigmathetatheta0,
-              invsigmatheta, M);
-    
-    updsigma2 (sigma2, theta, a, b, theta0, invsigmatheta, Ay, Vtheta, sumN, M);
-    
-    updzeta (zeta, alpha, A, sumlogdetA, Ay, Gnorm, y, sigma2, Vtheta, jumpzeta,
-                  zetaaccept, zeta0, invsigma2zeta, N, M);
-    
-    // update hyperparameters
-    double jumpzetast = jumpzeta + (zetaaccept/t - target)/pow(t,c);
-    if((jumpzetast > jumpmin) & (jumpzetast < jumpmax)){jumpzeta = jumpzetast;}
-  
-    arma::vec parms = arma::join_cols(theta,arma::ones(1)*alpha);
-    parms = arma::join_cols(parms,arma::ones(1)*sigma2);
-    
-    saveparms.col(t) = parms;
-    cout<<parms.t()<<endl;
+      // Update theta
+      updtheta (theta, Vtheta, Xb, Xgamma, sigma2, kv, kbeta, Xone, X, Ay, V, invsigmathetatheta0,
+                invsigmatheta, M);
+      
+      updsigma2 (sigma2, theta, a, b, theta0, invsigmatheta, Ay, Vtheta, sumN, M);
+      
+      updzeta (zeta, alpha, A, sumlogdetA, Ay, Gnorm, y, sigma2, Vtheta, jumpzeta,
+               zetaaccept, zeta0, invsigma2zeta, N, M);
+      
+      // update hyperparameters
+      double jumpzetast = jumpzeta + (zetaaccept/t - target)/pow(t,c);
+      if((jumpzetast > jumpmin) & (jumpzetast < jumpmax)){jumpzeta = jumpzetast;}
+      
+      arma::vec parms = arma::join_cols(theta,arma::ones(1)*alpha);
+      parms = arma::join_cols(parms,arma::ones(1)*sigma2);
+      
+      saveparms.col(t) = parms;
+      parmscpp             = wrap(parms);
+      parmscpp.attr("dim") = R_NilValue;
+      Rcpp::print(parmscpp);
+      Rcpp::Rcout<<"************************"<<endl;
+    }
+  } else {
+    for(int t(0); t<iteration; ++t){
+      // Update G
+      updGnorm (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv,t);
+      for(int m(0); m<M; ++m){
+        //Gnorm
+        arma::mat Gm = Gnorm[m];
+        
+        // V
+        arma::mat Xonem = Xone[m];
+        arma::mat Xm = X[m];
+        arma::mat Vm = arma::join_rows(Xonem,Gm*Xm);
+        arma::vec Vmtheta = Vm*theta;
+        V[m] = Vm;
+      }
+      
+      // Update theta
+      updtheta (theta, Vtheta, Xb, Xgamma, sigma2, kv, kbeta, Xone, X, Ay, V, invsigmathetatheta0,
+                invsigmatheta, M);
+      
+      updsigma2 (sigma2, theta, a, b, theta0, invsigmatheta, Ay, Vtheta, sumN, M);
+      
+      updzeta (zeta, alpha, A, sumlogdetA, Ay, Gnorm, y, sigma2, Vtheta, jumpzeta,
+               zetaaccept, zeta0, invsigma2zeta, N, M);
+      
+      // update hyperparameters
+      double jumpzetast = jumpzeta + (zetaaccept/t - target)/pow(t,c);
+      if((jumpzetast > jumpmin) & (jumpzetast < jumpmax)){jumpzeta = jumpzetast;}
+      
+      arma::vec parms = arma::join_cols(theta,arma::ones(1)*alpha);
+      parms = arma::join_cols(parms,arma::ones(1)*sigma2);
+      
+      saveparms.col(t) = parms;
+    }
   }
   
-  Rcpp::Environment base("package:base"); 
   
-  // Make function callable from C++
-  Rcpp::Function cCPP = base["c"];  
-  Rcpp::Function paste0CPP = base["paste0"];  
-  
-  StringVector Names = cCPP(paste0CPP("X",seq_len(kgamma)),paste0CPP("GX",seq_len(kgamma)),"alpha","sd.");
-  if(intercept){
-    Names = cCPP("Intercept",Names);
-  }
   
   NumericMatrix output = wrap(saveparms.t());
-  colnames(output) = Names;
   
-  //Print the processing time
-  double timer=((double)(clock()-begintime))/CLOCKS_PER_SEC;//Time in seconds
-  long nhours=floor(timer/3600);                            //Hours
-  long nminutes=((long)floor(timer/60))%60;                 //Minutes
-  double nseconds=timer-3600*nhours-60*nminutes;            //Seconds
-  cout<<"Elapsed time   : "<<nhours<<" HH "<<nminutes<<" mm "<<round(nseconds)<<" ss "<<endl;
-  cout<<""<<endl;
-  cout<<"zeta average acceptance rate: "<<zetaaccept/iteration<<endl;
-  
-  return output;
+  return List::create(Named("posterior")  = output, 
+                      Named("acceptance") = zetaaccept/iteration,
+                      Named("G")          = Gnorm);
 }
 
 
+// [[Rcpp::export]]
+List peerMCMCblock (const List& y,
+                    const List& X,
+                    const List& Xone,
+                    List& Gnorm,
+                    const int& M,
+                    const IntegerVector& N,
+                    const int& kbeta,
+                    const int& kgamma,
+                    const List& prior,
+                    const arma::vec& theta0,
+                    const arma::mat& invsigmatheta,
+                    const double& zeta0,
+                    const double& invsigma2zeta,
+                    const double& a, 
+                    const double& b,
+                    const arma::vec parms0,
+                    int iteration,
+                    const double& target,
+                    const double& jumpmin,
+                    const double& jumpmax,
+                    const double& c, 
+                    const int& nupmax,
+                    const bool& progress){
+  
+  
+  const arma::vec& invsigmathetatheta0 = invsigmatheta*theta0;
+  
+  //N and Xshed, ListIndex
+  List ListIndex(M);
+  
+  
+  for(int m(0); m<M; ++m){
+    // check prior 0 and 1;
+    arma::mat priorm = prior[m];
+    int Nm = N(m);
+    arma::vec ListI(Nm);
+    List ListIJ(Nm);
+    int ci = 0;
+    for(int i(0); i<Nm; ++i){
+      int cj = 0;
+      arma::vec ListJ(Nm);
+      
+      for(int j(0); j<Nm; ++j){
+        if(priorm(i,j) !=0 && priorm(i,j) !=1){
+          ListJ(cj) = j;
+          cj += 1;
+        }
+      }
+      if(cj > 0){
+        ListI(ci) = i;
+        ListJ = ListJ.head(cj);
+        ListIJ[ci] = ListJ;
+        ci += 1;
+      }
+    }
+    
+    ListI = ListI.head(ci);
+    IntegerVector idx = seq_len(Nm);
+    ListIJ = ListIJ[idx<=ci];
+    ListIndex[m] = List::create(ListI,ListIJ);
+  }
+  
+  int sumN = sum(N);
+  
+  int kv = kbeta + kgamma; // number of exogenous variables
+  
+  //initialize parameters
+  arma::vec theta = parms0.head(kv);
+  double sigma2 = parms0(kv+1);
+  double alpha = parms0(kv);
+  double zeta = log(alpha/(1-alpha));
+  
+  // Other parameters
+  double jumpzeta = 1;
+  double zetaaccept = 0;
+  List V(M), Vtheta(M), Xb(M), Xgamma(M), A(M), Ay(M);
+  double sumlogdetA = 0.0;
+  for(int m(0); m<M; ++m){
+    //Gnorm
+    int Nm = N(m);
+    arma::mat Gm = Gnorm[m];
+    
+    // V
+    arma::mat Xonem = Xone[m];
+    arma::mat Xm = X[m];
+    arma::mat Vm = arma::join_rows(Xonem,Gm*Xm);
+    arma::vec Vmtheta = Vm*theta;
+    arma::vec Xmb = Xonem*theta.head(kbeta);
+    arma::vec Xmgamma = Xm*theta.tail(kgamma);
+    V[m] = Vm;
+    
+    // Vtheta
+    Vtheta[m] = Vmtheta;
+    
+    //Xb
+    Xb[m] = Xmb;
+    
+    //Xgamma
+    Xgamma[m] = Xmgamma;
+    
+    // A
+    arma::mat Am = arma::eye(Nm,Nm) - alpha*Gm;
+    A[m] = Am;
+    
+    // Ay
+    arma::vec ym = y[m];
+    Ay[m] = Am*ym;
+    
+    // sumlogdetA
+    sumlogdetA += log(abs(det(Am)));
+  }
+  
+  
+  //Save 
+  arma::mat saveparms(kv+2,iteration);
+  NumericVector parmscpp;
+  // loop
+  if (progress) {
+    for(int t(0); t<iteration; ++t){
+      cout<<"Iteration "<<t+1<<"/"<<iteration<<endl;
+      
+      // Update G
+      updGnormblock (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv, nupmax);
+      for(int m(0); m<M; ++m){
+        //Gnorm
+        arma::mat Gm = Gnorm[m];
+        
+        // V
+        arma::mat Xonem = Xone[m];
+        arma::mat Xm = X[m];
+        arma::mat Vm = arma::join_rows(Xonem,Gm*Xm);
+        arma::vec Vmtheta = Vm*theta;
+        V[m] = Vm;
+      }
+      
+      // Update theta
+      updtheta (theta, Vtheta, Xb, Xgamma, sigma2, kv, kbeta, Xone, X, Ay, V, invsigmathetatheta0,
+                invsigmatheta, M);
+      
+      updsigma2 (sigma2, theta, a, b, theta0, invsigmatheta, Ay, Vtheta, sumN, M);
+      
+      updzeta (zeta, alpha, A, sumlogdetA, Ay, Gnorm, y, sigma2, Vtheta, jumpzeta,
+               zetaaccept, zeta0, invsigma2zeta, N, M);
+      
+      // update hyperparameters
+      double jumpzetast = jumpzeta + (zetaaccept/t - target)/pow(t,c);
+      if((jumpzetast > jumpmin) & (jumpzetast < jumpmax)){jumpzeta = jumpzetast;}
+      
+      arma::vec parms = arma::join_cols(theta,arma::ones(1)*alpha);
+      parms = arma::join_cols(parms,arma::ones(1)*sigma2);
+      
+      saveparms.col(t) = parms;
+      parmscpp             = wrap(parms);
+      parmscpp.attr("dim") = R_NilValue;
+      Rcpp::print(parmscpp);
+      Rcpp::Rcout<<"************************"<<endl;
+    }
+  } else {
+    for(int t(0); t<iteration; ++t){
+      // Update G
+      updGnormblock (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv, nupmax);
+      for(int m(0); m<M; ++m){
+        //Gnorm
+        arma::mat Gm = Gnorm[m];
+        
+        // V
+        arma::mat Xonem = Xone[m];
+        arma::mat Xm = X[m];
+        arma::mat Vm = arma::join_rows(Xonem,Gm*Xm);
+        arma::vec Vmtheta = Vm*theta;
+        V[m] = Vm;
+      }
+      
+      // Update theta
+      updtheta (theta, Vtheta, Xb, Xgamma, sigma2, kv, kbeta, Xone, X, Ay, V, invsigmathetatheta0,
+                invsigmatheta, M);
+      
+      updsigma2 (sigma2, theta, a, b, theta0, invsigmatheta, Ay, Vtheta, sumN, M);
+      
+      updzeta (zeta, alpha, A, sumlogdetA, Ay, Gnorm, y, sigma2, Vtheta, jumpzeta,
+               zetaaccept, zeta0, invsigma2zeta, N, M);
+      
+      // update hyperparameters
+      double jumpzetast = jumpzeta + (zetaaccept/t - target)/pow(t,c);
+      if((jumpzetast > jumpmin) & (jumpzetast < jumpmax)){jumpzeta = jumpzetast;}
+      
+      arma::vec parms = arma::join_cols(theta,arma::ones(1)*alpha);
+      parms = arma::join_cols(parms,arma::ones(1)*sigma2);
+      
+      saveparms.col(t) = parms;
+    }
+  }
+  
+  NumericMatrix output = wrap(saveparms.t());
+  
+  return List::create(Named("posterior")  = output, 
+                      Named("acceptance") = zetaaccept/iteration,
+                      Named("G")          = Gnorm);
+}
+
+
+
 class Peer: public MFuncGrad
-          {
+{
 private:
   List& listG;
   const Rcpp::IntegerVector& N;
@@ -609,7 +981,7 @@ public:
   
   
   double f_grad(Constvec& parms, Refvec grad)
-    {
+  {
     Eigen::VectorXd parms0 = parms;  //make a copy
     arma::vec alphaAR = arma::vec(parms0 .data(), parms0 .size(), false, false); //converte into arma vec
     
@@ -703,8 +1075,6 @@ List estimatepeerML(List& listG,
   double fopt;
   int status = optim_lbfgs(f, transalpha, fopt);
   
-  //Temporary
-  cout<<"Objective function: "<< -fopt<<endl;
   //End Temporary
   
   return Rcpp::List::create(
@@ -717,50 +1087,17 @@ List estimatepeerML(List& listG,
 
 // Starting point
 // [[Rcpp::export]] 
-NumericVector sartpoint (const List& prior,
+arma::vec sartpoint (List& Gnorm,
+                         const int& M,
+                         const IntegerVector& N,
+                         const int& kbeta,
+                         const int& kgamma,
                          const List& y,
-                         const List& X,
-                         const bool& intercept = true) {
+                         const List& X, 
+                         const List& Xone) {
   
-  List Xone = clone(X);
-  
-  //M
-  int M = y.length();
-  
-  //N and Xshed
-  Rcpp::IntegerVector N(M);
-  
-  for(int m(0); m<M; ++m){
-    arma::mat Xm = Xone(m);
-    N(m) = Xm.n_rows;
-    
-    if(intercept){
-      Xm = arma::join_rows(arma::ones(N(m)),Xm);
-      Xone(m) = Xm;
-    }
-  }
-  
-  //kz
-  int kbeta, kgamma;
-  arma::mat X0 = Xone(0);
-  kbeta = X0.n_cols;
-  
-  kgamma = kbeta;
-  
-  if(intercept){
-    kgamma -= 1;
-  }
   
   int kz = kbeta + kgamma; // number of exogenous variables
-  
-  // Initialize G
-  List Gnorm(M);
-  for(int m(0); m<M; ++m){
-    arma::mat priorm = prior(m);
-    mat matunif(N(m),N(m),fill::randu);
-    arma::mat G = arma::conv_to<arma::mat>::from(matunif < priorm);
-    Gnorm(m) = arma::normalise(G,1,1);
-  }
   
   
   List listG(3);
@@ -801,23 +1138,8 @@ NumericVector sartpoint (const List& prior,
   theta.head(kz) = thetaML;
   theta(kz)=alphaML;
   theta(kz+1)=seML;
-
-  Rcpp::Environment base("package:base"); 
   
-  // Make function callable from C++
-  Rcpp::Function cCPP = base["c"];  
-  Rcpp::Function paste0CPP = base["paste0"];  
-  
-  StringVector Names = cCPP(paste0CPP("X",seq_len(kgamma)),paste0CPP("GX",seq_len(kgamma)),"alpha","sd.");
-  if(intercept){
-    Names = cCPP("Intercept",Names);
-  }
-  
-  NumericVector output = wrap(theta);
-  
-  rownames(output) = Names;
-  
-  return output;
+  return theta;
 }
 
 

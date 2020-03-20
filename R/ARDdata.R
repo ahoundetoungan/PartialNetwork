@@ -24,7 +24,7 @@
 #' d       <- runif(N, 0, 45)
 #' 
 #' dist    <- sim.dnetwork(nu, d, zeta, z)}
-#' @seealso \link{\code{sim.network}}
+#' @seealso \code{\link{sim.network}}
 #' @export
 
 sim.dnetwork  <- function(nu, d, zeta, z) {
@@ -53,7 +53,7 @@ sim.dnetwork  <- function(nu, d, zeta, z) {
 #' 
 #' # Generate network
 #' G       <- sim.network(dist)}
-#' @seealso \link{\code{sim.dnetwork}}
+#' @seealso \code{\link{sim.dnetwork}}
 #' @export
 sim.network <- function(dnetwork) {
   Graph(dnetwork)

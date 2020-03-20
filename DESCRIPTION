@@ -7,9 +7,12 @@ Authors@R: c(person("Elysée Aristide", "Houndetoungan",  role = c("cre","aut"),
 Description: Compute IV-estimator and Bayesian estimator for linear-in-mean SAR model when only the network distribution is availaible. 
 License: GPL (>= 2)
 Encoding: UTF-8
+BugReports: https://github.com/ahoundetoungan/PartialNetwork/issues
+URL: https://github.com/ahoundetoungan/PartialNetwork
 LazyData: true
-Imports: Rcpp (>= 1.0.0)
+Imports: Rcpp (>= 1.0.0), Formula
 Depends: R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen, RcppNumerical, BH
+Suggests: AER
 RoxygenNote: 7.0.0
 

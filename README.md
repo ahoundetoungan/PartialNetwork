@@ -47,7 +47,7 @@ W           <- G/rs
 # covariates
 X           <- cbind(rnorm(N,0,5),rpois(N,6)) 
 # endogenous variable, no contextual effect
-y           <- solve(diag(rep(1,N))-alpha*W)%*%(cbind(rep(1,N), X)%*%beta + rnorm(N,0,se)) 
+y           <- solve(diag(N) - alpha * W) %*% (cbind(rep(1, N), X) %*% beta + rnorm(N,0,se)) 
 
 # generate instruments 
 instr       <- sim.IV(Probabilities, X, y, replication = 1, power = 2)
@@ -70,7 +70,7 @@ results           <- ivreg(Y~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, dat
 
 ## Bayesian estimator
 
-The Bayesian estimator is neatly packed in the function `peerMCMC(y,X,para,hyperparams,iteractions)`, where `y` is the list (lenght=M) of endogenous variables, `X` is the list of covariates, `hyperparam` specify the prior distributions, including the network linking probabilities, and `iterations` is the number of MCMC steps to be performed. See the help file for a complete description. Below, we provide a simple example using simulated data.
+The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contextual = TRUE, start, G0 = NULL, hyperparms, iteration = 2000, ctrl.mcmc = list(), data)`, where `formula` is the model equation, `contextual` indicates if the model has contextual effects, `G0` (optional) is the starting of the network,  `hyperparam` specify the prior distributions, including the network linking probabilities, `iterations` is the number of MCMC steps to be performed, `ctrl.mcmc` set some controls for the MCMC and `data` contains the data (if not specified R will search the variables in the global environment). See the help (`? mcmcSAR`) file for a complete description. Below, we provide a simple example using simulated data.
 
 ### Simulate data
 ```{r}
@@ -232,3 +232,4 @@ Iter = 5000
 #Update the parameters
 Gparmsupdate <- updateGP(ARD, trait, Begin, vfixcolumn, bfixcolumn, Iter)
 ```
+$h$

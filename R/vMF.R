@@ -54,7 +54,7 @@ logCpvMF <- function(p, eta) {
 #' dvMF(z, c(1,0))
 #' 
 #' # Density of c(0, 1, 0, 0) with the parameter eta = 3 and mu = c(0, 1, 0, 0)
-#' dvMF(c(0, 1, 0, 0), c(0, 3, 0, 0)) 
+#' dvMF(matrix(c(0, 1, 0, 0), nrow = 1), c(0, 3, 0, 0)) 
 #' @export
 dvMF <- function(z, theta, log.p = FALSE) {
   dvMFcpp(z, theta, log.p)

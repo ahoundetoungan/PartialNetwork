@@ -67,7 +67,7 @@
 #' # covariates
 #' X         <- cbind(rnorm(N,0,5),rpois(N,6)) 
 #' # endogenous variable, no contextual effect
-#' y         <- solve(diag(rep(1,N))-alpha*W)%*%(cbind(rep(1,N), X)%*%beta + rnorm(N,0,se)) 
+#' y         <- solve(diag(rep(1,N))-alpha*W)\%*\%(cbind(rep(1,N), X)\%*\%beta + rnorm(N,0,se)) 
 #' 
 #' # generate instruments 
 #' instr     <- sim.IV(Probabilities, X, y, replication = 1, power = 2)

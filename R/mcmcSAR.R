@@ -120,8 +120,9 @@
 #'   r1          <- r2 - Nm + 1
 #'   # contextual effect
 #'   Xm          <- X[r1:r2,]
-#'   GXm         <- Gm %*% Xm
-#'   y[r1:r2]    <- solve(diag(Nm)-alpha*Gm)%*%(cbind(rep(1,Nm),Xm)%*%beta + GXm%*%gamma + rnorm(Nm,0,se)) 
+#'   GXm         <- Gm \%*\% Xm
+#'   tmp         <- cbind(rep(1,Nm),Xm)\%*\%beta + GXm\%*\%gamma + rnorm(Nm,0,se)
+#'   y[r1:r2]    <- solve(diag(Nm)-alpha*Gm)\%*\%tmp 
 #' }
 #'   
 #' # number of parameters

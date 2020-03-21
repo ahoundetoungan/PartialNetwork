@@ -1,14 +1,15 @@
 // [[Rcpp::depends(RcppArmadillo, RcppEigen, RcppNumerical)]]
 #include <RcppArmadillo.h>
+#define NDEBUG 1
 #include <RcppArmadilloExtensions/sample.h>
 #include <RcppEigen.h>
 #include <RcppNumerical.h>
 
 using namespace Rcpp;
-using namespace arma;
+//using namespace arma;
 using namespace std;
-using namespace Eigen;
-using namespace Numer;
+//using namespace Eigen;
+//using namespace Numer;
 
 // USE A WAY TO QUICLY COMPUTE THE DET AND THE INVERSE 
 // Hsieh et al. (2019), A Structural Model for the Coevolution of Networks and Behavior
@@ -672,7 +673,8 @@ List peerMCMC (const List& y,
   // loop
   if (progress) {
     for(int t(0); t<iteration; ++t){
-      cout<<"Iteration "<<t+1<<"/"<<iteration<<endl;
+      //std::cout<<"Iteration "<<t+1<<"/"<<iteration<<std::endl;
+      Rprintf("Iteration %d/%d \n", t+1, iteration);
       
       // Update G
       updGnorm (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv,t);
@@ -708,7 +710,8 @@ List peerMCMC (const List& y,
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
       Rcpp::print(parmscpp);
-      Rcpp::Rcout<<"************************"<<endl;
+      //Rcpp::Rcout<<"************************"<<std::endl;
+      Rprintf("************************ \n");
     }
   } else {
     for(int t(0); t<iteration; ++t){
@@ -876,8 +879,8 @@ List peerMCMCblock (const List& y,
   // loop
   if (progress) {
     for(int t(0); t<iteration; ++t){
-      cout<<"Iteration "<<t+1<<"/"<<iteration<<endl;
-      
+      //std::cout<<"Iteration "<<t+1<<"/"<<iteration<<std::endl;
+      Rprintf("Iteration %d/%d \n", t+1, iteration);
       // Update G
       updGnormblock (Gnorm, prior,ListIndex, N, M, y, A, Ay, Xb, Xgamma, alpha, sigma2, kbeta,kv, nupmax);
       for(int m(0); m<M; ++m){
@@ -912,7 +915,8 @@ List peerMCMCblock (const List& y,
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
       Rcpp::print(parmscpp);
-      Rcpp::Rcout<<"************************"<<endl;
+      //Rcpp::Rcout<<"************************"<<std::endl;
+      Rprintf("************************ \n");
     }
   } else {
     for(int t(0); t<iteration; ++t){
@@ -959,7 +963,7 @@ List peerMCMCblock (const List& y,
 
 
 
-class Peer: public MFuncGrad
+class Peer: public Numer::MFuncGrad
 {
 private:
   List& listG;
@@ -980,7 +984,7 @@ public:
   double Grad;
   
   
-  double f_grad(Constvec& parms, Refvec grad)
+  double f_grad(Numer::Constvec& parms, Numer::Refvec grad)
   {
     Eigen::VectorXd parms0 = parms;  //make a copy
     arma::vec alphaAR = arma::vec(parms0 .data(), parms0 .size(), false, false); //converte into arma vec

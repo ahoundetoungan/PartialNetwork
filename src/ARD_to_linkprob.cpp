@@ -1,5 +1,8 @@
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppProgress)]]
 #include <RcppArmadillo.h>
+#include <progress.hpp>
+#include <progress_bar.hpp>
 
 using namespace Rcpp;
 //using namespace arma;
@@ -480,7 +483,7 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
               const arma::uvec & consb, const double& nsimul, const bool& fdegrees, 
               const bool& fzeta, const NumericVector& hyperparms, const NumericVector& target,
               const NumericVector& jumpmin, const NumericVector& jumpmax, 
-              const int& c, const bool& progress){
+              const int& c, const bool& display_progress){
   
   //Parameters initionlization values
   arma::mat z = z0, v = v0;
@@ -565,173 +568,93 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   double mubhat, sigmab2hat, mudhat, sigmad2hat, C0;
   
   //loop over nsimul
-  if (progress) {
-    for(int t(1);t<nsimul+1;++t){
-      
-      //print step
-      if(t%100==1.0){cout<<"*";}
-      if(t%5000==0){cout<<" "<<floor(t/nsimul*100)<<"%"<<endl;}
-      
-      //Step 2a update z
-      zupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, jumpz, zaccept, logCpeta, logCpzeta, logCp, loglik);
-      //Step 2b update v
-      vupdate(K, p, indexg, z, v, eta, fixv, vf);
-      //Update Cp
-      logCp=computelogCp(n, K, p, z, v, eta, zeta);
-      
-      //Step 2d update b
-      bupdate(n, K, Y, z, v, logd, logb, eta, zeta, mub, sigmab, jumpb, baccept, logCpeta, logCpzeta, logCp, SumYcol);
-      
-      //Step 2c update d
-      if(fdegrees==false){
-        dupdate(n, K, Y, z, v, logd, logb, eta, zeta, mud, sigmad, jumpd, daccept, logCpeta, logCpzeta, logCp, SumYrow);
-        
-        //step 2e rescale d and b
-        maxlogb = max(logb.elem(consb-1));
-        C0      = log(sum(exp(logb.elem(consb-1) - maxlogb))) + maxlogb - logPG0;
-        logd    = logd + C0;
-        logb    = logb - C0;}
-      
-      //Update L
-      loglik=loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCp, Y);
-      //Step 2f update eta
-      etaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphaeta, betaeta, jumpeta, etaaccept, logCpeta, logCpzeta, logCp, loglik);
-      
-      //Step 2g update zeta
-      if(fzeta==false){
-        zetaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphazeta, betazeta, jumpzeta, zetaaccept, logCpeta, logCpzeta, logCp, loglik);}
-      
-      
-      //Step 2h update mub
-      mubhat=mean(logb);
-      mub=(rnorm(1,mubhat,sigmab/sqrt(K)))(0);
-      
-      //step 2i update sigmab
-      sigmab2hat=sum(pow(logb-mubhat,2));  
-      sigmab=pow(sigmab2hat/(rchisq(1,K-1)(0)),0.5);
-      
-      //Step 2j update mud
-      mudhat=mean(logd);
-      mud=(rnorm(1,mudhat,sigmad/sqrt(n)))(0);
-      
-      //step 2k update sigmad
-      sigmad2hat=sum(pow(logd-mudhat,2));  
-      sigmad=pow(sigmad2hat/(rchisq(1,n-1)(0)),0.5);
-      
-      //update jumping scale
-      for(int i(0); i<n; ++i){
-        double jumpzst = jumpz(i) - (zaccept(i)/t - target(0))/pow(t,c);
-        if((jumpzst > jumpmin(0)) & (jumpzst < jumpmax(0))){jumpz(i) = jumpzst;}
-        double jumpdst = jumpd(i) + (daccept(i)/t - target(1))/pow(t,c);
-        if((jumpdst > jumpmin(1)) & (jumpdst < jumpmax(1))){jumpd(i) = jumpdst;}
-      }
-      
-      for(int k(0); k<K; ++k){
-        double jumpbst = jumpb(k) + (baccept(k)/t - target(2))/pow(t,c);
-        if((jumpbst > jumpmin(2)) & (jumpbst < jumpmax(2))){jumpb(k) = jumpbst;}
-        
-        double jumpetast = jumpeta(k) + (etaaccept(k)/t - target(3))/pow(t,c);
-        if((jumpetast > jumpmin(3)) & (jumpetast < jumpmax(3))){jumpeta(k) = jumpetast;}
-      }
-      
-      double jumpzetast = jumpzeta + (zetaaccept/t - target(4))/pow(t,c);
-      
-      if((jumpzetast > jumpmin(4)) & (jumpzetast < jumpmax(4))){jumpzeta = jumpzetast;}
-      
-      //Save the updates
-      zoutput(t)=z;
-      voutput(t)= v;
-      doutput.row(t)=exp(logd.t());
-      boutput.row(t)=exp(logb);
-      etaoutput.row(t)=eta;
-      zetaoutput(t)=zeta;
-      hyperupdate(t,0)=mud;
-      hyperupdate(t,1)=sigmad;
-      hyperupdate(t,2)=mub;
-      hyperupdate(t,3)=sigmab;
-    }
-  } else {
-    for(int t(1);t<nsimul+1;++t){
-      //Step 2a update z
-      zupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, jumpz, zaccept, logCpeta, logCpzeta, logCp, loglik);
-      //Step 2b update v
-      vupdate(K, p, indexg, z, v, eta, fixv, vf);
-      //Update Cp
-      logCp=computelogCp(n, K, p, z, v, eta, zeta);
-      
-      //Step 2d update b
-      bupdate(n, K, Y, z, v, logd, logb, eta, zeta, mub, sigmab, jumpb, baccept, logCpeta, logCpzeta, logCp, SumYcol);
-      
-      //Step 2c update d
-      if(fdegrees==false){
-        dupdate(n, K, Y, z, v, logd, logb, eta, zeta, mud, sigmad, jumpd, daccept, logCpeta, logCpzeta, logCp, SumYrow);
-        
-        //step 2e rescale d and b
-        maxlogb = max(logb.elem(consb-1));
-        C0      = log(sum(exp(logb.elem(consb-1) - maxlogb))) + maxlogb - logPG0;
-        logd    = logd + C0;
-        logb    = logb - C0;}
-      
-      //Update L
-      loglik=loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCp, Y);
-      //Step 2f update eta
-      etaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphaeta, betaeta, jumpeta, etaaccept, logCpeta, logCpzeta, logCp, loglik);
-      
-      //Step 2g update zeta
-      if(fzeta==false){
-        zetaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphazeta, betazeta, jumpzeta, zetaaccept, logCpeta, logCpzeta, logCp, loglik);}
-      
-      
-      //Step 2h update mub
-      mubhat=mean(logb);
-      mub=(rnorm(1,mubhat,sigmab/sqrt(K)))(0);
-      
-      //step 2i update sigmab
-      sigmab2hat=sum(pow(logb-mubhat,2));  
-      sigmab=pow(sigmab2hat/(rchisq(1,K-1)(0)),0.5);
-      
-      //Step 2j update mud
-      mudhat=mean(logd);
-      mud=(rnorm(1,mudhat,sigmad/sqrt(n)))(0);
-      
-      //step 2k update sigmad
-      sigmad2hat=sum(pow(logd-mudhat,2));  
-      sigmad=pow(sigmad2hat/(rchisq(1,n-1)(0)),0.5);
-      
-      //update jumping scale
-      for(int i(0); i<n; ++i){
-        double jumpzst = jumpz(i) - (zaccept(i)/t - target(0))/pow(t,c);
-        if((jumpzst > jumpmin(0)) & (jumpzst < jumpmax(0))){jumpz(i) = jumpzst;}
-        double jumpdst = jumpd(i) + (daccept(i)/t - target(1))/pow(t,c);
-        if((jumpdst > jumpmin(1)) & (jumpdst < jumpmax(1))){jumpd(i) = jumpdst;}
-      }
-      
-      for(int k(0); k<K; ++k){
-        double jumpbst = jumpb(k) + (baccept(k)/t - target(2))/pow(t,c);
-        if((jumpbst > jumpmin(2)) & (jumpbst < jumpmax(2))){jumpb(k) = jumpbst;}
-        
-        double jumpetast = jumpeta(k) + (etaaccept(k)/t - target(3))/pow(t,c);
-        if((jumpetast > jumpmin(3)) & (jumpetast < jumpmax(3))){jumpeta(k) = jumpetast;}
-      }
-      
-      double jumpzetast = jumpzeta + (zetaaccept/t - target(4))/pow(t,c);
-      
-      if((jumpzetast > jumpmin(4)) & (jumpzetast < jumpmax(4))){jumpzeta = jumpzetast;}
-      
-      //Save the updates
-      zoutput(t)=z;
-      voutput(t)= v;
-      doutput.row(t)=exp(logd.t());
-      boutput.row(t)=exp(logb);
-      etaoutput.row(t)=eta;
-      zetaoutput(t)=zeta;
-      hyperupdate(t,0)=mud;
-      hyperupdate(t,1)=sigmad;
-      hyperupdate(t,2)=mub;
-      hyperupdate(t,3)=sigmab;
-    }
-  }
+  Progress prgcpp(nsimul, display_progress);
   
+  for(int t(1);t<nsimul+1;++t){
+    
+    //print step
+    //if(t%100==1.0){std::cout<<"*";}
+    //if(t%5000==0){std::cout<<" "<<floor(t/nsimul*100)<<"%"<<std::endl;}
+    prgcpp.increment();
+    
+    //Step 2a update z
+    zupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, jumpz, zaccept, logCpeta, logCpzeta, logCp, loglik);
+    //Step 2b update v
+    vupdate(K, p, indexg, z, v, eta, fixv, vf);
+    //Update Cp
+    logCp=computelogCp(n, K, p, z, v, eta, zeta);
+    
+    //Step 2d update b
+    bupdate(n, K, Y, z, v, logd, logb, eta, zeta, mub, sigmab, jumpb, baccept, logCpeta, logCpzeta, logCp, SumYcol);
+    
+    //Step 2c update d
+    if(fdegrees==false){
+      dupdate(n, K, Y, z, v, logd, logb, eta, zeta, mud, sigmad, jumpd, daccept, logCpeta, logCpzeta, logCp, SumYrow);
+      
+      //step 2e rescale d and b
+      maxlogb = max(logb.elem(consb-1));
+      C0      = log(sum(exp(logb.elem(consb-1) - maxlogb))) + maxlogb - logPG0;
+      logd    = logd + C0;
+      logb    = logb - C0;}
+    
+    //Update L
+    loglik=loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCp, Y);
+    //Step 2f update eta
+    etaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphaeta, betaeta, jumpeta, etaaccept, logCpeta, logCpzeta, logCp, loglik);
+    
+    //Step 2g update zeta
+    if(fzeta==false){
+      zetaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphazeta, betazeta, jumpzeta, zetaaccept, logCpeta, logCpzeta, logCp, loglik);}
+    
+    
+    //Step 2h update mub
+    mubhat=mean(logb);
+    mub=(rnorm(1,mubhat,sigmab/sqrt(K)))(0);
+    
+    //step 2i update sigmab
+    sigmab2hat=sum(pow(logb-mubhat,2));  
+    sigmab=pow(sigmab2hat/(rchisq(1,K-1)(0)),0.5);
+    
+    //Step 2j update mud
+    mudhat=mean(logd);
+    mud=(rnorm(1,mudhat,sigmad/sqrt(n)))(0);
+    
+    //step 2k update sigmad
+    sigmad2hat=sum(pow(logd-mudhat,2));  
+    sigmad=pow(sigmad2hat/(rchisq(1,n-1)(0)),0.5);
+    
+    //update jumping scale
+    for(int i(0); i<n; ++i){
+      double jumpzst = jumpz(i) - (zaccept(i)/t - target(0))/pow(t,c);
+      if((jumpzst > jumpmin(0)) & (jumpzst < jumpmax(0))){jumpz(i) = jumpzst;}
+      double jumpdst = jumpd(i) + (daccept(i)/t - target(1))/pow(t,c);
+      if((jumpdst > jumpmin(1)) & (jumpdst < jumpmax(1))){jumpd(i) = jumpdst;}
+    }
+    
+    for(int k(0); k<K; ++k){
+      double jumpbst = jumpb(k) + (baccept(k)/t - target(2))/pow(t,c);
+      if((jumpbst > jumpmin(2)) & (jumpbst < jumpmax(2))){jumpb(k) = jumpbst;}
+      
+      double jumpetast = jumpeta(k) + (etaaccept(k)/t - target(3))/pow(t,c);
+      if((jumpetast > jumpmin(3)) & (jumpetast < jumpmax(3))){jumpeta(k) = jumpetast;}
+    }
+    
+    double jumpzetast = jumpzeta + (zetaaccept/t - target(4))/pow(t,c);
+    
+    if((jumpzetast > jumpmin(4)) & (jumpzetast < jumpmax(4))){jumpzeta = jumpzetast;}
+    
+    //Save the updates
+    zoutput(t)=z;
+    voutput(t)= v;
+    doutput.row(t)=exp(logd.t());
+    boutput.row(t)=exp(logb);
+    etaoutput.row(t)=eta;
+    zetaoutput(t)=zeta;
+    hyperupdate(t,0)=mud;
+    hyperupdate(t,1)=sigmad;
+    hyperupdate(t,2)=mub;
+    hyperupdate(t,3)=sigmab;
+  }
   
   //Create list for acceptance rate
   List acceptance=List::create(Named("z")=zaccept/nsimul, Named("d")=daccept/nsimul,
@@ -796,7 +719,7 @@ void cneighbor(const double& N1, const double& N2, const double& N,
 // [[Rcpp::export]]
 arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& d,
                     const arma::vec& zeta, const arma::mat& traitard,  const unsigned int Metrostart,
-                    const bool& progress){
+                    const bool& display_progress){
   // Number of people with ARD
   const double n=traitard.n_rows;
   const double N=n;
@@ -810,53 +733,33 @@ arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& 
   
   arma::mat probt(N,N), prob(N,N,arma::fill::zeros);
   
-  if (progress) {
-    for(int t(0);t<ngraph;++t){  // thus convergence for t from Metrostart to T+1
-      //print step
-      if((t+1)%100==1.0){cout<<"*";}
-      if((t+1)%5000==0){cout<<" "<<round((t+1)/ngraph*100)<<"%"<<endl;}
-      
-      zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-      arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
-      arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
-      Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
-      //compute nu for ARD
-      nuARDt=log(dt) + 0.5*log(Cpzetat) - 0.5*log(sum(dt)) ;
-      
-      // compute Probabilities
-      probt = zetat*zt*zt.t();
-      
-      probt += arma::repmat(nuARDt.t(),1,N) + arma::repmat(nuARDt,N,1);
-      probt = arma::exp(probt);
-      probt.diag()=arma::zeros(N);   //zero on the diagonal
-      probt*=(arma::sum(dt)/arma::accu(probt));
-      
-      
-      prob += probt;
-    }
-  } else {
-    for(int t(0);t<ngraph;++t){  // thus convergence for t from Metrostart to T+1
-      
-      zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-      arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
-      arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
-      Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
-      //compute nu for ARD
-      nuARDt=log(dt) + 0.5*log(Cpzetat) - 0.5*log(sum(dt)) ;
-      
-      // compute Probabilities
-      probt = zetat*zt*zt.t();
-      
-      probt += arma::repmat(nuARDt.t(),1,N) + arma::repmat(nuARDt,N,1);
-      probt = arma::exp(probt);
-      probt.diag()=arma::zeros(N);   //zero on the diagonal
-      probt*=(arma::sum(dt)/arma::accu(probt));
-      
-      
-      prob += probt;
-    }
-  }
+  //loop 
+  Progress prgcpp(ngraph, display_progress);
   
+  for(int t(0);t<ngraph;++t){  // thus convergence for t from Metrostart to T+1
+    //print step
+    //if((t+1)%100==1.0){std::cout<<"*";}
+    //if((t+1)%5000==0){std::cout<<" "<<round((t+1)/ngraph*100)<<"%"<<std::endl;}
+    prgcpp.increment();
+    
+    zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
+    arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
+    arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
+    Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
+    //compute nu for ARD
+    nuARDt=log(dt) + 0.5*log(Cpzetat) - 0.5*log(sum(dt)) ;
+    
+    // compute Probabilities
+    probt = zetat*zt*zt.t();
+    
+    probt += arma::repmat(nuARDt.t(),1,N) + arma::repmat(nuARDt,N,1);
+    probt = arma::exp(probt);
+    probt.diag()=arma::zeros(N);   //zero on the diagonal
+    probt*=(arma::sum(dt)/arma::accu(probt));
+    
+    
+    prob += probt;
+  }
   prob /= ngraph;
   return  prob;
 }
@@ -866,7 +769,7 @@ arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& 
 // [[Rcpp::export]]
 arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
                     const arma::vec& zeta, const arma::mat& traitard, const arma::mat& traitnonard, const unsigned int& M, 
-                    const unsigned int& Metrostart, const bool& progress){
+                    const unsigned int& Metrostart, const bool& display_progress){
   // Number of people with ARD
   const double n=traitard.n_rows;
   
@@ -891,75 +794,46 @@ arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& 
   arma::rowvec weightj(M), nunonARDt(n2), dnonARDt(n2);
   arma::uvec neighborj(M);
   
-  if(progress) {
-    for(int t(0);t<ngraph;++t){
-      //print step
-      if((t+1)%100==1.0){cout<<"*";}
-      if((t+1)%5000==0){cout<<" "<<round((t+1)/ngraph*100)<<"%"<<endl;}
-      
-      zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-      arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
-      arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
-      Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
-      //compute nu for ARD
-      nuARDt=log(dt) + 0.5*log(Cpzetat*n/N) - 0.5*log(sum(dt)) ;
-      
-      //compute nu for non ARD
-      for(int j(0);j<n2;++j){
-        neighborj=arma::conv_to<arma::uvec>::from((neighbor.row(j)).t());
-        weightj=weight.row(j);
-        nunonARDt.col(j)=weightj*(nuARDt.elem(neighborj));
-        znonARDt.row(j)=weightj*(zt.rows(neighborj));
-      }
-      znonARDt=normalise(znonARDt,2,1);
-      
-      // compute Probabilities
-      ztall=arma::join_cols(zt,znonARDt);
-      probt = zetat*ztall*ztall.t();;
-      
-      probt += arma::repmat(arma::join_cols(nuARDt.t(),nunonARDt.t()),1,N) + arma::repmat(arma::join_rows(nuARDt,nunonARDt),N,1);
-      probt = arma::exp(probt);
-      probt.diag()=arma::zeros(N); //zero on the diagonal
-      
-      // compute d for nonARD
-      dnonARDt=(N/n)*arma::exp(nunonARDt)*sum(arma::exp(nuARDt))/Cpzetat;
-      probt *= ((arma::sum(dt)+arma::sum(dnonARDt))/arma::accu(probt));
-      
-      prob += probt;
+  //loop 
+  Progress prgcpp(ngraph, display_progress);
+  
+  for(int t(0);t<ngraph;++t){  // thus convergence for t from Metrostart to T+1
+    //print step
+    //if((t+1)%100==1.0){std::cout<<"*";}
+    //if((t+1)%5000==0){std::cout<<" "<<round((t+1)/ngraph*100)<<"%"<<std::endl;}
+    prgcpp.increment();
+    
+    zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
+    arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
+    arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
+    Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
+    //compute nu for ARD
+    nuARDt=log(dt) + 0.5*log(Cpzetat*n/N) - 0.5*log(sum(dt)) ;
+    
+    //compute nu for non ARD
+    for(int j(0);j<n2;++j){
+      neighborj=arma::conv_to<arma::uvec>::from((neighbor.row(j)).t());
+      weightj=weight.row(j);
+      nunonARDt.col(j)=weightj*(nuARDt.elem(neighborj));
+      znonARDt.row(j)=weightj*(zt.rows(neighborj));
     }
-  } else {
-    for(int t(0);t<ngraph;++t){
-      zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-      arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
-      arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
-      Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
-      //compute nu for ARD
-      nuARDt=log(dt) + 0.5*log(Cpzetat*n/N) - 0.5*log(sum(dt)) ;
-      
-      //compute nu for non ARD
-      for(int j(0);j<n2;++j){
-        neighborj=arma::conv_to<arma::uvec>::from((neighbor.row(j)).t());
-        weightj=weight.row(j);
-        nunonARDt.col(j)=weightj*(nuARDt.elem(neighborj));
-        znonARDt.row(j)=weightj*(zt.rows(neighborj));
-      }
-      znonARDt=normalise(znonARDt,2,1);
-      
-      // compute Probabilities
-      ztall=arma::join_cols(zt,znonARDt);
-      probt = zetat*ztall*ztall.t();;
-      
-      probt += arma::repmat(arma::join_cols(nuARDt.t(),nunonARDt.t()),1,N) + arma::repmat(arma::join_rows(nuARDt,nunonARDt),N,1);
-      probt = arma::exp(probt);
-      probt.diag()=arma::zeros(N); //zero on the diagonal
-      
-      // compute d for nonARD
-      dnonARDt=(N/n)*arma::exp(nunonARDt)*sum(arma::exp(nuARDt))/Cpzetat;
-      probt *= ((arma::sum(dt)+arma::sum(dnonARDt))/arma::accu(probt));
-      
-      prob += probt;
-    }
+    znonARDt=normalise(znonARDt,2,1);
+    
+    // compute Probabilities
+    ztall=arma::join_cols(zt,znonARDt);
+    probt = zetat*ztall*ztall.t();;
+    
+    probt += arma::repmat(arma::join_cols(nuARDt.t(),nunonARDt.t()),1,N) + arma::repmat(arma::join_rows(nuARDt,nunonARDt),N,1);
+    probt = arma::exp(probt);
+    probt.diag()=arma::zeros(N); //zero on the diagonal
+    
+    // compute d for nonARD
+    dnonARDt=(N/n)*arma::exp(nunonARDt)*sum(arma::exp(nuARDt))/Cpzetat;
+    probt *= ((arma::sum(dt)+arma::sum(dnonARDt))/arma::accu(probt));
+    
+    prob += probt;
   }
+  
   prob /= ngraph;
   return  prob;
 }

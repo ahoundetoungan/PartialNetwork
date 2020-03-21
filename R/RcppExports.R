@@ -13,16 +13,16 @@ dvMFcpp <- function(z, theta, logp = FALSE) {
     .Call(`_PartialNetwork_dvMFcpp`, z, theta, logp)
 }
 
-updateGP <- function(Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, progress) {
-    .Call(`_PartialNetwork_updateGP`, Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, progress)
+updateGP <- function(Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, display_progress) {
+    .Call(`_PartialNetwork_updateGP`, Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, display_progress)
 }
 
-dnetwork1 <- function(T, P, z, d, zeta, traitard, Metrostart, progress) {
-    .Call(`_PartialNetwork_dnetwork1`, T, P, z, d, zeta, traitard, Metrostart, progress)
+dnetwork1 <- function(T, P, z, d, zeta, traitard, Metrostart, display_progress) {
+    .Call(`_PartialNetwork_dnetwork1`, T, P, z, d, zeta, traitard, Metrostart, display_progress)
 }
 
-dnetwork2 <- function(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, progress) {
-    .Call(`_PartialNetwork_dnetwork2`, T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, progress)
+dnetwork2 <- function(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, display_progress) {
+    .Call(`_PartialNetwork_dnetwork2`, T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, display_progress)
 }
 
 peerMCMC <- function(y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress) {

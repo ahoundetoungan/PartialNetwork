@@ -11,7 +11,7 @@
 #' @param print is logical; if TRUE, the progression will be printed in the console.
 #' @return a matrix of linking probabilities.
 #' @examples 
-#' \donotrun{
+#' \dontrun{
 #' set.seed(123)
 #' 
 #' # GENERATE DATA
@@ -67,7 +67,7 @@
 #' colSums(trait)*100/N
 #' 
 #' # Build ADR
-#' ARD         <- G %*% trait
+#' ARD         <- G \%*\% trait
 #' 
 #' # generate b
 #' genb        <- numeric(K)

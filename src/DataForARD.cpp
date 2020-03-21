@@ -17,7 +17,8 @@ arma::mat Prob(arma::vec& nu, arma::vec& d, double& zeta, arma::mat& z){
   prob.diag()=zeros(N);   //zero on the diagonal
   prob*=(arma::sum(d)/arma::accu(prob));
   
-  cout<<"Max probability  "<< max(max(prob))<<endl;
+  //std::cout<<"Max probability  "<< max(max(prob))<<std::endl;
+  Rprintf("max probability: %5.4f \n", max(max(prob)));
   
   arma::umat tempbin = (prob<1);
   arma::mat tempone = arma::mat(N,N,fill::ones);

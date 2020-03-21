@@ -13,7 +13,6 @@ sim.network(dnetwork)
 Generate networks from the network distribution.
 }
 \examples{
-\\donotrun{
 N       <- 500 
 zeta    <- 1
 
@@ -30,7 +29,7 @@ d       <- runif(N, 0, 45)
 dist    <- sim.dnetwork(nu, d, zeta, z)
 
 # Generate network
-G       <- sim.network(dist)}
+G       <- sim.network(dist)
 }
 \seealso{
 \code{\link{sim.dnetwork}}

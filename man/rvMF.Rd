@@ -2,7 +2,7 @@
 % Please edit documentation in R/vMF.R
 \name{rvMF}
 \alias{rvMF}
-\title{von Mises Fisher Distribution}
+\title{Simulation from von Mises-Fisher Distribution}
 \usage{
 rvMF(size, theta)
 }
@@ -12,7 +12,7 @@ rvMF(size, theta)
 \item{theta}{is the parameter as \code{eta*mu}.}
 }
 \description{
-Random generation for the von Mises Fisher Distribution
+Random generation for the von Mises-Fisher Distribution
 of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter equal to \code{eta} 
 (see Wood, 1994; Mardia, 2014).
 }
@@ -23,7 +23,8 @@ rvMF(1000,c(1,0))
 # Draw 10 vectors from vMF with parameters eta = sqrt(14) and mu proportional to (2,1,3)
 rvMF(10,c(2,1,3))
 
-# Draw from the vMF distribution with mean direction proportional to c(1, -1) and concentration parameter 3
+# Draw from the vMF distribution with mean direction proportional to c(1, -1)
+# and concentration parameter 3
 rvMF(10, 3 * c(1, -1) / sqrt(2))
 }
 \references{
@@ -31,5 +32,5 @@ Hornik, K., & Grün, B. (2014). \pkg{movMF}: An \R package for fitting mixtures 
 
 Mardia, K. V. (2014). Statistics of directional data. Academic press. \url{https://www.elsevier.com/books/statistics-of-directional-data/mardia/978-0-12-471150-1}.
 
-Wood, A. T. (1994). Simulation of the von Mises Fisher distribution. Communications in statistics-simulation and computation, 23(1), 157-164. \url{https://www.tandfonline.com/doi/abs/10.1080/03610919408813161}.
+Wood, A. T. (1994). Simulation of the von Mises-Fisher distribution. Communications in statistics-simulation and computation, 23(1), 157-164. \url{https://www.tandfonline.com/doi/abs/10.1080/03610919408813161}.
 }

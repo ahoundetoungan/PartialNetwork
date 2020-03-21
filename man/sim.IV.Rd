@@ -33,9 +33,9 @@ is given by \code{G2X[,,p]}.}
 \code{sim.IV} simulates Instrument Variables (IV) for linear-in-mean SAR model from the network distribution following Bramoullé et al. (2009).
 }
 \details{
-Bramoullé et al. (2009) prove that \eqn{(I - \alpha G)^{-1}}{(I - \alpha G)^{-1}} is an optimal intrument for the linear-in-mean SAR model, where \eqn{\alpha} is the peer effect. 
+Bramoullé et al. (2009) prove that \eqn{(I - \alpha G)^{-1}}{(I - \alpha G)^{-1}} is an optimal instrument for the linear-in-mean SAR model, where \eqn{\alpha} is the peer effect. 
 As \eqn{\alpha} is not known in practice, one can used \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X}, where \eqn{P} is the maximal power desired.
-\code{sim.IV} simulates these intruments when only the distribution of the network is 
+\code{sim.IV} simulates these instruments when only the distribution of the network is 
 available. The argument `power` is the maximal power desired.\cr
 In the case where some explanatory variables like \eqn{Gy} and \eqn{GX} are not obseved.
 Boucher and Houndetoungan (2019) show that one network drawn from the distribution can be used to approximate \eqn{Gy} and \eqn{GX}
@@ -79,7 +79,7 @@ W         <- G/rs
 # covariates
 X         <- cbind(rnorm(N,0,5),rpois(N,6)) 
 # endogenous variable, no contextual effect
-y         <- solve(diag(rep(1,N))-alpha*W)%*%(cbind(rep(1,N), X)%*%beta + rnorm(N,0,se)) 
+y         <- solve(diag(rep(1,N))-alpha*W)\%*\%(cbind(rep(1,N), X)\%*\%beta + rnorm(N,0,se)) 
 
 # generate instruments 
 instr     <- sim.IV(Probabilities, X, y, replication = 1, power = 2)

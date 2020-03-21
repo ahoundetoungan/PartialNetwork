@@ -45,8 +45,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // updateGP
-List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, const arma::mat& v0, const arma::vec& d0, const arma::rowvec& b0, const arma::rowvec& eta0, const double& zeta0, const arma::uvec& fixv, const arma::uvec& consb, const double& nsimul, const bool& fdegrees, const bool& fzeta, const NumericVector& hyperparms, const NumericVector& target, const NumericVector& jumpmin, const NumericVector& jumpmax, const int& c, const bool& progress);
-RcppExport SEXP _PartialNetwork_updateGP(SEXP YSEXP, SEXP traitSEXP, SEXP z0SEXP, SEXP v0SEXP, SEXP d0SEXP, SEXP b0SEXP, SEXP eta0SEXP, SEXP zeta0SEXP, SEXP fixvSEXP, SEXP consbSEXP, SEXP nsimulSEXP, SEXP fdegreesSEXP, SEXP fzetaSEXP, SEXP hyperparmsSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP) {
+List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, const arma::mat& v0, const arma::vec& d0, const arma::rowvec& b0, const arma::rowvec& eta0, const double& zeta0, const arma::uvec& fixv, const arma::uvec& consb, const double& nsimul, const bool& fdegrees, const bool& fzeta, const NumericVector& hyperparms, const NumericVector& target, const NumericVector& jumpmin, const NumericVector& jumpmax, const int& c, const bool& display_progress);
+RcppExport SEXP _PartialNetwork_updateGP(SEXP YSEXP, SEXP traitSEXP, SEXP z0SEXP, SEXP v0SEXP, SEXP d0SEXP, SEXP b0SEXP, SEXP eta0SEXP, SEXP zeta0SEXP, SEXP fixvSEXP, SEXP consbSEXP, SEXP nsimulSEXP, SEXP fdegreesSEXP, SEXP fzetaSEXP, SEXP hyperparmsSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -68,14 +68,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type jumpmin(jumpminSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type jumpmax(jumpmaxSEXP);
     Rcpp::traits::input_parameter< const int& >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(updateGP(Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, progress));
+    Rcpp::traits::input_parameter< const bool& >::type display_progress(display_progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(updateGP(Y, trait, z0, v0, d0, b0, eta0, zeta0, fixv, consb, nsimul, fdegrees, fzeta, hyperparms, target, jumpmin, jumpmax, c, display_progress));
     return rcpp_result_gen;
 END_RCPP
 }
 // dnetwork1
-arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const unsigned int Metrostart, const bool& progress);
-RcppExport SEXP _PartialNetwork_dnetwork1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP MetrostartSEXP, SEXP progressSEXP) {
+arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const unsigned int Metrostart, const bool& display_progress);
+RcppExport SEXP _PartialNetwork_dnetwork1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,14 +86,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type traitard(traitardSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type Metrostart(MetrostartSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(dnetwork1(T, P, z, d, zeta, traitard, Metrostart, progress));
+    Rcpp::traits::input_parameter< const bool& >::type display_progress(display_progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(dnetwork1(T, P, z, d, zeta, traitard, Metrostart, display_progress));
     return rcpp_result_gen;
 END_RCPP
 }
 // dnetwork2
-arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const arma::mat& traitnonard, const unsigned int& M, const unsigned int& Metrostart, const bool& progress);
-RcppExport SEXP _PartialNetwork_dnetwork2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP traitnonardSEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP progressSEXP) {
+arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const arma::mat& traitnonard, const unsigned int& M, const unsigned int& Metrostart, const bool& display_progress);
+RcppExport SEXP _PartialNetwork_dnetwork2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP traitnonardSEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,8 +106,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type traitnonard(traitnonardSEXP);
     Rcpp::traits::input_parameter< const unsigned int& >::type M(MSEXP);
     Rcpp::traits::input_parameter< const unsigned int& >::type Metrostart(MetrostartSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(dnetwork2(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, progress));
+    Rcpp::traits::input_parameter< const bool& >::type display_progress(display_progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(dnetwork2(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, display_progress));
     return rcpp_result_gen;
 END_RCPP
 }

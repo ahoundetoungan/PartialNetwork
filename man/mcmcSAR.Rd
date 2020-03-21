@@ -20,9 +20,9 @@ mcmcSAR(
 where `y` is the endogenous vector, the listed variable before the pipe, `x1`, `x2` are the individual exogenous variables and
 the listed variables after the pipe, `x1`, `x2` are the contextual observable variables. Other formulas may be
 \code{y ~ x1 + x2} for the model without contextual effects, \code{y ~ -1 + x1 + x2 | x1 + x2} for the model
-without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be differents from the individual ones.}
+without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual ones.}
 
-\item{contextual}{(optional) logical; if true, this means that all individual variables will be set as contextuals variables. Set the
+\item{contextual}{(optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
 the `formula` as `y ~ x1 + x2` and `contextual` as `TRUE` is equivalent to set the formula as `y ~ x1 + x2 | x1 + x2`.}
 
 \item{start}{(optional) is the vector of starting value of the model parameter as \eqn{(\beta ~ \gamma ~ \alpha ~ \sigma^2)'}{\beta  \gamma  \alpha  se2},
@@ -51,7 +51,7 @@ A list consisting of:
     \item{acceptance}{acceptance rate of zeta}
     \item{G}{last draw of G (row normalized)}
     \item{hyperparms}{list containing the hyperparameters}
-    \item{formula}{retun value of `formula`}
+    \item{formula}{return value of `formula`}
     \item{contextual}{return value of `contextual`.}
 }
 \description{
@@ -64,10 +64,10 @@ The model is given by
 The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma^2}{se2}.
 Prior distributions are assumed on \eqn{\mathbf{A}} the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
 \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se2}.
-\deqn{\mathbf{A}_{ij} ~ Bernoulli(\mathbf{P}_{ij})}{A[i,j] ~ Bernoulli(P[i,j])}
-\deqn{(\beta' ~ \gamma')'|\sigma^2 ~ \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
-\deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) ~ \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta})}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
-\deqn{\sigma^2 ~ IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
+\deqn{\mathbf{A}_{ij} \sim Bernoulli(\mathbf{P}_{ij})}{A[i,j] ~ Bernoulli(P[i,j])}
+\deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
+\deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) \sim \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta})}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
+\deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
 where \eqn{\mathbf{P}}{P} is the linking probability.\cr
 
 All hyperparameter can be defined in `hyperparms` and should be named as
@@ -78,7 +78,7 @@ the prior mean is zero.
 \item `invstheta` as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
 \item `muzeta`, the prior mean of \eqn{\zeta}. The default value is zero.
 \item `invszeta`, the inverse of the prior variance of \eqn{\zeta} with default value equal to 2.
-\item `a` and `b` default values are 4.2 and 2.2. This means for example that the prior mean od \eqn{\sigma^2}{se2} is 1.
+\item `a` and `b` default values are 4.2 and 2.2. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
 }
 Typically, the inverses are used for the priori variance in the normal distribution to allow non informative prior. Set the inverse of the prior
 variabce to 0 is equivalent to non informative prior.\cr
@@ -90,8 +90,11 @@ requires to set minimal and maximal jumpings scales through the parameter `ctrl.
 \item{`jumpmax`}: The default value is \code{10}. 
 \item{`print`}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is `TRUE`.
 \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. For some convergence reasons it mighit be 
-more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2019).
+more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2019). 
 }
+If `block.max` > 1, several entries are ramdomly chosen from the same row and updated simultaneously. The number of entries chosen is also randomly 
+chosen between 1 and `block.max`. The entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
+then the entries (i, 1), (i, 3), (i, 8), and so on.
 }
 \examples{
 \dontrun{
@@ -148,8 +151,9 @@ for (m in 1:M) {
   r1          <- r2 - Nm + 1
   # contextual effect
   Xm          <- X[r1:r2,]
-  GXm         <- Gm %*% Xm
-  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm) %*% (cbind(rep(1,Nm),Xm) %*% beta + GXm %*% gamma + rnorm(Nm,0,se)) 
+  GXm         <- Gm \%*\% Xm
+  tmp         <- cbind(rep(1,Nm),Xm)\%*\%beta + GXm\%*\%gamma + rnorm(Nm,0,se)
+  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm)\%*\%tmp 
 }
   
 # number of parameters
@@ -160,7 +164,11 @@ Kv            <- 2*ncol(X) + 1
 hyperparms    <- list("dnetwork" = prior) 
 
 # launch the MCMC
-out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
+# update entry on A, one by one
+out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
+# update up to 4 entries simultaneously
+ctrl <- list(block.max = 4)
+out2          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
 }
 }
 \references{

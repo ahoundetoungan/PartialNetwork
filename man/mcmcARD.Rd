@@ -20,7 +20,7 @@ mcmcARD(
 \arguments{
 \item{Y}{is a matrix of ARD. The entry (i, k) is the number of i's friends having the trait k.}
 
-\item{traitARD}{is the matrix of traits for induviduals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.}
+\item{traitARD}{is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.}
 
 \item{start}{is a list containing starting values of `z` (matrix of dimension \eqn{N \times p}), `v` (matrix of dimension \eqn{K \times p}),
 `d` (vector of dimension \eqn{N}), `b` (vector of dimension \eqn{K}), `eta` (vector of dimension \eqn{K}) and `zeta` (scalar).}
@@ -54,7 +54,7 @@ A list consisting of:
     \item{time}{Elapsed time in second}
     \item{simulations}{simulations from the posterior distribution}
     \item{hyperparameters}{vector of hyperparameters}
-    \item{Acceptance.rate}{list of acceptance rate}
+    \item{Acceptance.rate}{list of acceptance rates.}
 }
 \description{
 \code{mcmcARD} estimate the network model proposed by McCormick and Zheng (2015).
@@ -66,8 +66,8 @@ McCormick and Zheng (2015) write the likelihood of the model with respect to the
 the trait locations \eqn{\mathbf{v}_k}{vk}, the degree \eqn{d_i}{di}, the fraction of ties in the network that are
 made with members of group k \eqn{b_k}{bk}, the trait intensity parameter \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta}. The following
 prior distributions are defined.
-\deqn{\mathbf{z}_i \sim \text{Uniform ~ von Mises FIsher}}{zi ~ Uniform von Mises Fisher}
-\deqn{\mathbf{v}_k \sim \text{Uniform ~ von Mises FIsher}}{vk ~ Uniform von Mises Fisher}
+\deqn{\mathbf{z}_i \sim Uniform ~ von ~ Mises-Fisher}{zi ~ Uniform von Mises Fisher}
+\deqn{\mathbf{v}_k \sim Uniform ~ von ~ Mises-Fisher}{vk ~ Uniform von Mises Fisher}
 \deqn{d_i \sim log-\mathcal{N}(\mu_d, \sigma_d)}{di ~ log-Normal(mud, sigmad)}
 \deqn{b_k \sim log-\mathcal{N}(\mu_b, \sigma_b)}{bk ~ log-Normal(mub, sigmab)}
 \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
@@ -78,7 +78,7 @@ to set the desired \eqn{\mathbf{v}_k}{vk} and `fixb` to set the desired \eqn{b_k
 around the given starting value (see McCormick and Zheng, 2015 for more details).\cr
 
 During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
-requires to set minimal and maximal jumpings scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
+requires to set minimal and maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 \itemize{
 \item{`target`}: The default value is \code{rep(0.44, 5)}. 
 The target of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is  0.44.
@@ -89,7 +89,7 @@ The minimal jumping of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk
 }
 }
 \examples{
-\\donotrun{
+\dontrun{
 set.seed(123)
 
 # Sample size
@@ -106,7 +106,7 @@ P       <- 3     # Sphere dimension
 # Generate z (spherical coordinates)
 genz    <- rvMF(N,rep(0,P))
 
-# Genetate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
+# Generate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
 gennu   <- rnorm(N,mu,sigma)
 
 # compute degrees
@@ -139,11 +139,11 @@ trait       <- matrix(0,N,K)
 for(k in 1:K){
   trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
 }
-# print a percentage of peaople having a trait
+# print a percentage of people having a trait
 colSums(trait)*100/N
   
 # Build ADR
-ARD         <- G \%*\% trait
+ARD         <- G\%*\%trait
   
 # generate b
 genb        <- numeric(K)
@@ -152,7 +152,7 @@ for(k in 1:K){
 }
   
 ############ ARD Posterior distribution ################### 
-# initianalization 
+# initialization 
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
   

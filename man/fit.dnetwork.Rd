@@ -20,7 +20,7 @@ fit.dnetwork(
 
 \item{traitnonARD}{is the matrix of traits for individuals without ARD. The entry (j, k) is 1 if j has the trait k and 0 otherwise.}
 
-\item{m}{is the number of neighbours used to compute the gregariousness and the degree for individuals without ARD.}
+\item{m}{is the number of neighbors used to compute the gregariousness and the degree for individuals without ARD.}
 
 \item{burnin}{is the number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
 used the simulation from the iteration \code{burnin + 1}.}
@@ -28,15 +28,15 @@ used the simulation from the iteration \code{burnin + 1}.}
 \item{print}{is logical; if TRUE, the progression will be printed in the console.}
 }
 \value{
-a matrix of the network distribution
+a matrix of linking probabilities.
 }
 \description{
 \code{fit.dnetwork} compute the network distribution from the simulations of the posterior distribution of the 
-network formation model. The linking probabilities are also computed for indicidual without ARD if their traits are abserved.
-The degree and the gregariousness of theses individuals are computed from the sample with ARD using m-nearest neighbours method.
+network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
+The degree and the gregariousness of theses individuals are computed from the sample with ARD using m-nearest neighbors method.
 }
 \examples{
-\\donotrun{
+\dontrun{
 set.seed(123)
 
 # GENERATE DATA
@@ -102,7 +102,7 @@ for(k in 1:K){
 
 ############ ARD Posterior distribution ################### 
 # EXAMPLE 1: ARD observed for the whole population
-# initianalization 
+# initialization 
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 1; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 

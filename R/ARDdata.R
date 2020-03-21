@@ -10,7 +10,6 @@
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 #' Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.
 #' @examples 
-#' \donotrun{
 #' N       <- 500 
 #' zeta    <- 1
 #' 
@@ -23,7 +22,7 @@
 #' # Generate degrees
 #' d       <- runif(N, 0, 45)
 #' 
-#' dist    <- sim.dnetwork(nu, d, zeta, z)}
+#' dist    <- sim.dnetwork(nu, d, zeta, z)
 #' @seealso \code{\link{sim.network}}
 #' @export
 
@@ -35,7 +34,6 @@ sim.dnetwork  <- function(nu, d, zeta, z) {
 #' @description Generate networks from the network distribution.
 #' @param dnetwork is the matrix of link probabilities.
 #' @examples 
-#' \donotrun{
 #' N       <- 500 
 #' zeta    <- 1
 #' 
@@ -52,7 +50,7 @@ sim.dnetwork  <- function(nu, d, zeta, z) {
 #' dist    <- sim.dnetwork(nu, d, zeta, z)
 #' 
 #' # Generate network
-#' G       <- sim.network(dist)}
+#' G       <- sim.network(dist)
 #' @seealso \code{\link{sim.dnetwork}}
 #' @export
 sim.network <- function(dnetwork) {

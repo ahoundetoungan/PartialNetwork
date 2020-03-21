@@ -55,7 +55,7 @@
 #'     \item{hyperparameters}{vector of hyperparameters}
 #'     \item{Acceptance.rate}{list of acceptance rates.}
 #' @examples 
-#' \donotrun{
+#' \dontrun{
 #' set.seed(123)
 #' 
 #' # Sample size
@@ -109,7 +109,7 @@
 #' colSums(trait)*100/N
 #'   
 #' # Build ADR
-#' ARD         <- G %*% trait
+#' ARD         <- G\%*\%trait
 #'   
 #' # generate b
 #' genb        <- numeric(K)

@@ -1,7 +1,7 @@
 # PartialNetwork
 Estimating Peer Effects Using Partial Network Data
 
-This package includes all functions for the replication of the results in Boucher and Houndetoungan (2020). The exact replication codes are located in (DIRECTORY). Below, we also provide detailed examples on how to use the estimators described in the paper.
+This package includes all functions for the replication of the results in Boucher and Houndetoungan (2020). The exact replication codes are located in the folder test. Below, we also provide detailed examples on how to use the estimators described in the paper.
 
 ## How to install
 ```R
@@ -58,7 +58,7 @@ G2Xc1       <- instr[[1]]$G1X[,,2]  # proxy for GGX (draw 1)
 GXc2        <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 G2Xc2       <- instr[[1]]$G2X[,,2]  # proxy for GGX (draw 2)
 ```
-Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the AER package (required by PartialNetwork). For example:
+Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the [AER]{https://cran.r-project.org/web/packages/AER/AER.pdf} package. For example:
 ```R
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy
@@ -165,7 +165,7 @@ P       <- 3     # Sphere dimension
 # Generate z (spherical coordinates)
 genz    <- rvMF(N,rep(0,P))
 
-# Genetate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
+# Generate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
 gennu   <- rnorm(N,mu,sigma)
 
 # compute degrees
@@ -198,7 +198,7 @@ trait       <- matrix(0,N,K)
 for(k in 1:K){
   trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
 }
-# print a percentage of peaople having a trait
+# print a percentage of people having a trait
 colSums(trait)*100/N
   
 # Build ADR
@@ -213,10 +213,10 @@ for(k in 1:K){
 ```
 ### Estimate the model on simulated data
 
-We present a simple function wrapping, `updateGP`, for the estimation procedure proposed by Breza et al. (2020). For specific information on the function, see the help file.
+We present a simple function wrapping, `mcmcARD`, for the estimation procedure proposed by Breza et al. (2020). For specific information on the function, see the help file.
 
 ```R
-# initianalization 
+# initialization 
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
   

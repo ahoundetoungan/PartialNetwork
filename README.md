@@ -10,7 +10,7 @@ devtools::install_github("PartialNetwork")
 
 ## Instrumental Variable procedure
 
-We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnetwork` is the network linking probabilities, `X` is a matrix of covariates, `y` (optional) is the vector of outcome, `replication` (optional, default = 1) is the number of replication, and `power` (optional) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for Gy and simulated instruments. See the help file (`? sim.IV`) of the function for details. The following code provides an example using a single group of network.
+We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnetwork` is the network linking probabilities, `X` is a matrix of covariates, `y` (optional) is the vector of outcome, `replication` (optional, default = 1) is the number of replication, and `power` (optional, default=1) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for Gy and simulated instruments. See the help file (`? sim.IV`) of the function for details. The following code provides an example using a single group of network.
 
 ```R
 # initialize parameters
@@ -69,7 +69,7 @@ results           <- ivreg(Y~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, dat
 
 ## Bayesian estimator
 
-The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contextual, start, G0, hyperparms, iteration, ctrl.mcmc, data)`, where `formula` is the model equation, `contextual` indicates if the model has contextual effects, `start` (optional) is the parameter initialization, `G0` (optional) is the starting of the network,  `hyperparam` specify the prior distributions, including the network linking probabilities, `iterations` is the number of MCMC steps to be performed, `ctrl.mcmc` set some controls for the MCMC and `data` contains the data (if not specified R will search the variables in the global environment). See the help (`? mcmcSAR`) file for a complete description. Below, we provide a simple example using simulated data.
+The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contextual, start, G0, hyperparms, iteration, ctrl.mcmc, data)`, where `formula` is the model equation, `contextual` indicates if the model has contextual effects, `start` (optional) is the parameter initialization, `G0` (optional) is the starting of the network,  `hyperparam` specify the prior distributions, including the network linking probabilities, `iterations` (optional, default=2000) is the number of MCMC steps to be performed, `ctrl.mcmc` set some controls for the MCMC and `data` contains the data (if not specified R will search the variables in the global environment). See the help (`? mcmcSAR`) file for a complete description. Below, we provide a simple example using simulated data.
 
 ### Simulate data
 ```R
@@ -133,7 +133,8 @@ for (m in 1:M) {
 
 ### Estimate the model on simulated data
 ```R
-# number of exogenoua variables
+# number of exogenous variables
+# Here: X, GX + constant
 Kv            <- 2*ncol(X) + 1 
 
 # set the hyperparameter

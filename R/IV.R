@@ -18,9 +18,9 @@
 #' is given by \code{G2X[,,p]}.}
 #' 
 #' 
-#' @details Bramoullé et al. (2009) prove that \eqn{(I - \alpha G)^{-1}}{(I - \alpha G)^{-1}} is an optimal intrument for the linear-in-mean SAR model, where \eqn{\alpha} is the peer effect. 
+#' @details Bramoullé et al. (2009) prove that \eqn{(I - \alpha G)^{-1}}{(I - \alpha G)^{-1}} is an optimal instrument for the linear-in-mean SAR model, where \eqn{\alpha} is the peer effect. 
 #' As \eqn{\alpha} is not known in practice, one can used \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X}, where \eqn{P} is the maximal power desired.
-#' \code{sim.IV} simulates these intruments when only the distribution of the network is 
+#' \code{sim.IV} simulates these instruments when only the distribution of the network is 
 #' available. The argument `power` is the maximal power desired.\cr
 #' In the case where some explanatory variables like \eqn{Gy} and \eqn{GX} are not obseved.
 #' Boucher and Houndetoungan (2019) show that one network drawn from the distribution can be used to approximate \eqn{Gy} and \eqn{GX}

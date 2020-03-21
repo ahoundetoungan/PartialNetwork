@@ -1,9 +1,15 @@
 #' @title The PartialNetwork package
 #' @description The \pkg{PartialNetwork} package implements IV Compute IV and Bayesian estimator for linear-in-mean SAR model when
-#' only the network distribution is availaible. To make these computations faster \pkg{PartialNetwork} relies on a \code{C++} using \pkg{Rcpp} (Eddelbuettel et al., 2011). 
+#' the network is not observed and only the network distribution is availaible. To make these computations faster \pkg{PartialNetwork} relies on a \code{C++} using \pkg{Rcpp} (Eddelbuettel et al., 2011). 
 #'
 #' @details 
-#' ---- Vincent General detail on the package is here ----
+#' Two main functions are provided to estimate the linear-in-mean SAR model when the network is not observed and only the network distribution is availaible (see Boucher and Houndetoungan, 2019). The function
+#' \code{\link{sim.IV}} simulates valide instruments from the distribution (see Bramoullé et al., 2009). The instruments can be used to estimate the model using \link[AER]{ivreg} 
+#' function from the package \pkg{AER} (Kleiber et al., 2020). Alternatively the function \link{mcmcSAR} can also be used and the network distribution acts as prior distribution for the network.\cr
+#' The \pkg{PartialNetwork} package also implements a network formation model from Aggregate Relational Data (McCormick and Zheng, 2015; Breza et al., 2017). This requires implementing the
+#' von Mises-Fisher distribution (see Wood, 1994; Mardia, 2014). Instead of using the package \link[https://cran.r-project.org/web/packages/movMF/index.html]{movMF} (Hornik and Grün, 2014), which implements 
+#' mixtures of von Mises-Fisher distributions, \pkg{PartialNetwork} relies on its own fast functions (\link{rvMF}, \link{dvMF} and \link{logCpvMF}) implemented in C++ using RCpp (Eddelbuettel et al. 2011).
+#' 
 #' @references 
 #' Boucher, V., & Houndetoungan, A. (2019). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
 #' @references 
@@ -15,6 +21,8 @@
 #' \url{http://www.jstatsoft.org/v40/i08/}.
 #' @references 
 #' Hornik, K., & Grün, B. (2014). \pkg{movMF}: An \R package for fitting mixtures of von Mises-Fisher distributions. \emph{Journal of Statistical Software}, 58(10), 1-31. \url{https://epub.wu.ac.at/4893/}.
+#' @references 
+#' Kleiber, C., Zeileis, A., & Zeileis, M. A. (2020). Package ‘AER’. \R package version 1.2, 4. \url{https://cran.r-project.org/web/packages/AER/AER.pdf}.
 #' @references 
 #' Mardia, K. V. (2014). Statistics of directional data. Academic press. \url{https://www.elsevier.com/books/statistics-of-directional-data/mardia/978-0-12-471150-1}.
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 

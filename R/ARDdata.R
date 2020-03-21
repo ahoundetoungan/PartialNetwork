@@ -6,9 +6,9 @@
 #' @param z is a matrix where each row is a spherical coordinate.
 #' @return a matrix of link probabilities
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
-#'  identify network structure without network data (No. w23491). National Bureau of Economic Research.
+#'  identify network structure without network data (No. w23491). National Bureau of Economic Research. \url{https://arxiv.org/abs/1703.04157}.
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
-#' Journal of the American Statistical Association, 110(512), 1684-1695.
+#' Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.
 #' @examples 
 #' \donotrun{
 #' N       <- 500 
@@ -20,7 +20,7 @@
 #' # Genetate the gregariousness
 #' nu      <- rnorm(N, -1.35, 0.37)
 #' 
-#' # Generale degrees
+#' # Generate degrees
 #' d       <- runif(N, 0, 45)
 #' 
 #' dist    <- sim.dnetwork(nu, d, zeta, z)}

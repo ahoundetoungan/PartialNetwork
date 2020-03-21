@@ -1,5 +1,10 @@
 #' @importFrom Formula as.Formula
 #' @importFrom stats model.frame
+#' @importFrom stats terms
+#' @importFrom stats update
+#' @importFrom stats model.response
+#' @importFrom stats model.matrix
+#' @importFrom stats delete.response
 formula.to.data <- function(formula, contextual, data) {
   
   ## Extract data from the formula

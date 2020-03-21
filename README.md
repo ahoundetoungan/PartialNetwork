@@ -220,7 +220,7 @@ We present a simple function wrapping, `mcmcARD`, for the estimation procedure p
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
   
-# We should fix one bk
+# We should fix some vk and bk
 vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]

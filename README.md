@@ -48,7 +48,7 @@ X           <- cbind(rnorm(N,0,5),rpois(N,6))
 Y           <- solve(diag(N) - alpha * W) %*% (cbind(rep(1, N), X) %*% beta + rnorm(N,0,se)) 
 
 # generate instruments 
-instr       <- sim.IV(Probabilities, X, y, replication = 1, power = 2)
+instr       <- sim.IV(Probabilities, X, y, replication = 2, power = 2)
 
 GY1c1       <- instr[[1]]$G1y       # proxy for Gy (draw 1)
 GXc1        <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)

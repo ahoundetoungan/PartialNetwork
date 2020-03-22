@@ -14,7 +14,7 @@ We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnet
 
 ```R
 # initialize parameters
-# number of groupe
+# number of groups
 M             <- 5
 # size of the group
 N             <- 100      

@@ -48,13 +48,13 @@ X           <- cbind(rnorm(N,0,5),rpois(N,6))
 Y           <- solve(diag(N) - alpha * W) %*% (cbind(rep(1, N), X) %*% beta + rnorm(N,0,se)) 
 
 # generate instruments 
-instr       <- sim.IV(Probabilities, X, y, replication = 2, power = 2)
+instr       <- sim.IV(Probabilities, X, y, replication = 1, power = 2)
 
 GY1c1       <- instr[[1]]$G1y       # proxy for Gy (draw 1)
 GXc1        <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)
 G2Xc1       <- instr[[1]]$G1X[,,2]  # proxy for GGX (draw 1)
-GXc2        <- instr[[2]]$G2X[,,1]  # proxy for GX (draw 2)
-G2Xc2       <- instr[[2]]$G2X[,,2]  # proxy for GGX (draw 2)
+GXc2        <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
+G2Xc2       <- instr[[1]]$G2X[,,2]  # proxy for GGX (draw 2)
 ```
 Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the [**AER**](https://cran.r-project.org/web/packages/AER/index.html) package. For example:
 ```R

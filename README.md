@@ -29,7 +29,6 @@ alpha         <- 0.4
 # std-dev errors
 se            <- 1
 
-
 # network probabilities
 Prob          <- list()
 
@@ -160,6 +159,14 @@ hyperparms    <- list("dnetwork" = prior)
 
 # launch the MCMC
 out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
+
+# the packahe has summary and plot methods of classe S3
+# summary
+summary(out)
+# plot simulations
+plot(out)
+# plot density functions
+plot(out, plot.type = "dens")
 ```
 ## ARD, Breza et al. (2020)
 

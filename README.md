@@ -14,10 +14,12 @@ We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnet
 
 ```R
 # initialize parameters
+# number of groupe
+M             <- 5
 # size of the group
-N             <- 500      
+N             <- 100      
 # value of lambda (precision parameter for the network formation model)
-lambda        <- 0.2   
+lambda        <- 1   
 # individual effects
 beta          <- c(2, 1, 1.5) 
 # contextual effects
@@ -26,29 +28,42 @@ gamma         <- c(5, -3)
 alpha         <- 0.4
 # std-dev errors
 se            <- 1
-# heterogeneity of the linking probabilities
-c             <- rnorm(N*N, 0, 1) 
+
 
 # network probabilities
-# generate linking probabilities
-Probabilities       <- matrix(exp(c / lambda) / (1 + exp(c / lambda)), N)
-# no self-link
-diag(Probabilities) <- 0 
+Prob          <- list()
+
+for (m in 1:M) {
+  # heterogeneity of the linking probabilities
+  c           <- rnorm(N*N, 0, 1) 
+  # generate linking probabilities
+  Pm          <- matrix(exp(c / lambda) / (1 + exp(c / lambda)), N)
+  # no self-link
+  diag(Pm)    <- 0 
+  Prob[[m]]   <- Pm
+}
 
 # generate data
-# generate the 'observed network'
-G           <- sim.network(Probabilities) 
-rs          <- rowSums(G)
-rs[rs == 0] <- 1
-# row-normalize
-W           <- G/rs
-# covariates
-X           <- cbind(rnorm(N,0,5),rpois(N,6)) 
-# endogenous variable, no contextual effect
-Y           <- solve(diag(N) - alpha * W) %*% (cbind(rep(1, N), X) %*% beta + rnorm(N,0,se)) 
+X             <- matrix(data =  NA, nrow = 0, ncol = 2)
+y             <- c()
+
+for (m in 1:M) {
+  # generate the 'observed network'
+  Gm          <- sim.network(Prob[[m]]) 
+  rs          <- rowSums(Gm)
+  rs[rs == 0] <- 1
+  # row-normalize
+  Wm          <- Gm/rs
+  # covariates
+  Xm          <- cbind(rnorm(N,0,5),rpois(N,6)) 
+  # endogenous variable, no contextual effect
+  ym          <- solve(diag(N) - alpha * Wm) %*% (cbind(rep(1, N), Xm) %*% beta + rnorm(N,0,se)) 
+  y           <- c(y, ym)
+  X           <- rbind(X, Xm)
+}
 
 # generate instruments 
-instr       <- sim.IV(Probabilities, X, Y, replication = 1, power = 2)
+instr       <- sim.IV(Prob, X, y, replication = 1, power = 2)
 
 GY1c1       <- instr[[1]]$G1y       # proxy for Gy (draw 1)
 GXc1        <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)
@@ -57,14 +72,15 @@ GXc2        <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 G2Xc2       <- instr[[1]]$G2X[,,2]  # proxy for GGX (draw 2)
 ```
 Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the [**AER**](https://cran.r-project.org/web/packages/AER/index.html) package. For example:
-```R
+  ```R
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy
-dataset           <- as.data.frame(cbind(Y,X,GY1c1,GXc2,G2Xc2)) 
+dataset           <- as.data.frame(cbind(y,X,GY1c1,GXc2,G2Xc2)) 
 # rename variables
-colnames(dataset) <- c("Y","X1","X2","Gy1","Z1","Z2","ZZ1","ZZ2") 
+colnames(dataset) <- c("y","X1","X2","Gy1","Z1","Z2","ZZ1","ZZ2") 
 library(AER)
-results           <- ivreg(Y~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, data = dataset)
+results           <- ivreg(y ~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, data = dataset)
+summary(results)
 ```
 
 ## Bayesian estimator

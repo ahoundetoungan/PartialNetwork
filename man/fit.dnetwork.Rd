@@ -14,7 +14,7 @@ fit.dnetwork(
 )
 }
 \arguments{
-\item{object}{is an `estim.ARD` object returned by \code{\link{mcmcARD}}}
+\item{object}{is an `estim.ARD` object returned by \code{\link{mcmcARD}}.}
 
 \item{traitARD}{is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.}
 
@@ -31,9 +31,9 @@ used the simulation from the iteration \code{burnin + 1}.}
 a matrix of linking probabilities.
 }
 \description{
-\code{fit.dnetwork} compute the network distribution from the simulations of the posterior distribution of the 
-network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
-The degree and the gregariousness of theses individuals are computed from the sample with ARD using m-nearest neighbors method.
+\code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the 
+ARD network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
+The degrees and the gregariousness of individuals without ARD are computed from the sample with ARD using m-nearest neighbors method.
 }
 \examples{
 \dontrun{
@@ -106,7 +106,7 @@ for(k in 1:K){
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 1; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 
-# We should fix one bk
+# We should fix some vk and bk
 vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]
@@ -132,7 +132,7 @@ ARD         <- ARD[1:n,]
 d0     <- exp(rnorm(n)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 1; z0 <- matrix(rvMF(n,rep(0,P)),n); v0 <- matrix(rvMF(K,rep(0,P)),K)
 
-# We should fix one bk
+# We should fix some vk and bk
 vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]

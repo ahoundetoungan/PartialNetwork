@@ -9,13 +9,13 @@ dvMF(z, theta, log.p = FALSE)
 \arguments{
 \item{z}{is a matrix where each row is a spherical coordinate at which the density will be evaluated.}
 
-\item{theta}{is the parameter as \code{eta*mu}.}
+\item{theta}{is a vector of dimension `p` such that \code{eta*mu}.}
 
 \item{log.p}{is logical; if TRUE, probabilities p are given as log(p).}
 }
 \description{
-Density function for the von Mises-Fisher Distribution.
-of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter equal to \code{eta}.
+Density function for the von Mises-Fisher Distribution
+of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter \code{eta}.
 }
 \examples{
 # Draw 1000 vectors from vMF with parameter eta = 1 and mu = c(1,0)

@@ -1,10 +1,10 @@
 #' @title Simulation of the distribution of the network
 #' @description Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2017).
 #' @param nu is the vector of gregariousness.
-#' @param d is the vector of degrees
+#' @param d is the vector of degrees.
 #' @param zeta is a scale parameter that captures the influence of the latent positions on the link probabilities. 
 #' @param z is a matrix where each row is a spherical coordinate.
-#' @return a matrix of link probabilities
+#' @return a matrix of linking probabilities.
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
 #'  identify network structure without network data (No. w23491). National Bureau of Economic Research. \url{https://arxiv.org/abs/1703.04157}.
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 

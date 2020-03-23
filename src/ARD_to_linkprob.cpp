@@ -660,7 +660,11 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   List acceptance=List::create(Named("z")=zaccept/nsimul, Named("d")=daccept/nsimul,
                                Named("b")=baccept/nsimul, Named("eta")=etaaccept/nsimul,
                                Named("zeta")=zetaaccept/nsimul);
-  
+  // non updated hyper
+  List hypernonupdate = List::create(Named("alphaeta")    = alphaeta,
+                                      Named("betaeta")    = betaeta,
+                                      Named("alphazeta")  = alphazeta,
+                                      Named("betazeta")   = betazeta);
   
   // Save summary
   List simulations =  List::create(Named("z")    = zoutput,
@@ -669,9 +673,14 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
                                    Named("b")    = boutput,
                                    Named("eta")  = etaoutput, 
                                    Named("zeta") = zetaoutput);
-  return List::create(Named("simulations")      = simulations,
-                      Named("hyperparameters")  = hyperupdate,
-                      Named("Acceptance rate")  = acceptance);
+  
+  
+  List rethyperparms = List::create(Named("updated")     = hyperupdate,
+                                    Named("non.updated") = hypernonupdate);
+                                      
+  return List::create(Named("simulations")       = simulations,
+                      Named("hyperparms")        = rethyperparms,
+                      Named("accept.rate")       = acceptance);
 }
 
 

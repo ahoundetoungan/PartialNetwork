@@ -2,27 +2,27 @@
 #' @description \code{mcmcSAR} implements the Bayesian estimator of the linear-in-mean SAR model when only the linking probabilities are available.
 #' The linking probabilities are used as hyperparameter of the prior distribution of the network.
 #' @param formula an object of class \link[stats]{formula}: a symbolic description of the model. The `formula` should be as for example \code{y ~ x1 + x2 | x1 + x2}
-#' where `y` is the endogenous vector, the listed variable before the pipe, `x1`, `x2` are the individual exogenous variables and
+#' where `y` is the endogenous vector, the listed variables before the pipe, `x1`, `x2` are the individual exogenous variables and
 #' the listed variables after the pipe, `x1`, `x2` are the contextual observable variables. Other formulas may be
 #' \code{y ~ x1 + x2} for the model without contextual effects, \code{y ~ -1 + x1 + x2 | x1 + x2} for the model
-#' without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual ones.
+#' without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual variables.
 #' @param  contextual (optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
 #' the `formula` as `y ~ x1 + x2` and `contextual` as `TRUE` is equivalent to set the formula as `y ~ x1 + x2 | x1 + x2`.
-#' @param  start (optional) is the vector of starting value of the model parameter as \eqn{(\beta ~ \gamma ~ \alpha ~ \sigma^2)'}{\beta  \gamma  \alpha  se2},
+#' @param  start (optional) is the vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se2)'},
 #' where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
-#' and \eqn{\sigma^2}{se2} the variable of the error term. If the `start` is missing, Maximum Likelihood estimator will be used automatically where
-#' the newotk matrix will be the one given throug the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).
-#' @param hyperparms is a list of hyperparameter parameter. It should contain at least the `dnetwork` which is the linking probabilities. As there are `M` groups and
-#' individual from different groups are not linked, `dnetwork` is a list of `M` matrix where each matrix of the link probability of one group.
+#' and \eqn{\sigma^2}{se2} the variance of the error term. If the `start` is missing, a Maximum Likelihood estimator will be used, where
+#' the newotk matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).
+#' @param hyperparms is a list of hyperparameter parameter. It should contain at least `dnetwork`, the linking probabilities. As there are `M` groups and
+#' individual from different groups are not linked, `dnetwork` is a list of `M` matrix where each matrix of the link probabilities in one group.
 #' @param G0 (optional) is the starting value of the (row normalized) network as a list of `M` sub-network.
-#' @param iteration is the number of iterations in the MCMC.
+#' @param iteration is the number of MCMC steps to be performed.
 #' @param ctrl.mcmc is a list of MCMC controls (See details).
 #' @param data an optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
 #' in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcARD` is called.
 #' @details The model is given by
-#' \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon}{y = X\beta + GX\gamma + \alpha Gy + \epsilon}
+#' \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon.}
 #' The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma^2}{se2}.
-#' Prior distributions are assumed on \eqn{\mathbf{A}} the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
+#' Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
 #' \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se2}.
 #' \deqn{\mathbf{A}_{ij} \sim Bernoulli(\mathbf{P}_{ij})}{A[i,j] ~ Bernoulli(P[i,j])}
 #' \deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
@@ -30,45 +30,50 @@
 #' \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
 #' where \eqn{\mathbf{P}}{P} is the linking probability.\cr
 #' 
-#' All hyperparameter can be defined in `hyperparms` and should be named as
+#' All the hyperparametera can be defined through the argument `hyperparms` (a list)  and should be named as follow.
 #' \itemize{
-#' \item `dnetwork`, the linking probability. This hyperparameter is required.
+#' \item `dnetwork`, the linking probabilities (list of M matrix). This hyperparameter is required.
 #' \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
 #' the prior mean is zero.
 #' \item `invstheta` as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
 #' \item `muzeta`, the prior mean of \eqn{\zeta}. The default value is zero.
 #' \item `invszeta`, the inverse of the prior variance of \eqn{\zeta} with default value equal to 2.
-#' \item `a` and `b` default values are 4.2 and 2.2. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
+#' \item `a` and `b` which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
 #' }
-#' Typically, the inverses are used for the priori variance in the normal distribution to allow non informative prior. Set the inverse of the prior
-#' variabce to 0 is equivalent to non informative prior.\cr
-#' During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of \eqn{\alpha} to the `target` value. This
-#' requires to set minimal and maximal jumpings scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
+#' Inverses are used for the priori variance through the argument `hyperparms`  in order to allow non informative prior. Set the inverse of the prior
+#' variance to 0 is equivalent to assume a non informative prior.\cr
+#' During the MCMC, the jumping scale of \eqn{\alpha} is updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate to the `target` value. This
+#' requires to set a minimal and a maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 #' \itemize{
-#' \item{`target`}: The default value is 0.44. 
-#' \item{`jumpmin`}: The default value is \code{1e-12}. 
-#' \item{`jumpmax`}: The default value is \code{10}. 
-#' \item{`print`}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is `TRUE`.
-#' \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. For some convergence reasons it mighit be 
+#' \item{`target`}: the default value is 0.44. 
+#' \item{`jumpmin`}: the default value is \code{1e-12}. 
+#' \item{`jumpmax`}: the default value is \code{10}. 
+#' \item{`print.level`}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
+#'  If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
+#'  the simulations from the posterior distribution are printed.
+#' \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. For some convergence reasons, it mighit be 
 #' more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2019). 
 #' }
-#' If `block.max` > 1, several entries are ramdomly chosen from the same row and updated simultaneously. The number of entries chosen is also randomly 
-#' chosen between 1 and `block.max`. The entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
+#' If `block.max` > 1, several entries are ramdomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
+#' chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
 #' then the entries (i, 1), (i, 3), (i, 8), and so on. 
 #' @return A list consisting of:
-#'     \item{n.group}{number of groups}
-#'     \item{N}{vector of each group size}
-#'     \item{iteration}{number of iterations if the MCMC}
-#'     \item{posterior}{matrix containing the simulations}
-#'     \item{acceptance}{acceptance rate of zeta}
-#'     \item{G}{last draw of G (row normalized)}
-#'     \item{hyperparms}{list containing the hyperparameters}
-#'     \item{formula}{return value of `formula`}
-#'     \item{contextual}{return value of `contextual`.}
+#'     \item{n.group}{number of groups.}
+#'     \item{N}{vector of each group size.}
+#'     \item{time}{elapsed time to run the MCMC in second.}
+#'     \item{iteration}{number of MCMC steps performed.}
+#'     \item{posterior}{matrix containing the simulations.}
+#'     \item{hyperparms}{return value of `hyperparms`.}
+#'     \item{accept.rate}{acceptance rate of zeta.}
+#'     \item{G}{last draw of G (row normalized).}
+#'     \item{start}{starting values.}
+#'     \item{formula}{input value of `formula`.}
+#'     \item{contextual}{input value of `contextual`.}
+#'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 #' @examples 
 #' \dontrun{
 #' # Number of groups
-#' M             <- 100
+#' M             <- 10
 #' # size of each group
 #' N             <- rep(50,M)
 #' # precision parameter for the network formation process
@@ -95,7 +100,7 @@
 #'     Prob        <- matrix(exp(c/lambda)/(1+exp(c/lambda)),Nm) 
 #'     # no self-link
 #'    diag(Prob)  <- 0 
-#'    prior[[m]]  <-Prob
+#'    prior[[m]]  <- Prob
 #' }
 #' 
 #' ## generate data
@@ -135,10 +140,18 @@
 #' # launch the MCMC
 #' # update entry on A, one by one
 #' out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
+#' summary(out1)
+#' plot(out1)
+#' plot(out1, plot.type = "dens")
 #' # update up to 4 entries simultaneously
-#' ctrl <- list(block.max = 4)
+#' ctrl <- list(block.max = 4, print.level = 2)
 #' out2          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
+#' summary(out2)
+#' plot(out2)
+#' plot(out2, plot.type = "dens")
 #'}
+#' @references 
+#' Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 #' @references 
 #' Boucher, V., & Houndetoungan, A. (2019). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
 #' @importFrom Formula as.Formula
@@ -150,14 +163,14 @@ mcmcSAR <- function(formula,
                     start,
                     hyperparms,
                     G0     = NULL,
-                    iteration = 2000,
+                    iteration = 2000L,
                     ctrl.mcmc = list(),
                     data){
   t1           <- Sys.time()
   target       <- ctrl.mcmc$target
   jumpmin      <- ctrl.mcmc$jumpmin
   jumpmax      <- ctrl.mcmc$jumpmax
-  print        <- ctrl.mcmc$print
+  print.level  <- ctrl.mcmc$print.level
   block.max    <- ctrl.mcmc$block.max
   c            <- ctrl.mcmc$c
   
@@ -204,13 +217,22 @@ mcmcSAR <- function(formula,
     }
   }
   
-  if (is.null(print)) {
-    print     <- TRUE
+  if (is.null(print.level)) {
+    print.level      <- 1
   } else {
-    if(length(print) != 1) {
-      stop("print in ctrl.mcmc should be a scalar")
+    if(length(print.level) != 1) {
+      stop("print.level in ctrl.mcmc should be a scalar")
     }
   }
+  
+  ctrl.mcmc    <- list(
+    target     = target,
+    jumpmin    = jumpmin,
+    jumpmax    = jumpmax,
+    block.max  = block.max,
+    print.level= print.level,
+    c          = c
+  )
   
   if (missing(contextual)) {
     contextual <- FALSE
@@ -232,8 +254,14 @@ mcmcSAR <- function(formula,
   
   col.Xone     <- colnames(Xone)
   col.x        <- colnames(X)
-  col.post     <- c(col.Xone, paste0("G: ", col.x), "Gy", "se2")
+  col.post     <- c(col.Xone)
+  if (is.null(X)) {
+    col.post     <- c(col.post, "Gy", "se2")
+  } else {
+    col.post     <- c(col.post, paste0("G: ", col.x), "Gy", "se2")
+  }
   
+
   # hyperparameter
   dnetwork     <- hyperparms$dnetwork
   if (is.null(dnetwork)) {
@@ -270,6 +298,16 @@ mcmcSAR <- function(formula,
     b          <- (a - 2)/1
   }
   
+  hyperparms   <- c(hyperparms, 
+                    list(
+                      mutheta   = mutheta,
+                      invstheta = invstheta,
+                      muzeta    = muzeta,
+                      invszeta  = invszeta,
+                      a         = a,
+                      b         = b
+                    ))
+  
   # M and network
   M            <- length(dnetwork)
   N            <- NULL
@@ -305,12 +343,19 @@ mcmcSAR <- function(formula,
     }
   }
   
-  
-  
-  
-  
   if (is.null(X)) {
-    stop("This version of the package does not allow MCMC for the model without contextual effect. Please use IV regressions.")
+    if (missing(start)) {
+      start    <- sartpointnoc(G0, M, N, kbeta, y, Xone);
+    }
+    if (block.max == 1) {
+      out      <- peerMCMCnoc(y, Xone, G0, M, N, kbeta, dnetwork, mutheta, invstheta, 
+                           muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
+                           c, print.level)
+    } else {
+      out      <- peerMCMCblocknoc(y, Xone, G0, M, N, kbeta, dnetwork, mutheta, invstheta, 
+                                muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
+                                c, block.max, print.level)
+    }
   } else {
     if (missing(start)) {
       start    <- sartpoint(G0, M, N, kbeta, kgamma, y, X, Xone);
@@ -318,18 +363,15 @@ mcmcSAR <- function(formula,
     if (block.max == 1) {
       out      <- peerMCMC(y, X, Xone, G0, M, N, kbeta, kgamma, dnetwork, mutheta, invstheta, 
                             muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
-                           c, print)
+                           c, print.level)
     } else {
       out      <- peerMCMCblock(y, X, Xone, G0, M, N, kbeta, kgamma, dnetwork, mutheta, invstheta, 
                                 muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
-                                c, block.max, print)
+                                c, block.max, print.level)
     }
   }
   
-  
   colnames(out$posterior) <- col.post
-  t2          <- Sys.time()
-  timer       <- as.numeric(difftime(t2, t1, units = "secs")) 
   
   
   cat("\n\n")
@@ -340,6 +382,8 @@ mcmcSAR <- function(formula,
   cat("Iteration              : ", iteration, "\n")
   
   # Print the processing time
+  t2          <- Sys.time()
+  timer       <- as.numeric(difftime(t2, t1, units = "secs")) 
   nhours     <- floor(timer/3600)
   nminutes   <- floor((timer-3600*nhours)/60)%%60
   nseconds   <- timer-3600*nhours-60*nminutes
@@ -347,9 +391,19 @@ mcmcSAR <- function(formula,
   cat("Average acceptance rate: ", out$acceptance, "\n")
 
   
-  out        <- c(list("n.group" = M, "N" = c(N), "iteration" = iteration),
-                  out, 
-                  list("hyperparms" = hyperparms, "formula" = formula))
+  out        <- c(list("n.group"     = M,
+                       "N"           = c(N),
+                       "time"        = timer,
+                       "iteration"   = iteration,
+                       "posterior"   = out$posterior,
+                       "hyperparms"  = hyperparms, 
+                       "accept.rate" = out$acceptance, 
+                       "G"           = out$G,
+                       "start"       = c(start),
+                       "formula"     = formula,
+                       "contextual"  = contextual,
+                       "ctrl.mcmc"   = ctrl.mcmc))
+  
   class(out) <- "mcmcSAR"
   return(out)
 }

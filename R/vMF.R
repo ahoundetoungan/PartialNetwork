@@ -1,6 +1,6 @@
 #' @title Simulation from von Mises-Fisher Distribution
 #' @description Random generation for the von Mises-Fisher Distribution
-#' of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter equal to \code{eta} 
+#' of dimension \code{p} with location parameter \code{mu} and intensity parameter \code{eta} 
 #' (see Wood, 1994; Mardia, 2014).
 #' @param size is the number of simulations.
 #' @param theta is the parameter as \code{eta*mu}.
@@ -30,9 +30,9 @@ rvMF  <- function(size, theta) {
 
 #' @title Normalization constant of von Mises-Fisher Distribution
 #' @description log of the Normalization Constant for the von Mises-Fisher Distribution
-#' of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter equal to \code{eta}.
+#' of dimension \code{p} with location parameter \code{mu} and intensity parameter \code{eta}.
 #' @param p is the dimension of the hypersphere.
-#' @param eta is the intensity parameter
+#' @param eta is the intensity parameter.
 #' @examples 
 #' logCpvMF(2, 3.1)
 #' @export
@@ -41,10 +41,10 @@ logCpvMF <- function(p, eta) {
 }
 
 #' @title Density function of von Mises-Fisher Distribution
-#' @description Density function for the von Mises-Fisher Distribution.
-#' of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter equal to \code{eta}.
+#' @description Density function for the von Mises-Fisher Distribution
+#' of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter \code{eta}.
 #' @param z is a matrix where each row is a spherical coordinate at which the density will be evaluated.
-#' @param theta is the parameter as \code{eta*mu}.
+#' @param theta is a vector of dimension `p` such that \code{eta*mu}.
 #' @param log.p is logical; if TRUE, probabilities p are given as log(p).
 #' @examples
 #' # Draw 1000 vectors from vMF with parameter eta = 1 and mu = c(1,0)

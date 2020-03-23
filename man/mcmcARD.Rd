@@ -10,7 +10,7 @@ mcmcARD(
   start,
   fixv,
   consb,
-  iteration = 2000,
+  iteration = 2000L,
   sim.d = TRUE,
   sim.zeta = TRUE,
   hyperparms = NULL,
@@ -20,7 +20,7 @@ mcmcARD(
 \arguments{
 \item{Y}{is a matrix of ARD. The entry (i, k) is the number of i's friends having the trait k.}
 
-\item{traitARD}{is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.}
+\item{traitARD}{is the matrix of traits for individuals with ARD. The entry (i, k) is equal to 1 if i has the trait k and 0 otherwise.}
 
 \item{start}{is a list containing starting values of `z` (matrix of dimension \eqn{N \times p}), `v` (matrix of dimension \eqn{K \times p}),
 `d` (vector of dimension \eqn{N}), `b` (vector of dimension \eqn{K}), `eta` (vector of dimension \eqn{K}) and `zeta` (scalar).}
@@ -31,33 +31,35 @@ a Procrustes transformation (see McCormick and Zheng, 2015; Breza et al., 2017 a
 
 \item{consb}{is a vector of the subset of \eqn{\beta_k}{bk} constrained to the total size (see McCormick and Zheng, 2015; Breza et al., 2017 and details).}
 
-\item{iteration}{is the number of simulation in the MCMC process}
+\item{iteration}{is the number of MCMC steps to be performed.}
 
 \item{sim.d}{is logical indicating weather the degree `d` will be updated in the MCMC. If `sim.d = FALSE`,
 the starting value of `d` in the argument `start` is set fixed along the process.}
 
-\item{sim.zeta}{s logical indicating weather the degree `zeta` will be updated in the MCMC. If `sim.zeta = FALSE`,
+\item{sim.zeta}{is logical indicating weather the degree `zeta` will be updated in the MCMC. If `sim.zeta = FALSE`,
 the starting value of `zeta` in the argument `start` is set fixed along the process.}
 
-\item{hyperparms}{is an 8-dimensional vector of hyperparameters containing \eqn{\mu_d}{mud},  \eqn{\sigma_d}{sigmad},
+\item{hyperparms}{is an 8-dimensional vector of hyperparameters such that, \eqn{\mu_d}{mud},  \eqn{\sigma_d}{sigmad},
 \eqn{\mu_b}{mub}, \eqn{\sigma_b}{sigmab}, \eqn{\alpha_{\eta}}{alphaeta}, \eqn{\beta_{\eta}}{betaeta}, 
-\eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_zeta}{betazeta} (see details).}
+\eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_{\zeta}}{betazeta} (see details).}
 
 \item{ctrl.mcmc}{is a list of MCMC controls (See details).}
 }
 \value{
 A list consisting of:
-    \item{n}{dimension of the sample with ARD}
-    \item{K}{number of traits}
-    \item{p}{hypersphere dimension}
-    \item{iteration}{number of iterations in the MCMC}
-    \item{time}{Elapsed time in second}
-    \item{simulations}{simulations from the posterior distribution}
-    \item{hyperparameters}{vector of hyperparameters}
-    \item{Acceptance.rate}{list of acceptance rates.}
+    \item{n}{dimension of the sample with ARD.}
+    \item{K}{number of traits.}
+    \item{p}{hypersphere dimension.}
+    \item{time}{elapsed time in second.}
+    \item{iteration}{number of MCMC steps performed.}
+    \item{simulations}{simulations from the posterior distribution.}
+    \item{hyperparms}{retrun value of hyperparameters (updated and non updated).}
+    \item{accept.rate}{list of acceptance rates.}
+    \item{start}{starting values.}
+    \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 }
 \description{
-\code{mcmcARD} estimate the network model proposed by McCormick and Zheng (2015).
+\code{mcmcARD} estimates the network model proposed by McCormick and Zheng (2015).
 }
 \details{
 The linking probability is given by
@@ -73,9 +75,9 @@ prior distributions are defined.
 \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
 \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \cr
 
-For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to set fixed. The parameter `fixv` can be used
-to set the desired \eqn{\mathbf{v}_k}{vk} and `fixb` to set the desired \eqn{b_k}{bk}. The parameter will be set
-around the given starting value (see McCormick and Zheng, 2015 for more details).\cr
+For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to set fixed around their given starting value
+(see McCormick and Zheng, 2015 for more details). The parameter `fixv` can be used
+to set the desired \eqn{\mathbf{v}_k}{vk} and `fixb` to set the desired \eqn{b_k}{bk}.\cr
 
 During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
 requires to set minimal and maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
@@ -90,10 +92,8 @@ The minimal jumping of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk
 }
 \examples{
 \dontrun{
-set.seed(123)
-
 # Sample size
-N  <- 500 
+N       <- 500 
 
 # ARD parameters
 genzeta <- 1
@@ -156,7 +156,7 @@ for(k in 1:K){
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
   
-# We should fix one bk
+# We should fix some vk and bk
 vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]

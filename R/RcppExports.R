@@ -33,8 +33,12 @@ peerMCMCblock <- function(y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0,
     .Call(`_PartialNetwork_peerMCMCblock`, y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress)
 }
 
-sartpoint <- function(Gnorm, M, N, kbeta, kgamma, y, X, Xone) {
-    .Call(`_PartialNetwork_sartpoint`, Gnorm, M, N, kbeta, kgamma, y, X, Xone)
+peerMCMCnoc <- function(y, V, Gnorm, M, N, kbeta, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress) {
+    .Call(`_PartialNetwork_peerMCMCnoc`, y, V, Gnorm, M, N, kbeta, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress)
+}
+
+peerMCMCblocknoc <- function(y, V, Gnorm, M, N, kbeta, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress) {
+    .Call(`_PartialNetwork_peerMCMCblocknoc`, y, V, Gnorm, M, N, kbeta, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress)
 }
 
 Prob <- function(nu, d, zeta, z) {
@@ -67,5 +71,13 @@ flistGnorm1nc <- function(dnetwork, y, Xone, M) {
 
 flistGnorm2nc <- function(dnetwork, Gnorm, y, Xone, M) {
     .Call(`_PartialNetwork_flistGnorm2nc`, dnetwork, Gnorm, y, Xone, M)
+}
+
+sartpoint <- function(Gnorm, M, N, kbeta, kgamma, y, X, Xone) {
+    .Call(`_PartialNetwork_sartpoint`, Gnorm, M, N, kbeta, kgamma, y, X, Xone)
+}
+
+sartpointnoc <- function(Gnorm, M, N, kbeta, y, Xone) {
+    .Call(`_PartialNetwork_sartpointnoc`, Gnorm, M, N, kbeta, y, Xone)
 }
 

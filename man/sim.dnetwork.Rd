@@ -9,14 +9,14 @@ sim.dnetwork(nu, d, zeta, z)
 \arguments{
 \item{nu}{is the vector of gregariousness.}
 
-\item{d}{is the vector of degrees}
+\item{d}{is the vector of degrees.}
 
 \item{zeta}{is a scale parameter that captures the influence of the latent positions on the link probabilities.}
 
 \item{z}{is a matrix where each row is a spherical coordinate.}
 }
 \value{
-a matrix of link probabilities
+a matrix of linking probabilities.
 }
 \description{
 Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2017).

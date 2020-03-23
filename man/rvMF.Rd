@@ -13,7 +13,7 @@ rvMF(size, theta)
 }
 \description{
 Random generation for the von Mises-Fisher Distribution
-of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter equal to \code{eta} 
+of dimension \code{p} with location parameter \code{mu} and intensity parameter \code{eta} 
 (see Wood, 1994; Mardia, 2014).
 }
 \examples{

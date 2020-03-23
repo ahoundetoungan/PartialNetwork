@@ -43,15 +43,21 @@ formula.to.data <- function(formula, contextual, data) {
   }
   
   if (contextual) {
+    if (!is.null(X)) {
+      stop("contextual cannot be TRUE while contextual variable are declared after the pipe.")
+    }
     X              <- Xone
+    tmpx           <- as.character(formula(formula, lhs = 1, rhs = 1))
+    formula        <- Formula::as.Formula(paste(c(tmpx[c(2, 1, 3)], "|", tmpx[3]), collapse = " "))
   } 
   
   Colnames.x       <- colnames(X)
   intercept        <- "(Intercept)" %in% Colnames.x
   
   if (intercept) {
-    X              <- X[,-1]
-  } 
+    X              <- X[,-1, drop = FALSE]
+  }  
+  
   
   list("formula" = formula, 
        "Xone" = Xone,

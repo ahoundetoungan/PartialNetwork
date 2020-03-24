@@ -26,7 +26,7 @@
 #' \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se2}.
 #' \deqn{\mathbf{A}_{ij} \sim Bernoulli(\mathbf{P}_{ij})}{A[i,j] ~ Bernoulli(P[i,j])}
 #' \deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
-#' \deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) \sim \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta})}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
+#' \deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) \sim \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta}^2)}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
 #' \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
 #' where \eqn{\mathbf{P}}{P} is the linking probability.\cr
 #' 

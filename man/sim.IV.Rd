@@ -89,7 +89,7 @@ for (m in 1:M) {
   # covariates
   Xm          <- cbind(rnorm(N,0,5),rpois(N,6)) 
   # endogenous variable, no contextual effect
-  ym          <- solve(diag(N) - alpha * Wm) \\%*\\% (cbind(rep(1, N), Xm) \\%*\\% beta + rnorm(N,0,se)) 
+  ym          <- solve(diag(N) - alpha * Wm) \%*\% (cbind(rep(1, N), Xm) \%*\% beta + rnorm(N,0,se)) 
   y           <- c(y, ym)
   X           <- rbind(X, Xm)
 }

@@ -94,13 +94,13 @@
 #' 
 #' ## generate network probabilities
 #' for (m in 1:M) {
-#'   Nm          <- N[m]
+#'     Nm          <- N[m]
 #'     c           <- rnorm(Nm*Nm,0,1)
 #'     # linking probabilities
 #'     Prob        <- matrix(exp(c/lambda)/(1+exp(c/lambda)),Nm) 
 #'     # no self-link
-#'    diag(Prob)  <- 0 
-#'    prior[[m]]  <- Prob
+#'     diag(Prob)  <- 0 
+#'     prior[[m]]  <- Prob
 #' }
 #' 
 #' ## generate data

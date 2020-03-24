@@ -20,10 +20,9 @@ our.sum <- function(x) {
 
 # function to perform the simulation
 # l stands for the l-th simulation
-# lambda network precision parameter
-fsim <- function(l, lambda){
-  M          <- 100          # Number of groups
-  N          <- rep(50,M)   # Group size
+f.mc <- function(l){
+  M         <- 100          # Number of groups
+  N         <- rep(50,M)    # Group size
   # Parameters
   
   beta      <- c(2,1,1.5)
@@ -44,31 +43,36 @@ fsim <- function(l, lambda){
   
   #loop over group
   for (m in 1:M) {
-    #Generate link probabilities
-    c                  <- rnorm(N[m] * N[m], 0, 1)
-    
-    distr              <- matrix(exp(c / lambda) / (1 + exp(c / lambda)), N[m])
-    diag(distr)        <- 0
-    
-    #The complete graph
-    G                <- sim.network(dnetwork = distr)
-    
-    #True network row normalized
-    rs               <- rowSums(G)
-    rs[rs == 0]      <- 1
-    W[[m]]           <- G / rs
-    
     #Covariates
     X[[m]]   <- cbind(rnorm(N[m],0,5),rpois(N[m],6))
     
     #Fixed effects
     feffect  <- 0.3 * X[[m]][1, 1] + 0.3 * X[[m]][3, 2] - 1.8 * X[[m]][50, 2]
     
+    # Network depending on X
+    distr          <- matrix(0, N[m], N[m])
+    for (i in 1:(N[m] - 1)) {
+      for (j in (i + 1):N[m]) {
+        distr[i,j] <- pnorm(-4.5 + abs(X[[m]][i,1] - X[[m]][j,1]) - 2*abs(X[[m]][i,2] - X[[m]][j,2]))
+      }
+    }
+    distr          <- distr + t(distr)
+
+    diag(distr)    <- 0
+    
+    #The complete graph
+    G              <- sim.network(dnetwork = distr)
+    
+    #True network row normalized
+    rs             <- rowSums(G)
+    rs[rs == 0]    <- 1
+    W[[m]]         <- G / rs
+    
     #True GX
     GX[[m]]  <- W[[m]] %*% X[[m]]
     
     #Y for section without contextual effects
-    Y1[[m]]  <- solve(diag(rep(1, N[m])) - alpha * W[[m]]) %*% (cbind(rep(1,N[m]), X[[m]])%*%beta + rnorm(N[m],0,se))
+    Y1[[m]]  <- solve(diag(rep(N[m])) - alpha * W[[m]]) %*% (cbind(rep(1,N[m]), X[[m]])%*%beta + rnorm(N[m],0,se))
     GY1[[m]] <- W[[m]] %*% Y1[[m]]
     
     #Y for section with contextual effects
@@ -177,55 +181,38 @@ fsim <- function(l, lambda){
   sest3.2     <- summary(ivreg(Y3allm0 ~ Xallm0 + GXallm0 + GXc0allm0 + GY3callm0 | Xallm0 + GXallm0 + GXc0allm0 + G2Xcallm0), diagnostic = TRUE)
   lest3.2     <- c(sest3.2$coefficients[, 1], sest3.2$diagnostics[, 3])
   
-  cat("lambda ", lambda, " -- Iteration ", l, "\n")
+  cat("Iteration ", l, "\n")
   c(lest1.1.1, lest1.1.2, lest1.2.1.1, lest1.2.1.2, lest1.2.2.1,
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)
-}
-
-# monte carlo function for each parlambda
-f.mc <- function(iteration, lambda) {
-  out.mc        <- mclapply(1:iteration, function(w) fsim(w, lambda), mc.cores = 8L)
-  # simu as m matrix
-  simu          <- t(do.call(cbind, out.mc))
-  
-  # the colnames
-  tmp <- c("Intercept",paste0("X",1:2),"alpha","Weak","Wu","Sargan")
-  c1  <- paste0("No Con - GY obs - ins GX ", tmp)
-  c2  <- paste0("No Con - GY obs - ins GX GGX ", tmp)
-  c3  <- paste0("No Con - GY notobs - ins GX - sam draw ", c(tmp,"corGX1e","corGX2e"))
-  c4  <- paste0("No Con - GY notobs - ins GX GGX - sam draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
-  c5  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e"))
-  c6  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
-  
-  tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), "alpha", "Weak", "Wu", "Sargan")
-  c7  <- paste0("Wit Con - GY obs ", tmp)
-  c9  <- paste0("Fix eff - GY obs ", tmp)
-  tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), paste0("GXc", 1:2), "alpha", "Weak", "Wu", "Sargan")
-  c8  <- paste0("Wit Con - GY no obs ", tmp)
-  c10 <- paste0("Fix eff - GY obs ", tmp)
-  
-  colnames(simu) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-  
-  # summary for all simulation using ARD
-  results        <- t(apply(simu, 2, our.sum))
-  results
 }
 
 set.seed(123)
 
 # Number of simulation
-iteration <- 10
-# Monte Carlo for several values of lambda
-veclambda <- c(seq(0.01, 2, 0.01), Inf)
-out       <- lapply(veclambda, function(lambda) f.mc(iteration, lambda))
+iteration <- 1000
+out.mc        <- mclapply(1:iteration, f.mc, mc.cores = 8L)
 
-# result for specific lambda
-lambda    <- 1
-ilambda   <- which(veclambda == lambda)
-out[[ilambda]]
+# simu as m matrix
+simu          <- t(do.call(cbind, out.mc))
 
-lambda    <- Inf
-ilambda   <- which(veclambda == lambda)
-out[[ilambda]]
+# the colnames
+tmp <- c("Intercept",paste0("X",1:2),"alpha","Weak","Wu","Sargan")
+c1  <- paste0("No Con - GY obs - ins GX ", tmp)
+c2  <- paste0("No Con - GY obs - ins GX GGX ", tmp)
+c3  <- paste0("No Con - GY notobs - ins GX - sam draw ", c(tmp,"corGX1e","corGX2e"))
+c4  <- paste0("No Con - GY notobs - ins GX GGX - sam draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
+c5  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e"))
+c6  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
 
-# plot estimation of alpha for lambda from 0 to 2
+tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), "alpha", "Weak", "Wu", "Sargan")
+c7  <- paste0("Wit Con - GY obs ", tmp)
+c9  <- paste0("Fix eff - GY obs ", tmp)
+tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), paste0("GXc", 1:2), "alpha", "Weak", "Wu", "Sargan")
+c8  <- paste0("Wit Con - GY no obs ", tmp)
+c10 <- paste0("Fix eff - GY obs ", tmp)
+
+colnames(simu) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+
+# summary for all simulation using ARD
+results        <- t(apply(simu, 2, our.sum))
+print(results)

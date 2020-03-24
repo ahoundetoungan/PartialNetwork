@@ -98,7 +98,9 @@ fsim <- function(l, parlambda){
     distr    <- accel_nuclear_gradient(inputs = t(trait), outputs = t(ARD), lambda = parlambda)
     
     #True network row normalized
-    W[[m]]   <- G / rowSums(G)
+    rs               <- rowSums(G)
+    rs[rs == 0]      <- 1
+    W[[m]]           <- G / rs
     
     #Covariates
     X[[m]]   <- cbind(rnorm(N[m],0,5),rpois(N[m],6))

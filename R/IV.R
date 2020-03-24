@@ -1,6 +1,6 @@
 #' @title Instrument Variables for SAR model
-#' @description \code{sim.IV} simulates Instrument Variables (IV) for linear-in-mean SAR model from the network distribution following Bramoullé et al. (2009).
-#' @param dnetwork is a square matrix (or a list of matrix if many groups) where the (i, j)th position is the probability of the event "i knows j".
+#' @description \code{sim.IV} generates Instrument Variables (IV) for linear-in-mean SAR model from the network distribution. See Propositions 1 and 2 of Boucher and Houndetoungan (2020).
+#' @param dnetwork is a square matrix (or a list of matrix if many groups) where the (i, j)th position is the probability of the event "i is linked to j".
 #' @param X is a matrix of the individual observable characteristics.
 #' @param y (optional) is the endogenous variable as a vector.
 #' @param replication (optional, default = 1) is the number of repetitions (see details).
@@ -18,17 +18,16 @@
 #' is given by \code{G2X[,,p]}.}
 #' 
 #' 
-#' @details Bramoullé et al. (2009) prove that \eqn{(I - \alpha G)^{-1}}{(I - \alpha G)^{-1}} is an optimal instrument for the linear-in-mean SAR model, where \eqn{\alpha} is the peer effect. 
-#' As \eqn{\alpha} is not known in practice, one can used \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X}, where \eqn{P} is the maximal power desired.
-#' \code{sim.IV} simulates these instruments when only the distribution of the network is 
-#' available. The argument `power` is the maximal power desired.\cr
+#' @details Bramoullé et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} as instruments, where \eqn{P} is the maximal power desired.
+#' \code{sim.IV} generate approximation of those instruments, based on Propositions 1 and 2 in Boucher and Houndetoungan (2020) (see also below).
+#' The argument `power` is the maximal power desired.\cr
 #' In the case where some explanatory variables like \eqn{Gy} and \eqn{GX} are not obseved.
 #' Boucher and Houndetoungan (2019) show that one network drawn from the distribution can be used to approximate \eqn{Gy} and \eqn{GX}
 #' as explanatory variable, but the same network should not be used to approximate the instruments. Thus, each component in the function's output gives
-#' `G1y` and `G1X` computed with the same network (can be used as explanatory variables) and `G2X` computed with another network (can be used as instrument).
-#' For inference issue this process can be replicated several times and the argument `replication` can be used to set the number of replications desired.
+#' `G1y` and `G1X` computed with the same network and `G2X` computed with another network (can be used as instrument).
+#' This process can be replicated several times and the argument `replication` can be used to set the number of replications desired.
 #' @references 
-#' Boucher, V., & Houndetoungan, A. (2019). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
+#' Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
 #' @references 
 #' Bramoullé, Y., Djebbari, H., & Fortin, B. (2009). Identification of peer effects through social networks. \emph{Journal of econometrics}, 150(1), 41-55. \url{https://www.sciencedirect.com/science/article/abs/pii/S0304407609000335}
 #' @examples 
@@ -93,7 +92,7 @@
 #' G2Xc2     <- instr[[1]]$G2X[,,2]  # proxy for GGX (draw 2)
 #' 
 #' # build dataset
-#' # keep only instrument constructed using a different draw than the one used to proxy Gy
+#' # keep only instruments constructed using a different draw than the one used to proxy Gy
 #' dataset           <- as.data.frame(cbind(y,X,GY1c1,GXc2,G2Xc2)) 
 #' # rename variables
 #' colnames(dataset) <- c("y","X1","X2","Gy1","Z1","Z2","ZZ1","ZZ2")

@@ -181,7 +181,7 @@
 #' density functions of Baysian SAR model parameter. For more details about the graphical
 #' parameter arguments, see \link[graphics]{par}.
 #' @param x an object of class "mcmcSAR", output of the function \code{\link{mcmcSAR}}.
-#' @param x an object of class "plot.mcmcSAR", output of thes functions \code{\link{plot.mcmcSAR}}.
+#' @param x an object of class "plot.mcmcSAR", output of the function \code{\link{plot.mcmcSAR}}.
 #' @param plot.type a character that indicate the type of plot: "sim" for plotting the simulation
 #' from the posterior distribution or "dens" for plotting the posterior density functions.
 #' @param burnin is the number of MCMC steps which will be considered as burn-in iterations. If `NULL` (default value),
@@ -318,7 +318,7 @@
     tmp1          <- c(list(x = posterior[, k], ... = ...),  x[-(1:11)])
     
     tmp2          <- c(list(x = do.call("density", tmp1),
-                          main = coln[i],
+                          main = coln[k],
                           xlab = "",
                           ylab = "",
                           ...  = ...), x[-(1:11)])

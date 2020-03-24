@@ -143,7 +143,7 @@ for(k in 1:K){
 colSums(trait)*100/N
   
 # Build ADR
-ARD         <- G\\%*\\%trait
+ARD         <- G\%*\%trait
   
 # generate b
 genb        <- numeric(K)

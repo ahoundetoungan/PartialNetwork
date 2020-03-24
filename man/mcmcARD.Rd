@@ -143,7 +143,7 @@ for(k in 1:K){
 colSums(trait)*100/N
   
 # Build ADR
-ARD         <- G\%*\%trait
+ARD         <- G\\%*\\%trait
   
 # generate b
 genb        <- numeric(K)
@@ -156,7 +156,7 @@ for(k in 1:K){
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
   
-# We should fix some vk and bk
+# We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
 vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]
@@ -199,8 +199,8 @@ k <- 8
 \references{
 Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 
-Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
- identify network structure without network data (No. w23491). \emph{National Bureau of Economic Research}. \url{https://www.nber.org/papers/w23491}.
+Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
+ identify network structure without network data. \emph{American Economic Review, forthcoming}.
 
 McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 \emph{Journal of the American Statistical Association}, 110(512), 1684-1695. \url{https://amstat.tandfonline.com/doi/full/10.1080/01621459.2014.991395}.

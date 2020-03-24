@@ -1,12 +1,12 @@
-#' @title Simulation of the distribution of the network
-#' @description Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2017).
+#' @title Simulation of the distribution of the network for Breza et al. (2020)
+#' @description Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2020).
 #' @param nu is the vector of gregariousness.
 #' @param d is the vector of degrees.
 #' @param zeta is a scale parameter that captures the influence of the latent positions on the link probabilities. 
 #' @param z is a matrix where each row is a spherical coordinate.
 #' @return a matrix of linking probabilities.
-#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
-#'  identify network structure without network data (No. w23491). National Bureau of Economic Research. \url{https://arxiv.org/abs/1703.04157}.
+#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
+#'  identify network structure without network data. \emph{American Economic Review, Forthcoming}
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 #' Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.
 #' @examples 

@@ -6,34 +6,29 @@
 \alias{PartialNetwork-package}
 \title{The PartialNetwork package}
 \description{
-The \pkg{PartialNetwork} package implements IV Compute IV and Bayesian estimator for linear-in-mean SAR model when
-the network is not observed and only the network distribution is availaible. To make these computations faster \pkg{PartialNetwork} relies on a \code{C++} using \pkg{Rcpp} (Eddelbuettel et al., 2011).
+The \pkg{PartialNetwork} package implements instrumental variable (IV) and Bayesian estimators for the linear-in-mean SAR model (e.g. Bramoullé et al., 2009) when
+the distribution of the network is availaible, but not the network itself. To make the computations faster \pkg{PartialNetwork} uses \code{C++} through the \pkg{Rcpp} package (Eddelbuettel et al., 2011).
 }
 \details{
-Two main functions are provided to estimate the linear-in-mean SAR model when the network is not observed and only the network distribution is availaible (see Boucher and Houndetoungan, 2019). The function
-\code{\link{sim.IV}} simulates valide instruments from the distribution (see Bramoullé et al., 2009). The instruments can be used to estimate the model using \link[AER]{ivreg} 
-function from the package \pkg{AER} (Kleiber et al., 2020). Alternatively the function \link{mcmcSAR} can also be used to compute Bayesian estimation based on an adaptive MCMC (Atchadé and Rosenthal, 2005). In that case, 
-the network distribution acts as prior distribution for the network.\cr
-The \pkg{PartialNetwork} package also implements a network formation model based on Aggregate Relational Data (McCormick and Zheng, 2015; Breza et al., 2017). This model requires implementing the
-von Mises-Fisher distribution; ie the simulation from the distribution as well as its density function and its nomalization constant (see Wood, 1994; Mardia, 2014). Although
-the package \href{https://cran.r-project.org/web/packages/movMF/index.html}{\pkg{movMF}} (Hornik and Grün, 2014) offers functions to do this,
-\pkg{PartialNetwork} relies on its own functions (\link{rvMF}, \link{dvMF} and \link{logCpvMF}) implemented in C++ since and very fast.
+Two main functions are provided to estimate the linear-in-mean SAR model using only the distribution of the network. The function
+\code{\link{sim.IV}} generates valid instruments using the distribution of the network (see Propositions 1 and 2 in Boucher and Houndetoungan (2020)). Once the instruments are constructed, one can estimate the model using standard IV estimators. We recommend the function \link[AER]{ivreg} 
+from the package \pkg{AER} (Kleiber et al., 2020). The function \link{mcmcSAR} performs a Bayesian estimation based on an adaptive MCMC (Atchadé and Rosenthal, 2005). In that case, 
+the distribution of the network acts as prior distribution for the network.\cr
+The package \pkg{PartialNetwork} also implements a network formation model based on Aggregate Relational Data (McCormick and Zheng, 2015; Breza et al., 2017).
 }
 \references{
 Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 
-Boucher, V., & Houndetoungan, A. (2019). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
+Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
 
 Bramoullé, Y., Djebbari, H., & Fortin, B. (2009). Identification of peer effects through social networks. \emph{Journal of econometrics}, 150(1), 41-55. \url{https://www.sciencedirect.com/science/article/abs/pii/S0304407609000335}.
 
-Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
- identify network structure without network data (No. w23491). National Bureau of Economic Research. \url{https://arxiv.org/abs/1703.04157}.
+Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (20202). Using aggregated relational data to feasibly
+ identify network structure without network data. \emph{American Economic Review, forthcoming.}
 
 Eddelbuettel, D., François, R., Allaire, J., Ushey, K., Kou, Q., Russel, N., ... & Bates, D. (2011),
 \pkg{Rcpp}: Seamless \R and \code{C++} integration. \emph{Journal of Statistical Software}, 40(8), 1-18.
 \url{http://www.jstatsoft.org/v40/i08/}.
-
-Hornik, K., & Grün, B. (2014). \pkg{movMF}: An \R package for fitting mixtures of von Mises-Fisher distributions. \emph{Journal of Statistical Software}, 58(10), 1-31. \url{https://epub.wu.ac.at/4893/}.
 
 Kleiber, C., Zeileis, A., & Zeileis, M. A. (2020). Package ‘AER’. \R package version 1.2, 4. \url{https://cran.r-project.org/web/packages/AER/index.html}.
 

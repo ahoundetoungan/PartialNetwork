@@ -1,7 +1,7 @@
-#' @title Fitting Network Distribution
+#' @title Fitting Network Distribution using ARD.
 #' @description \code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the 
 #' ARD network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
-#' The degrees and the gregariousness of individuals without ARD are computed from the sample with ARD using m-nearest neighbors method.
+#' The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a m-nearest neighbors method.
 #' @param object is an `estim.ARD` object returned by \code{\link{mcmcARD}}.
 #' @param traitARD is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.
 #' @param traitnonARD is the matrix of traits for individuals without ARD. The entry (j, k) is 1 if j has the trait k and 0 otherwise.
@@ -76,12 +76,12 @@
 #' }
 #' 
 #' ############ ARD Posterior distribution ################### 
-#' # EXAMPLE 1: ARD observed for the whole population
+#' # EXAMPLE 1: ARD observed for the entire population
 #' # initialization 
 #' d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 #' zeta0  <- 1; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 #' 
-#' # We should fix some vk and bk
+#' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
 #' vfixcolumn      <- 1:5
 #' bfixcolumn      <- c(3, 5)
 #' b0[bfixcolumn]  <- genb[bfixcolumn]
@@ -97,7 +97,7 @@
 #' 
 #' plot(rowSums(dist), gend)
 #' 
-#' # EXAMPLE 2: ARD observed for a sample from the population
+#' # EXAMPLE 2: ARD observed for a sample of the population
 #' # observed sample
 #' traitard    <- trait[1:n, ]
 #' traitnonard <- trait[(n + 1):N, ]
@@ -107,7 +107,7 @@
 #' d0     <- exp(rnorm(n)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 #' zeta0  <- 1; z0 <- matrix(rvMF(n,rep(0,P)),n); v0 <- matrix(rvMF(K,rep(0,P)),K)
 #' 
-#' # We should fix some vk and bk
+#' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
 #' vfixcolumn      <- 1:5
 #' bfixcolumn      <- c(3, 5)
 #' b0[bfixcolumn]  <- genb[bfixcolumn]

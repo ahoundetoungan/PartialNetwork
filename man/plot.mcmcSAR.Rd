@@ -10,7 +10,7 @@
 \method{print}{plot.mcmcSAR}(x, ...)
 }
 \arguments{
-\item{x}{an object of class "plot.mcmcSAR", output of thes functions \code{\link{plot.mcmcSAR}}.}
+\item{x}{an object of class "plot.mcmcSAR", output of the function \code{\link{plot.mcmcSAR}}.}
 
 \item{plot.type}{a character that indicate the type of plot: "sim" for plotting the simulation
 from the posterior distribution or "dens" for plotting the posterior density functions.}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ARDdata.R
 \name{sim.dnetwork}
 \alias{sim.dnetwork}
-\title{Simulation of the distribution of the network}
+\title{Simulation of the distribution of the network for Breza et al. (2020)}
 \usage{
 sim.dnetwork(nu, d, zeta, z)
 }
@@ -19,7 +19,7 @@ sim.dnetwork(nu, d, zeta, z)
 a matrix of linking probabilities.
 }
 \description{
-Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2017).
+Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2020).
 }
 \examples{
 N       <- 500 
@@ -37,8 +37,8 @@ d       <- runif(N, 0, 45)
 dist    <- sim.dnetwork(nu, d, zeta, z)
 }
 \references{
-Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2017). Using aggregated relational data to feasibly
- identify network structure without network data (No. w23491). National Bureau of Economic Research. \url{https://arxiv.org/abs/1703.04157}.
+Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
+ identify network structure without network data. \emph{American Economic Review, Forthcoming}
 
 McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.

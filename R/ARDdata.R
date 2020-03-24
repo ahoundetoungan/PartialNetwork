@@ -6,7 +6,7 @@
 #' @param z is a matrix where each row is a spherical coordinate.
 #' @return a matrix of linking probabilities.
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
-#'  identify network structure without network data. \emph{American Economic Review, Forthcoming}
+#'  identify network structure without network data. \emph{American Economic Review, Forthcoming} \url{https://arxiv.org/abs/1703.04157}
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 #' Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.
 #' @examples 
@@ -31,7 +31,7 @@ sim.dnetwork  <- function(nu, d, zeta, z) {
 }
 
 #' @title Simulation of the network
-#' @description Generate networks from the network distribution.
+#' @description Generate networks from the distribution of the network.
 #' @param dnetwork is the matrix of link probabilities.
 #' @examples 
 #' N       <- 500 

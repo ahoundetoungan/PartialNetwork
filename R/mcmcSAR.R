@@ -30,7 +30,7 @@
 #' \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
 #' where \eqn{\mathbf{P}}{P} is the linking probability.\cr
 #' 
-#' All the hyperparametera can be defined through the argument `hyperparms` (a list) and should be named as follow.
+#' All the hyperparameters can be defined through the argument `hyperparms` (a list) and should be named as follow.
 #' \itemize{
 #' \item `dnetwork`, the linking probabilities (list of M matrix). This hyperparameter is required.
 #' \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
@@ -52,7 +52,7 @@
 #'  If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
 #'  the simulations from the posterior distribution are printed.
 #' \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It mighit be 
-#' more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2019). 
+#' more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2020). 
 #' }
 #' If `block.max` > 1, several entries are ramdomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
 #' chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
@@ -138,7 +138,7 @@
 #' hyperparms    <- list("dnetwork" = prior) 
 #'
 #' # launch the MCMC
-#' # update entry on A, one by one
+#' # update entry of A, one by one
 #' out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
 #' summary(out1)
 #' plot(out1)

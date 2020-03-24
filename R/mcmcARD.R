@@ -4,7 +4,7 @@
 #' @param traitARD is the matrix of traits for individuals with ARD. The entry (i, k) is equal to 1 if i has the trait k and 0 otherwise.
 #' @param start is a list containing starting values of `z` (matrix of dimension \eqn{N \times p}), `v` (matrix of dimension \eqn{K \times p}),
 #'  `d` (vector of dimension \eqn{N}), `b` (vector of dimension \eqn{K}), `eta` (vector of dimension \eqn{K}) and `zeta` (scalar).
-#' @param fixv is a vector of which location parameters among the \eqn{p} will be set fixed for identifiability.
+#' @param fixv is a vector setting which location parameters are fixed for identifiability.
 #' These fixed positions are used to rotate the latent surface back to a common orientation at each iteration using
 #' a Procrustes transformation (see McCormick and Zheng, 2015; Breza et al., 2017 and details).
 #' @param consb is a vector of the subset of \eqn{\beta_k}{bk} constrained to the total size (see McCormick and Zheng, 2015; Breza et al., 2017 and details).
@@ -31,9 +31,9 @@
 #' \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
 #' \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \cr
 #' 
-#' For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to set fixed around their given starting value
+#' For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to be exogenously fixed around their given starting value
 #' (see McCormick and Zheng, 2015 for more details). The parameter `fixv` can be used
-#' to set the desired \eqn{\mathbf{v}_k}{vk} and `fixb` to set the desired \eqn{b_k}{bk}.\cr
+#' to set the desired value for \eqn{\mathbf{v}_k}{vk} while `fixb` can be used to set the desired values for \eqn{b_k}{bk}.\cr
 #' 
 #' During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
 #' requires to set minimal and maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
@@ -108,7 +108,7 @@
 #' # print a percentage of people having a trait
 #' colSums(trait)*100/N
 #'   
-#' # Build ADR
+#' # Build ARD
 #' ARD         <- G\%*\%trait
 #'   
 #' # generate b
@@ -163,7 +163,7 @@
 #' }} 
 #' @references Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
-#'  identify network structure without network data. \emph{American Economic Review, forthcoming}.
+#'  identify network structure without network data. \emph{American Economic Review, forthcoming}. \url{https://arxiv.org/abs/1703.04157}
 #' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
 #' \emph{Journal of the American Statistical Association}, 110(512), 1684-1695. \url{https://amstat.tandfonline.com/doi/full/10.1080/01621459.2014.991395}.
 #' @export

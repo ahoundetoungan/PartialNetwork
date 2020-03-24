@@ -10,7 +10,7 @@ sim.network(dnetwork)
 \item{dnetwork}{is the matrix of link probabilities.}
 }
 \description{
-Generate networks from the network distribution.
+Generate networks from the distribution of the network.
 }
 \examples{
 N       <- 500 

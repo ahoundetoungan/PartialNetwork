@@ -1,5 +1,5 @@
 #' @title Summarizing Bayesian SAR Model 
-#' @description summary method and print method for class `mcmcSAR`.
+#' @description Summary and print methods for the class `mcmcSAR`.
 #' @param object an object of class "mcmcSAR", output of the function \code{\link{mcmcSAR}}.
 #' @param x an object of class "summary.mcmcSAR" or "mcmcSAR, output of thes functions \code{\link{summary.mcmcSAR}} and
 #' \code{\link{print.summary.mcmcSAR}}.
@@ -24,7 +24,7 @@
 #'     \item{...}{arguments passed to methods.}
 #' @examples 
 #' \dontrun{
-#' # Let us consider the example in mcmcSAR function
+#' # Let us consider the example from the mcmcSAR function
 #' out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
 #' # Print the summary
 #' summary(out)

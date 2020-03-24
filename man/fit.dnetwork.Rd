@@ -91,8 +91,8 @@ for(k in 1:K){
 # print a percentage of peaople having a trait
 colSums(trait)*100/N
 
-# Build ADR
-ARD         <- G \%*\% trait
+# Build ARD
+ARD         <- G \\%*\\% trait
 
 # generate b
 genb        <- numeric(K)

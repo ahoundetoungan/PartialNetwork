@@ -30,16 +30,16 @@ For any \eqn{p \in \{1, 2, ..., power\}}{p = 1, 2, ..., power}, the approximatio
 is given by \code{G2X[,,p]}.}
 }
 \description{
-\code{sim.IV} generates Instrument Variables (IV) for linear-in-mean SAR model from the network distribution. See Propositions 1 and 2 of Boucher and Houndetoungan (2020).
+\code{sim.IV} generates Instrument Variables (IV) for linear-in-mean SAR models using only the distribution of the network. See Propositions 1 and 2 of Boucher and Houndetoungan (2020).
 }
 \details{
-Bramoullé et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} as instruments, where \eqn{P} is the maximal power desired.
+Bramoullé et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} as instruments for \eqn{Gy}, where \eqn{P} is the maximal power desired.
 \code{sim.IV} generate approximation of those instruments, based on Propositions 1 and 2 in Boucher and Houndetoungan (2020) (see also below).
 The argument `power` is the maximal power desired.\cr
-In the case where some explanatory variables like \eqn{Gy} and \eqn{GX} are not obseved.
-Boucher and Houndetoungan (2019) show that one network drawn from the distribution can be used to approximate \eqn{Gy} and \eqn{GX}
-as explanatory variable, but the same network should not be used to approximate the instruments. Thus, each component in the function's output gives
-`G1y` and `G1X` computed with the same network and `G2X` computed with another network (can be used as instrument).
+When \eqn{Gy} and the instruments \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} are not obseved, 
+Boucher and Houndetoungan (2019) show that we can use one drawn from the distribution of the network in order to approximate \eqn{Gy}, but that
+the same draw should not be used to approximate the instruments. Thus, each component in the function's output gives
+`G1y` and `G1X` computed with the same network and `G2X` computed with another network, which can be used in order to approximate the instruments.
 This process can be replicated several times and the argument `replication` can be used to set the number of replications desired.
 }
 \examples{
@@ -89,7 +89,7 @@ for (m in 1:M) {
   # covariates
   Xm          <- cbind(rnorm(N,0,5),rpois(N,6)) 
   # endogenous variable, no contextual effect
-  ym          <- solve(diag(N) - alpha * Wm) \%*\% (cbind(rep(1, N), Xm) \%*\% beta + rnorm(N,0,se)) 
+  ym          <- solve(diag(N) - alpha * Wm) \\%*\\% (cbind(rep(1, N), Xm) \\%*\\% beta + rnorm(N,0,se)) 
   y           <- c(y, ym)
   X           <- rbind(X, Xm)
 }

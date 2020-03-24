@@ -66,7 +66,7 @@
 #' # print a percentage of peaople having a trait
 #' colSums(trait)*100/N
 #' 
-#' # Build ADR
+#' # Build ARD
 #' ARD         <- G \%*\% trait
 #' 
 #' # generate b

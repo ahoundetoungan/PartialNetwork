@@ -44,7 +44,7 @@ A list consisting of:
     \item{...}{arguments passed to methods.}
 }
 \description{
-summary method and print method for class `mcmcSAR`.
+Summary and print methods for the class `mcmcSAR`.
 }
 \details{
 The function is smart and allows all the possible arguments with the functions \link[base]{summary}, 
@@ -53,7 +53,7 @@ The function is smart and allows all the possible arguments with the functions \
 }
 \examples{
 \dontrun{
-# Let us consider the example in mcmcSAR function
+# Let us consider the example from the mcmcSAR function
 out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
 # Print the summary
 summary(out)

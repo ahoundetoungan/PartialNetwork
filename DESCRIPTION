@@ -14,5 +14,4 @@ Imports: Rcpp (>= 1.0.0), Formula, abind
 Depends: R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen, RcppNumerical, RcppProgress, BH
 Suggests: AER
-RoxygenNote: 7.0.0
-
+RoxygenNote: 7.1.0

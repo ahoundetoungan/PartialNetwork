@@ -31,7 +31,7 @@ and \eqn{\sigma^2}{se2} the variance of the error term. If the `start` is missin
 the newotk matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).}
 
 \item{hyperparms}{is a list of hyperparameter parameter. It should contain at least `dnetwork`, the linking probabilities. As there are `M` groups and
-individual from different groups are not linked, `dnetwork` is a list of `M` matrix where each matrix of the link probabilities in one group.}
+individual from different groups are not linked, `dnetwork` is a list of `M` matrices where each matrix give the link probabilities in one group.}
 
 \item{G0}{(optional) is the starting value of the (row normalized) network as a list of `M` sub-network.}
 
@@ -73,7 +73,7 @@ Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in whi
 \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
 where \eqn{\mathbf{P}}{P} is the linking probability.\cr
 
-All the hyperparametera can be defined through the argument `hyperparms` (a list)  and should be named as follow.
+All the hyperparametera can be defined through the argument `hyperparms` (a list) and should be named as follow.
 \itemize{
 \item `dnetwork`, the linking probabilities (list of M matrix). This hyperparameter is required.
 \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
@@ -94,7 +94,7 @@ requires to set a minimal and a maximal jumping scales through the parameter `ct
 \item{`print.level`}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
  If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
  the simulations from the posterior distribution are printed.
-\item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. For some convergence reasons, it mighit be 
+\item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It mighit be 
 more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2019). 
 }
 If `block.max` > 1, several entries are ramdomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
@@ -156,9 +156,9 @@ for (m in 1:M) {
   r1          <- r2 - Nm + 1
   # contextual effect
   Xm          <- X[r1:r2,]
-  GXm         <- Gm \%*\% Xm
-  tmp         <- cbind(rep(1,Nm),Xm)\%*\%beta + GXm\%*\%gamma + rnorm(Nm,0,se)
-  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm)\%*\%tmp 
+  GXm         <- Gm \\%*\\% Xm
+  tmp         <- cbind(rep(1,Nm),Xm)\\%*\\%beta + GXm\\%*\\%gamma + rnorm(Nm,0,se)
+  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm)\\%*\\%tmp 
 }
   
 # number of parameters
@@ -185,7 +185,7 @@ plot(out2, plot.type = "dens")
 \references{
 Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 
-Boucher, V., & Houndetoungan, A. (2019). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
+Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
 }
 \seealso{
 \code{\link{sim.IV}}

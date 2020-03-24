@@ -151,10 +151,14 @@ fit.dnetwork   <- function(object, traitARD, traitnonARD = NULL, m, burnin = NUL
     if (!missing(m)) {
       warning("m is defined but not used")
     }
-    cat("ARD observed on the entire population \n")
+    if (print) {
+      cat("ARD observed on the entire population \n")
+    }
     out      <- dnetwork1(T, P, z, d, zeta, traitARD, Mst, print)
   } else {
-    cat("ARD non observed on the entire population \n")
+    if (print) {
+      cat("ARD non observed on the entire population \n")
+    }
     out      <- dnetwork2(T, P, z, d, zeta, traitARD, traitnonARD, m, Mst, print)
   }
   
@@ -165,14 +169,15 @@ fit.dnetwork   <- function(object, traitARD, traitnonARD = NULL, m, burnin = NUL
   
   
   # Print the processing time
-  cat("\n\n")
-  cat("Average link probabilities estimated \n")
-  cat("Iteration             :", T - Mst + 1, "\n  \n")
-  
-  nhours     <- floor(timer/3600)
-  nminutes   <- floor((timer-3600*nhours)/60)%%60
-  nseconds   <- timer-3600*nhours-60*nminutes
-  cat("Elapsed time   : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n")
-  
+  if (print) {
+    cat("\n\n")
+    cat("Average link probabilities estimated \n")
+    cat("Iteration             :", T - Mst + 1, "\n  \n")
+    
+    nhours     <- floor(timer/3600)
+    nminutes   <- floor((timer-3600*nhours)/60)%%60
+    nseconds   <- timer-3600*nhours-60*nminutes
+    cat("Elapsed time   : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n")
+  }
   out
 }

@@ -47,11 +47,11 @@ fsim <- function(l, lambda){
     #Generate link probabilities
     c                  <- rnorm(N[m] * N[m], 0, 1)
     
-    distr              <- matrix(exp(c / lambda[i]) / (1 + exp(c / lambda[i])), N[m])
+    distr              <- matrix(exp(c / lambda) / (1 + exp(c / lambda)), N[m])
     diag(distr)        <- 0
     
     #The complete graph
-    G        <- sim.network(dnetwork = Probab)
+    G        <- sim.network(dnetwork = distr)
     
     #True network row normalized
     W[[m]]   <- G / rowSums(G)
@@ -77,10 +77,6 @@ fsim <- function(l, lambda){
     Y3[[m]]  <- solve(diag(rep(1, N[m])) - alpha * W[[m]]) %*% (feffect + X[[m]] %*% beta[-1] +  GX[[m]] %*% gamma + rnorm(N[m], 0, se))
     GY3[[m]] <- W[[m]] %*% Y3[[m]]
     
-    
-    #Estimate the network distribution
-    distr  <- sim.network(distr)
-    
     #Compute instruments
     instr1 <- sim.IV(dnetwork = distr, X[[m]], Y1[[m]], replication = 1, power = 2)
     instr2 <- sim.IV(dnetwork = distr, X[[m]], Y2[[m]], replication = 1, power = 2)
@@ -94,7 +90,6 @@ fsim <- function(l, lambda){
     G2Xc0[[m]] <- instr1[[1]]$G1X[, , 2]
     GXc[[m]]   <- instr1[[1]]$G2X[, , 1]
     G2Xc[[m]]  <- instr1[[1]]$G2X[, , 2]
-    print(paste("Iteration :", l," -- Group:", m))
   }
   
   # Concatenate M groups data
@@ -180,6 +175,7 @@ fsim <- function(l, lambda){
   sest3.2     <- summary(ivreg(Y3allm0 ~ Xallm0 + GXallm0 + GXc0allm0 + GY3callm0 | Xallm0 + GXallm0 + GXc0allm0 + G2Xcallm0), diagnostic = TRUE)
   lest3.2     <- c(sest3.2$coefficients[, 1], sest3.2$diagnostics[, 3])
   
+  cat("lambda ", lambda, " -- Iteration ", l, "\n")
   c(lest1.1.1, lest1.1.2, lest1.2.1.1, lest1.2.1.2, lest1.2.2.1,
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)
 }
@@ -219,7 +215,7 @@ set.seed(123)
 iteration <- 10
 # Monte Carlo for several values of lambda
 veclambda <- c(seq(0.01, 2, 0.01), Inf)
-out       <- lapply(veclambda, function(lambda) f.m(iteration, lambda))
+out       <- lapply(veclambda, function(lambda) f.mc(iteration, lambda))
 
 # result for specific lambda
 lambda    <- 1

@@ -5,7 +5,7 @@
 #include <progress_bar.hpp>
 
 using namespace Rcpp;
-//using namespace arma;
+using namespace arma;
 using namespace std;
 
 /*
@@ -770,6 +770,10 @@ arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& 
     prob += probt;
   }
   prob /= ngraph;
+  
+  arma::umat tempbin = (prob<1);
+  arma::mat tempone = arma::mat(N,N,arma::fill::ones);
+  prob = tempbin%prob + (1-tempbin)%tempone;
   return  prob;
 }
 
@@ -844,5 +848,8 @@ arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& 
   }
   
   prob /= ngraph;
+  arma::umat tempbin = (prob<1);
+  arma::mat tempone = arma::mat(N,N,arma::fill::ones);
+  prob = tempbin%prob + (1-tempbin)%tempone;
   return  prob;
 }

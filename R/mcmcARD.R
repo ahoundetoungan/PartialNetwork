@@ -207,7 +207,7 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
       stop("c in ctrl.mcmc should be a scalar")
     }
   }
-
+  
   if (is.null(print)) {
     print     <- TRUE
   } else {
@@ -234,11 +234,11 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
   if (is.null(z0) | is.null(v0) | is.null(d0) | is.null(b0) | is.null(eta0) | is.null(zeta0)) {
     stop("Elements in start should be named as z, v, b, d, eta and zeta")
   }
-    
+  
   n            <- nrow(Y)
   K            <- ncol(Y)
   p            <- ncol(z0)
-    
+  
   out          <- updateGP(Y, traitARD, z0, v0, d0, b0, eta0, zeta0, fixv, consb, iteration, !sim.d, !sim.zeta,
                            hyperparms, target, jumpmin, jumpmax,  c, print)
   
@@ -254,33 +254,36 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
   timer       <- as.numeric(difftime(t2, t1, units = "secs"))
   
   out         <- c(list("n" = n,
-                         "K" = K,
-                         "p" = p,
-                         "time" = timer,
+                        "K" = K,
+                        "p" = p,
+                        "time" = timer,
                         "iteration" = iteration),
-                    out,
+                   out,
                    list("start" = start, "ctrl.mcmc" = ctrl.mcmc))
   class(out)  <- "estim.ARD"
-  cat("\n\n")
-  cat("The program successfully executed \n")
-  cat("\n")
-  cat("********SUMMARY******** \n")
-  cat("n              : ", n, "\n")
-  cat("K              : ", K, "\n")
-  cat("Dimension      : ", p, "\n")
-  cat("Iteration      : ", iteration, "\n")
-  
-  # Print the processing time
-  nhours     <- floor(timer/3600)
-  nminutes   <- floor((timer-3600*nhours)/60)%%60
-  nseconds   <- timer-3600*nhours-60*nminutes
-  cat("Elapsed time   : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n \n")
-  cat("Average acceptance rate \n")
-  cat("                      z: ", mean(zaccept), "\n")
-  cat("                      d: ", mean(daccept), "\n")
-  cat("                      b: ", mean(baccept), "\n")
-  cat("                    eta: ", mean(etaaccept), "\n")
-  cat("                   zeta: ", zetaaccept, "\n")
+  if(print) {
+    cat("\n\n")
+    cat("The program successfully executed \n")
+    cat("\n")
+    cat("********SUMMARY******** \n")
+    cat("n              : ", n, "\n")
+    cat("K              : ", K, "\n")
+    cat("Dimension      : ", p, "\n")
+    cat("Iteration      : ", iteration, "\n")
+    
+    
+    # Print the processing time
+    nhours     <- floor(timer/3600)
+    nminutes   <- floor((timer-3600*nhours)/60)%%60
+    nseconds   <- timer-3600*nhours-60*nminutes
+    cat("Elapsed time   : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n \n")
+    cat("Average acceptance rate \n")
+    cat("                      z: ", mean(zaccept), "\n")
+    cat("                      d: ", ifelse(sim.d, mean(daccept), "Fixed"), "\n")
+    cat("                      b: ", mean(baccept), "\n")
+    cat("                    eta: ", mean(etaaccept), "\n")
+    cat("                   zeta: ", ifelse(sim.zeta, zetaaccept, "Fixed"), "\n")
+  }
   
   out
 }

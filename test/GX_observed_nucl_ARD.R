@@ -4,6 +4,7 @@ setwd("~/Dropbox/ARD/CppFiles")
 library(ggplot2)                      # Install ggplot2 if not already done.
 library(AER)                          # Install AER if not already done.
 library(PartialNetwork)               # Install PartialNetwork if not already done.
+library(nuclearARD)                   # Install nuclearARD if not already done.
 library(doParallel)                   # To run the Monte Carlo in parallel
 ##################################################################################
 # our summary function
@@ -20,11 +21,18 @@ our.sum <- function(x) {
 
 # function to perform the simulation
 # l stands for the l-th simulation
-# lambda network precision parameter
-fsim <- function(l, lambda){
+# parlambda is the tuning parameter for 
+# nuclear estimation see (Alidaee, H., E. Auerbach, and M. P. Leung (2020):
+# “Recovering Network Structure from Aggregated Relational Data using Penalized Regression,” 
+fsim <- function(l, parlambda){
   M          <- 20           # Number of groups
   N          <- rep(250,M)   # Group size
   # Parameters
+  genzeta   <- 1.5
+  mu        <- -1.25
+  sigma     <- 0.37
+  K         <- 12
+  P         <- 3
   
   beta      <- c(2,1,1.5)
   gamma     <- c(5,-3)
@@ -44,14 +52,50 @@ fsim <- function(l, lambda){
   
   #loop over group to estimate dnetwork
   for (m in 1:M) {
-    #Generate link probabilities
-    c                  <- rnorm(N[m] * N[m], 0, 1)
+    #1- Generate z
+    genz  <- rvMF(N[m], rep(0, P))
+    #2- Genetate nu  from a Normal distribution with parameters mu and sigma
+    gennu <- rnorm(N[m], mu, sigma)
+    #3- Generate a graph G
+    #Before, lets's compute d
+    gend  <- N[m] * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * exp(logCpvMF(P, 0) - logCpvMF(P, genzeta))
     
-    distr              <- matrix(exp(c / lambda[i]) / (1 + exp(c / lambda[i])), N[m])
-    diag(distr)        <- 0
+    #Link probabilities
+    Probabilities     <- sim.dnetwork(nu = gennu, d = gend, zeta = genzeta, z = genz) 
     
     #The complete graph
-    G        <- sim.network(dnetwork = Probab)
+    G                 <- sim.network(dnetwork = Probabilities)
+    
+    #4a Generate vk
+    genv              <- rvMF(K, rep(0, P))
+    
+    #fix some vk distant
+    genv[1, ]         <- c(1, 0, 0)
+    genv[2, ]         <- c(0, 1, 0)
+    genv[3, ]         <- c(0, 0, 1)
+    
+    #4b set eta
+    geneta            <- abs(rnorm(K, 4, 1))
+    
+    #4c Build Features matrix
+    densityatz        <- matrix(0, N[m], K)
+    for (k in 1:K) {
+      densityatz[, k] <- dvMF(genz, genv[k, ] * geneta[k])
+    }
+    
+    trait             <- matrix(0, N[m], K)
+    
+    NK                <- floor(runif(K, 0.8, 0.95) * colSums(densityatz) / unlist(lapply(1:K, function(w){max(densityatz[,w])}))) 
+    
+    for (k in 1:K) {
+      trait[,k]       <- rbinom(N[m], 1, NK[k] * densityatz[,k] / sum(densityatz[,k]))
+    } 
+    
+    #5 contruct ADR
+    ARD               <- G %*% trait
+    
+    #Estimate the network distribution
+    distr    <- accel_nuclear_gradient(inputs = t(trait), outputs = t(ARD), lambda = parlambda)
     
     #True network row normalized
     W[[m]]   <- G / rowSums(G)
@@ -185,8 +229,8 @@ fsim <- function(l, lambda){
 }
 
 # monte carlo function for each parlambda
-f.mc <- function(iteration, lambda) {
-  out.mc        <- mclapply(1:iteration, function(w) fsim(w, lambda), mc.cores = 8L)
+f.mc <- function(iteration, parlambda) {
+  out.mc        <- mclapply(1:iteration, function(w) fsim(w, parlambda), mc.cores = 8L)
   # simu as m matrix
   simu          <- t(do.call(cbind, out.mc))
   
@@ -216,18 +260,11 @@ f.mc <- function(iteration, lambda) {
 set.seed(123)
 
 # Number of simulation
-iteration <- 10
-# Monte Carlo for several values of lambda
-veclambda <- c(seq(0.01, 2, 0.01), Inf)
-out       <- lapply(veclambda, function(lambda) f.m(iteration, lambda))
+iteration <- 1000
+out1      <- f.mc(iteration, 200)
+out2      <- f.mc(iteration, 600)
+out3      <- f.mc(iteration, 1374)
 
-# result for specific lambda
-lambda    <- 1
-ilambda   <- which(veclambda == lambda)
-out[[ilambda]]
-
-lambda    <- Inf
-ilambda   <- which(veclambda == lambda)
-out[[ilambda]]
-
-# plot estimation of alpha for lambda from 0 to 2
+print(out1)
+print(out2)
+print(out3)

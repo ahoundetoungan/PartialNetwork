@@ -261,7 +261,7 @@ mcmcSAR <- function(formula,
     col.post     <- c(col.post, paste0("G: ", col.x), "Gy", "se2")
   }
   
-
+  
   # hyperparameter
   dnetwork     <- hyperparms$dnetwork
   if (is.null(dnetwork)) {
@@ -349,12 +349,12 @@ mcmcSAR <- function(formula,
     }
     if (block.max == 1) {
       out      <- peerMCMCnoc(y, Xone, G0, M, N, kbeta, dnetwork, mutheta, invstheta, 
-                           muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
-                           c, print.level)
+                              muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
+                              c, print.level)
     } else {
       out      <- peerMCMCblocknoc(y, Xone, G0, M, N, kbeta, dnetwork, mutheta, invstheta, 
-                                muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
-                                c, block.max, print.level)
+                                   muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
+                                   c, block.max, print.level)
     }
   } else {
     if (missing(start)) {
@@ -362,7 +362,7 @@ mcmcSAR <- function(formula,
     }
     if (block.max == 1) {
       out      <- peerMCMC(y, X, Xone, G0, M, N, kbeta, kgamma, dnetwork, mutheta, invstheta, 
-                            muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
+                           muzeta, invszeta, a, b, start, iteration, target, jumpmin, jumpmax,
                            c, print.level)
     } else {
       out      <- peerMCMCblock(y, X, Xone, G0, M, N, kbeta, kgamma, dnetwork, mutheta, invstheta, 
@@ -387,9 +387,11 @@ mcmcSAR <- function(formula,
   nhours     <- floor(timer/3600)
   nminutes   <- floor((timer-3600*nhours)/60)%%60
   nseconds   <- timer-3600*nhours-60*nminutes
-  cat("Elapsed time           : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n \n")
-  cat("Average acceptance rate: ", out$acceptance, "\n")
-
+  if (print.level > 0) {
+    cat("Elapsed time           : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n \n")
+    cat("Average acceptance rate: ", out$acceptance, "\n")
+  }
+  
   
   out        <- c(list("n.group"     = M,
                        "N"           = c(N),

@@ -17,14 +17,17 @@ our.sum <- function(x) {
   return(out)
 }
 
-
 # function to perform the simulation
 # l stands for the l-th simulation
-# lambda network precision parameter
-fsim <- function(l, lambda){
+f.mc  <- function(l){
   M          <- 20           # Number of groups
   N          <- rep(250,M)   # Group size
   # Parameters
+  genzeta   <- 1.5
+  mu        <- -1.25
+  sigma     <- 0.37
+  K         <- 12
+  P         <- 3
   
   beta      <- c(2,1,1.5)
   gamma     <- c(5,-3)
@@ -44,14 +47,74 @@ fsim <- function(l, lambda){
   
   #loop over group to estimate dnetwork
   for (m in 1:M) {
-    #Generate link probabilities
-    c                  <- rnorm(N[m] * N[m], 0, 1)
+    #1- Generate z
+    genz  <- rvMF(N[m], rep(0, P))
+    #2- Genetate nu  from a Normal distribution with parameters mu and sigma
+    gennu <- rnorm(N[m], mu, sigma)
+    #3- Generate a graph G
+    #Before, lets's compute d
+    gend  <- N[m] * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * exp(logCpvMF(P, 0) - logCpvMF(P, genzeta))
     
-    distr              <- matrix(exp(c / lambda[i]) / (1 + exp(c / lambda[i])), N[m])
-    diag(distr)        <- 0
+    #Link probabilities
+    Probabilities     <- sim.dnetwork(nu = gennu, d = gend, zeta = genzeta, z = genz) 
     
     #The complete graph
-    G        <- sim.network(dnetwork = Probab)
+    G                 <- sim.network(dnetwork = Probabilities)
+    
+    #4a Generate vk
+    genv              <- rvMF(K, rep(0, P))
+    
+    #fix some vk distant
+    genv[1, ]         <-c(1, 0, 0)
+    genv[2, ]         <- c(0, 1, 0)
+    genv[3, ]         <- c(0, 0, 1)
+    
+    #4b set eta
+    geneta            <- abs(rnorm(K, 4, 1))
+    
+    #4c Build Features matrix
+    densityatz        <- matrix(0, N[m], K)
+    for (k in 1:K) {
+      densityatz[, k] <- dvMF(genz, genv[k, ] * geneta[k])
+    }
+    
+    trait             <- matrix(0, N[m], K)
+    
+    NK                <- floor(runif(K, 0.8, 0.95) * colSums(densityatz) / unlist(lapply(1:K, function(w){max(densityatz[,w])}))) 
+    
+    for (k in 1:K) {
+      trait[,k]       <- rbinom(N[m], 1, NK[k] * densityatz[,k] / sum(densityatz[,k]))
+    } 
+    
+    #5 contruct ADR
+    ARD               <- G %*% trait
+    
+    #generate b
+    genb              <- numeric(K)
+    for (k in 1:K) {
+      genb[k]         <- sum(G[, trait[, k] == 1]) / sum(G)
+    }
+    ###### Fit Breza et al. (2017) parameter #####
+    # We should fix one bk
+    vfixcolumn       <- 1:5
+    bfixcolumn       <- 3
+    
+    # Initialization
+    # We initialize using the true parameter in order to run just few MCMC steps
+    start            <-list("z"    = genz,
+                            "v"    = genv,
+                            "d"    = gend,
+                            "b"    = genb,
+                            "eta"  = geneta,
+                            "zeta" = genzeta)
+    
+    # hyperparameter
+    hparms           <- c(0, 1, 0, 1, 5, 0.5, 1, 1)
+
+    # fit the parameters
+    # we consider the model with zeta = 1
+    Gparms           <- mcmcARD(ARD, trait, start, vfixcolumn, bfixcolumn, iteration = 1000L,
+                                sim.zeta = F,ctrl.mcmc = list(print = FALSE))
     
     #True network row normalized
     W[[m]]   <- G / rowSums(G)
@@ -79,7 +142,7 @@ fsim <- function(l, lambda){
     
     
     #Estimate the network distribution
-    distr  <- sim.network(distr)
+    distr  <- fit.dnetwork(Gparms, trait, print = FALSE)
     
     #Compute instruments
     instr1 <- sim.IV(dnetwork = distr, X[[m]], Y1[[m]], replication = 1, power = 2)
@@ -184,50 +247,33 @@ fsim <- function(l, lambda){
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)
 }
 
-# monte carlo function for each parlambda
-f.mc <- function(iteration, lambda) {
-  out.mc        <- mclapply(1:iteration, function(w) fsim(w, lambda), mc.cores = 8L)
-  # simu as m matrix
-  simu          <- t(do.call(cbind, out.mc))
-  
-  # the colnames
-  tmp <- c("Intercept",paste0("X",1:2),"alpha","Weak","Wu","Sargan")
-  c1  <- paste0("No Con - GY obs - ins GX ", tmp)
-  c2  <- paste0("No Con - GY obs - ins GX GGX ", tmp)
-  c3  <- paste0("No Con - GY notobs - ins GX - sam draw ", c(tmp,"corGX1e","corGX2e"))
-  c4  <- paste0("No Con - GY notobs - ins GX GGX - sam draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
-  c5  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e"))
-  c6  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
-  
-  tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), "alpha", "Weak", "Wu", "Sargan")
-  c7  <- paste0("Wit Con - GY obs ", tmp)
-  c9  <- paste0("Fix eff - GY obs ", tmp)
-  tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), paste0("GXc", 1:2), "alpha", "Weak", "Wu", "Sargan")
-  c8  <- paste0("Wit Con - GY no obs ", tmp)
-  c10 <- paste0("Fix eff - GY obs ", tmp)
-  
-  colnames(simu) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-  
-  # summary for all simulation using ARD
-  results        <- t(apply(simu, 2, our.sum))
-  results
-}
 
 set.seed(123)
-
 # Number of simulation
-iteration <- 10
-# Monte Carlo for several values of lambda
-veclambda <- c(seq(0.01, 2, 0.01), Inf)
-out       <- lapply(veclambda, function(lambda) f.m(iteration, lambda))
+iteration     <- 1000
+out.mc        <- mclapply(1:iteration, f.mc, mc.cores = 8L)
 
-# result for specific lambda
-lambda    <- 1
-ilambda   <- which(veclambda == lambda)
-out[[ilambda]]
+# simu as m matrix
+simu          <- t(do.call(cbind, out.mc))
 
-lambda    <- Inf
-ilambda   <- which(veclambda == lambda)
-out[[ilambda]]
+# the colnames
+tmp <- c("Intercept",paste0("X",1:2),"alpha","Weak","Wu","Sargan")
+c1  <- paste0("No Con - GY obs - ins GX ", tmp)
+c2  <- paste0("No Con - GY obs - ins GX GGX ", tmp)
+c3  <- paste0("No Con - GY notobs - ins GX - sam draw ", c(tmp,"corGX1e","corGX2e"))
+c4  <- paste0("No Con - GY notobs - ins GX GGX - sam draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
+c5  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e"))
+c6  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
 
-# plot estimation of alpha for lambda from 0 to 2
+tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), "alpha", "Weak", "Wu", "Sargan")
+c7  <- paste0("Wit Con - GY obs ", tmp)
+c9  <- paste0("Fix eff - GY obs ", tmp)
+tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), paste0("GXc", 1:2), "alpha", "Weak", "Wu", "Sargan")
+c8  <- paste0("Wit Con - GY no obs ", tmp)
+c10 <- paste0("Fix eff - GY obs ", tmp)
+
+colnames(simu) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+
+# summary for all simulation using ARD
+results        <- t(apply(simu, 2, our.sum))
+print(results)

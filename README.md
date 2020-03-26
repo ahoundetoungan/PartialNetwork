@@ -16,7 +16,7 @@ library(devtools)
 install_github("ahoundetoungan/PartialNetwork")
 ```
 ### Load PartialNetwork
-**PartialNetwork** package needs to be loaded before using. Once the installation is done, it can be called as a common package in [**R**](https://cran.r-project.org/).
+Once the installation is done, **PartialNetwork** can be loaded as a common package in [**R**](https://cran.r-project.org/).
 ```R
 library(PartialNetwork)
 ```

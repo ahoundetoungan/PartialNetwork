@@ -254,5 +254,5 @@ start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "z
 out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn, consb = bfixcolumn, iteration = 5000)
 
 # fit network distribution using the estimates from mcmcARD
-dist <- fit.dnetwork(out, traitARD = trait)
+dist  <- fit.dnetwork(out, traitARD = trait)
 ```

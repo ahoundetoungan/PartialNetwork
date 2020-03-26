@@ -3,11 +3,26 @@ Estimating Peer Effects Using Partial Network Data
 
 The **PartialNetwork** package includes all functions for the replication of the results in Boucher and Houndetoungan (2020). The exact replication codes are located in the folder [**test**](https://github.com/ahoundetoungan/PartialNetwork/tree/master/test). Below, we also provide detailed examples on how to use the estimators described in the paper.
 
-## How to install
+## Installation
+### Requirements
+- **PartialNetwork** package needs \R version 3.0.0 or later which can be downloaded for Linux, Mac and Windows on [**CRAN**](https://cran.r-project.org/). 
+- [**devtools**](https://cran.r-project.org/package=devtools) package should be installed on \R. If not already done, install [**devtools**](https://cran.r-project.org/package=devtools) using the code.
 ```R
-devtools::install_github("PartialNetwork")
+install.packages("devtools")
 ```
+- (*Only for windows users*) Windows user shoul install  [**Rools**](https://cran.r-project.org/bin/windows/Rtools/) compatible with their \R version. 
 
+### How to install
+**PartialNetwork** package can be installed from this GitHub repos using the `install_github` function of the [**devtools**](https://cran.r-project.org/package=devtools) package. All the denpendencies will also be installed automatically.
+```R
+library(devtools) 
+install_github("ahoundetoungan/PartialNetwork")
+```
+### How to load
+**PartialNetwork** package needs to be loaded before using. Once the installation is done, it can be called in \R unsing the `library` function.
+```R
+library(PartialNetwork)
+```
 ## Instrumental Variable procedure
 
 We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnetwork` is the network linking probabilities, `X` is a matrix of covariates, `y` (optional) is the vector of outcome, `replication` (optional, default = 1) is the number of replication, and `power` (optional, default = 1) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for Gy and simulated instruments. See the help file (`? sim.IV`) of the function for details. The following code provides an example using a single group of network.
@@ -160,7 +175,7 @@ hyperparms    <- list("dnetwork" = prior)
 # launch the MCMC
 out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
 
-# the packahe has summary and plot methods of classe S3
+# the packahe has summary and plot methods of class S3
 # summary
 summary(out)
 # plot simulations

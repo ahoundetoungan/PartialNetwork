@@ -36,7 +36,7 @@ is given by \code{G2X[,,p]}.}
 Bramoullé et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} as instruments for \eqn{Gy}, where \eqn{P} is the maximal power desired.
 \code{sim.IV} generate approximation of those instruments, based on Propositions 1 and 2 in Boucher and Houndetoungan (2020) (see also below).
 The argument `power` is the maximal power desired.\cr
-When \eqn{Gy} and the instruments \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} are not obseved, 
+When \eqn{Gy} and the instruments \eqn{GX}, \eqn{G^2X}{GGX}, ..., \eqn{G^P X}{GG...GX} are not obseved, 
 Boucher and Houndetoungan (2019) show that we can use one drawn from the distribution of the network in order to approximate \eqn{Gy}, but that
 the same draw should not be used to approximate the instruments. Thus, each component in the function's output gives
 `G1y` and `G1X` computed with the same network and `G2X` computed with another network, which can be used in order to approximate the instruments.
@@ -95,7 +95,7 @@ for (m in 1:M) {
 }
 
 # generate instruments 
-instr       <- sim.IV(Prob, X, y, replication = 1, power = 2)
+instr         <- sim.IV(Prob, X, y, replication = 1, power = 2)
 
 GY1c1     <- instr[[1]]$G1y       # proxy for Gy (draw 1)
 GXc1      <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)

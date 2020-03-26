@@ -1,7 +1,9 @@
+##################################################################################
+# This code replicates the Monte Carlo simulations using Bayesian method.        #
+# GX and Gy are not observed and the network distribution is used as             #
+# prior information (section 4).                                                 #
 #####################################Headline#####################################
 rm(list = ls())
-setwd("~/Dropbox/ARD/CppFiles")
-library(ggplot2)                      # Install ggplot2 if not already done.
 library(AER)                          # Install AER if not already done.
 library(PartialNetwork)               # Install PartialNetwork if not already done.
 library(doParallel)                   # To run the Monte Carlo in parallel
@@ -21,6 +23,7 @@ our.sum <- function(x) {
 # l stands for the l-th simulation
 
 f.mc  <- function(l){
+  cat("Iteration ", l, "\n")
   M          <- 100          # Number of groups
   N          <- rep(50,M)   # Group size
   lambda     <- 1
@@ -37,7 +40,7 @@ f.mc  <- function(l){
   # dependent variable
   y          <- c()
   
-  #loop over group
+  #loop over groups
   for (m in 1:M) {
     Nm            <- N[m]
     #Generate link probabilities
@@ -59,7 +62,7 @@ f.mc  <- function(l){
     r2            <- sum(N[1:m])
     r1            <- r2 - Nm + 1
     
-    # contextual effect
+    # contextual effects
     Xm            <- X[r1:r2,]
     GXm           <- Gm %*% Xm
     tmp           <- cbind(rep(1, Nm), Xm) %*% beta + GXm %*% gamma + rnorm(Nm, 0, se)
@@ -78,22 +81,21 @@ f.mc  <- function(l){
                        "a"        = 4.2,
                        "b"        = (4.2 - 2)/se)
   ctrl         <- list("print.level" = 0)
+  mcmcStep     <- 2000
   out          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, start = c(beta, gamma, alpha, se),
-                          iteration = 2000, ctrl.mcmc = ctrl)
+                          iteration = mcmcStep, ctrl.mcmc = ctrl)
   
-  cat("Iteration ", l, "\n")
-  
-  apply(out[500:2000,], 2, mean)
+  apply(out$posterior[500:mcmcStep,], 2, mean)
 }
 
 
 iteration      <- 1000
 out.mc         <- mclapply(1:iteration, f.mc, mc.cores = 8L)
 
-# simu as m matrix
+
 simu           <- t(do.call(cbind, out.mc))
 colnames(simu) <- c("Intercept", paste0("X",1:2), paste0("GX",1:2), "alpha", "se2")
 
-# result
+# results
 results        <- t(apply(simu, 2, our.sum))
 print(results)

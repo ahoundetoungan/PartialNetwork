@@ -1,7 +1,8 @@
+##################################################################################
+# This code replicates the Monte Carlo simulations when GX is observed and       #
+# the network is estimated using nuclear ARD.                                    #
 #####################################Headline#####################################
 rm(list = ls())
-setwd("~/Dropbox/ARD/CppFiles")
-library(ggplot2)                      # Install ggplot2 if not already done.
 library(AER)                          # Install AER if not already done.
 library(PartialNetwork)               # Install PartialNetwork if not already done.
 library(nuclearARD)                   # Install nuclearARD if not already done.
@@ -22,7 +23,7 @@ our.sum <- function(x) {
 # function to perform the simulation
 # l stands for the l-th simulation
 # parlambda is the tuning parameter for 
-# nuclear estimation see (Alidaee, H., E. Auerbach, and M. P. Leung (2020):
+# nuclear estimation see Alidaee, H., E. Auerbach, and M. P. Leung (2020):
 # “Recovering Network Structure from Aggregated Relational Data using Penalized Regression,” 
 fsim <- function(l, parlambda){
   M          <- 20           # Number of groups
@@ -50,8 +51,9 @@ fsim <- function(l, parlambda){
   W    <- Y1   <- Y2   <- Y3  <- X    <- GY1 <- GY2  <- GY3  <- GX       <- list(M)
   GY1c <- GY2c <- GY3c <- GXc <- G2Xc <-GXc0 <-G2Xc0 <- G3Xc <- indexall <- list(M)
   
-  #loop over group to estimate dnetwork
+  #loop over groups
   for (m in 1:M) {
+    print(paste("Iteration :", l," -- Group:", m))
     #1- Generate z
     genz  <- rvMF(N[m], rep(0, P))
     #2- Genetate nu  from a Normal distribution with parameters mu and sigma
@@ -140,7 +142,6 @@ fsim <- function(l, parlambda){
     G2Xc0[[m]] <- instr1[[1]]$G1X[, , 2]
     GXc[[m]]   <- instr1[[1]]$G2X[, , 1]
     G2Xc[[m]]  <- instr1[[1]]$G2X[, , 2]
-    print(paste("Iteration :", l," -- Group:", m))
   }
   
   # Concatenate M groups data

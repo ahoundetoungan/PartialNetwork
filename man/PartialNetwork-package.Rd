@@ -32,10 +32,10 @@ Eddelbuettel, D., François, R., Allaire, J., Ushey, K., Kou, Q., Russel, N., ..
 \pkg{Rcpp}: Seamless \R and \code{C++} integration. \emph{Journal of Statistical Software}, 40(8), 1-18.
 \url{http://www.jstatsoft.org/v40/i08/}.
 
-Hornik, K., & Grün, B. (2014). \pkg{movMF}: An R package for fitting mixtures of von Mises-Fisher distributions. \emph{Journal of Statistical Software}, 58(10), 1-31.
+Hornik, K., & Grün, B. (2014). \pkg{movMF}: An \R package for fitting mixtures of von Mises-Fisher distributions. \emph{Journal of Statistical Software}, 58(10), 1-31.
 \url{https://epub.wu.ac.at/4893/}.
 
-Kleiber, C., Zeileis, A., & Zeileis, M. A. (2020). Package ‘AER’. \R package version 1.2, 4. \url{https://cran.r-project.org/web/packages/AER/index.html}.
+Kleiber, C., Zeileis, A., & Zeileis, M. A. (2020). Package ‘AER’. \R package version 1.2, 4. \url{https://cran.r-project.org/package=AER}.
 
 Mardia, K. V. (2014). Statistics of directional data. Academic press. \url{https://www.elsevier.com/books/statistics-of-directional-data/mardia/978-0-12-471150-1}.
 

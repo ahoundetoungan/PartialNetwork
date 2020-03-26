@@ -5,7 +5,7 @@ The **PartialNetwork** package includes all functions for the replication of the
 
 ## How to install
 ```R
-devtools::install_github("PartialNetwork")
+devtools::install_github("ahoundetoungan/PartialNetwork")
 ```
 
 ## Instrumental Variable procedure
@@ -160,7 +160,7 @@ hyperparms    <- list("dnetwork" = prior)
 # launch the MCMC
 out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
 
-# the packahe has summary and plot methods of classe S3
+# the packahe has summary and plot methods of class S3
 # summary
 summary(out)
 # plot simulations

@@ -48,8 +48,9 @@ fsim <- function(l, parlambda){
   
   
   # Some useful variables
-  W    <- Y1   <- Y2   <- Y3  <- X    <- GY1 <- GY2  <- GY3  <- GX       <- list(M)
-  GY1c <- GY2c <- GY3c <- GXc <- G2Xc <-GXc0 <-G2Xc0 <- G3Xc <- indexall <- list(M)
+  W     <- Y1    <- Y2   <- Y3    <- X     <- GY1   <- GY2    <- GY3      <- GX  <- list(M)
+  GY1c  <- GY2c  <- GY3c <- GX1c  <- G2X1c <-GX1c0  <- G2X1c0 <- indexall <- list(M)
+  GX2c  <- G2X2c <-GX2c0 <-G2X2c0 <- GX3c  <- G2X3c <- GX3c0  <-G2X3c0    <- list(M)
   
   #loop over groups
   for (m in 1:M) {
@@ -134,97 +135,125 @@ fsim <- function(l, parlambda){
     instr2 <- sim.IV(dnetwork = distr, X[[m]], Y2[[m]], replication = 1, power = 2)
     instr3 <- sim.IV(dnetwork = distr, X[[m]], Y3[[m]], replication = 1, power = 2)
     
-    GY1c[[m]]  <- instr1[[1]]$G1y
-    GY2c[[m]]  <- instr2[[1]]$G1y
-    GY3c[[m]]  <- instr3[[1]]$G1y
+    GY1c[[m]]   <- instr1[[1]]$G1y
+    GX1c0[[m]]  <- instr1[[1]]$G1X[, , 1] 
+    G2X1c0[[m]] <- instr1[[1]]$G1X[, , 2]  
+    GX1c[[m]]   <- instr1[[1]]$G2X[, , 1]
+    G2X1c[[m]]  <- instr1[[1]]$G2X[, , 2]
     
-    GXc0[[m]]  <- instr1[[1]]$G1X[, , 1]
-    G2Xc0[[m]] <- instr1[[1]]$G1X[, , 2]
-    GXc[[m]]   <- instr1[[1]]$G2X[, , 1]
-    G2Xc[[m]]  <- instr1[[1]]$G2X[, , 2]
+    
+    GY2c[[m]]   <- instr2[[1]]$G1y
+    GX2c0[[m]]  <- instr2[[1]]$G1X[, , 1] 
+    G2X2c0[[m]] <- instr2[[1]]$G1X[, , 2]  
+    GX2c[[m]]   <- instr2[[1]]$G2X[, , 1]
+    G2X2c[[m]]  <- instr2[[1]]$G2X[, , 2]
+    
+    
+    GY3c[[m]]   <- instr3[[1]]$G1y
+    GX3c0[[m]]  <- instr3[[1]]$G1X[, , 1] 
+    G2X3c0[[m]] <- instr3[[1]]$G1X[, , 2]  
+    GX3c[[m]]   <- instr3[[1]]$G2X[, , 1]
+    G2X3c[[m]]  <- instr3[[1]]$G2X[, , 2]
   }
   
   # Concatenate M groups data
-  
-  # Y for section 3.1, 3.2 and 3.3
+  # Y 
   Y1all     <- do.call("c", lapply(1:M, function(x) Y1[[x]]))
   Y2all     <- do.call("c", lapply(1:M, function(x) Y2[[x]]))
-  Y3allm0   <- do.call("c", lapply(1:M, function(x) J %*% Y3[[x]]))
+  Y3all     <- do.call("c", lapply(1:M, function(x) J %*% Y3[[x]]))
   
   
-  # In section 3.1 or 3.3 GY may be observed
+  # GY observed
   GY1all    <- do.call("c", lapply(1:M, function(x) GY1[[x]]))
   GY2all    <- do.call("c", lapply(1:M, function(x) GY2[[x]]))
   GY3all    <- do.call("c", lapply(1:M, function(x) J %*% GY3[[x]]))
   
-  # GY constructed for section 3.1
+  # GY constructed 
   GY1call   <- do.call("c", lapply(1:M, function(x) GY1c[[x]]))
   GY2call   <- do.call("c", lapply(1:M, function(x) GY2c[[x]]))
-  GY3callm0 <- do.call("c", lapply(1:M, function(x) J %*% GY3c[[x]]))
+  GY3call   <- do.call("c", lapply(1:M, function(x) J %*% GY3c[[x]]))
   
   
-  # Covariates
+  # X
   Xall      <- do.call(rbind, lapply(1:M, function(x) X[[x]]))
-  Xallm0    <- do.call(rbind, lapply(1:M, function(x) J %*% X[[x]]))
+  X3all     <- do.call(rbind, lapply(1:M, function(x) J %*% X[[x]]))
   
-  # GX
+  # GX observed
   GXall     <- do.call(rbind, lapply(1:M, function(x) GX[[x]]))
-  GXallm0   <- do.call(rbind, lapply(1:M, function(x) J %*% GX[[x]]))
+  GX3all    <- do.call(rbind, lapply(1:M, function(x) J %*% GX[[x]]))
   
   
   # G^pX constructed
-  GXc0all   <- do.call(rbind, lapply(1:M, function(x) GXc0[[x]]))
-  GXcall    <- do.call(rbind, lapply(1:M, function(x) GXc[[x]]))
-  G2Xcall   <- do.call(rbind, lapply(1:M, function(x) G2Xc[[x]]))
-  G2Xc0all  <- do.call(rbind, lapply(1:M, function(x) G2Xc0[[x]]))
-  GXc0allm0 <- do.call(rbind, lapply(1:M, function(x) J %*% GXc0[[x]]))
-  G2Xcallm0 <- do.call(rbind, lapply(1:M, function(x) J %*% G2Xc[[x]]))
+  # model without contextual effects
+  # same draw
+  GX1c0all   <- do.call(rbind, lapply(1:M, function(x) GX1c0[[x]]))
+  G2X1c0all  <- do.call(rbind, lapply(1:M, function(x) G2X1c0[[x]]))
+  # different draw
+  GX1call    <- do.call(rbind, lapply(1:M, function(x) GX1c[[x]]))
+  G2X1call   <- do.call(rbind, lapply(1:M, function(x) G2X1c[[x]]))
+  
+  # model with contextual effects
+  # same draw
+  GX2c0all   <- do.call(rbind, lapply(1:M, function(x) GX2c0[[x]]))
+  G2X2c0all  <- do.call(rbind, lapply(1:M, function(x) G2X2c0[[x]]))
+  # different draw
+  GX2call    <- do.call(rbind, lapply(1:M, function(x) GX2c[[x]]))
+  G2X2call   <- do.call(rbind, lapply(1:M, function(x) G2X2c[[x]]))
+  
+  # model with fixed effects
+  # same draw
+  GX3c0all   <- do.call(rbind, lapply(1:M, function(x) J %*% GX3c0[[x]]))
+  G2X3c0all  <- do.call(rbind, lapply(1:M, function(x) J %*% G2X3c0[[x]]))
+  # different draw
+  GX3call    <- do.call(rbind, lapply(1:M, function(x) J %*% GX3c[[x]]))
+  G2X3call   <- do.call(rbind, lapply(1:M, function(x) J %*% G2X3c[[x]]))
   
   
   ###### Estimation
   #estimation section 3.1
   #if Gy is observed. We use GX constructed as instruments
-  sest1.1.1   <- summary(ivreg(Y1all ~ Xall + GY1all | Xall +  GXcall), diagnostic=TRUE)
+  sest1.1.1   <- summary(ivreg(Y1all ~ Xall + GY1all | Xall +  GX1call), diagnostic=TRUE)
   lest1.1.1   <- c(sest1.1.1$coefficients[,1],sest1.1.1$diagnostics[,3])
   
   #if Gy is observed. We use GX and GGX constructed as instruments
-  sest1.1.2   <- summary(ivreg(Y1all ~ Xall + GY1all | Xall +  GXcall + G2Xcall) , diagnostic=TRUE)
+  sest1.1.2   <- summary(ivreg(Y1all ~ Xall + GY1all | Xall +  GX1call + G2X1call) , diagnostic=TRUE)
   lest1.1.2   <- c(sest1.1.2$coefficients[,1],sest1.1.2$diagnostics[,3])
   
   #if Gy is not observed. 
   #Same draw
   #We use GX constructed as instruments
-  sest1.2.1.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GXc0all) , diagnostic=TRUE)
-  lest1.2.1.1 <- c(sest1.2.1.1$coefficients[,1],sest1.2.1.1$diagnostics[,3], cor((GY1all-GY1call),GXc0all))
+  sest1.2.1.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1c0all) , diagnostic=TRUE)
+  lest1.2.1.1 <- c(sest1.2.1.1$coefficients[,1],sest1.2.1.1$diagnostics[,3])
   
   #We use GX and GGX constructed as instruments
-  sest1.2.1.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GXc0all + G2Xc0all), diagnostic=TRUE)
-  lest1.2.1.2 <- c(sest1.2.1.2$coefficients[,1],sest1.2.1.2$diagnostics[,3], cor((GY1all-GY1call),cbind(GXc0all,G2Xcall)))
+  sest1.2.1.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1c0all + G2X1c0all), diagnostic=TRUE)
+  lest1.2.1.2 <- c(sest1.2.1.2$coefficients[,1],sest1.2.1.2$diagnostics[,3])
   
   #different draw
   #We use GX constructed as instruments
-  sest1.2.2.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GXcall), diagnostic=TRUE)
-  lest1.2.2.1 <- c(sest1.2.2.1$coefficients[,1],sest1.2.2.1$diagnostics[,3], cor((GY1all-GY1call),GXcall))
+  sest1.2.2.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1call), diagnostic=TRUE)
+  lest1.2.2.1 <- c(sest1.2.2.1$coefficients[,1],sest1.2.2.1$diagnostics[,3])
   
   #We use GX and GGX constructed as instruments
-  sest1.2.2.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GXcall + G2Xcall), diagnostic=TRUE)
-  lest1.2.2.2 <- c(sest1.2.2.2$coefficients[,1],sest1.2.2.2$diagnostics[,3], cor((GY1all-GY1call),cbind(GXcall,G2Xcall)))
+  sest1.2.2.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1call + G2X1call), diagnostic=TRUE)
+  lest1.2.2.2 <- c(sest1.2.2.2$coefficients[,1],sest1.2.2.2$diagnostics[,3])
   
   #estimation section 3.2
   #GY is observed
-  sest2.1     <- summary(ivreg(Y2all ~ Xall + GXall + GY2all | Xall  + GXall + G2Xcall), diagnostic = TRUE)
+  sest2.1     <- summary(ivreg(Y2all ~ Xall + GXall + GY2all | Xall  + GXall + G2X2call), diagnostic = TRUE)
   lest2.1     <- c(sest2.1$coefficients[, 1], sest2.1$diagnostics[, 3])
   
   #GY is not observed
-  sest2.2     <- summary(ivreg(Y2all ~ Xall + GXall +  GXc0all + GY2call | Xall  + GXall + GXc0all + G2Xcall), diagnostic = TRUE)
+  sest2.2     <- summary(ivreg(Y2all ~ Xall + GXall +  GX2c0all + GY2call | Xall  + GXall + GX2c0all + G2X2call), diagnostic = TRUE)
   lest2.2     <- c(sest2.2$coefficients[, 1], sest2.2$diagnostics[, 3])
   
   # estimation section 3.3
-  sest3.1     <- summary(ivreg(Y3allm0 ~ Xallm0 + GXallm0 + GY3all | Xallm0 + GXallm0 + G2Xcallm0), diagnostic = TRUE)
+  #Gy is observed
+  sest3.1     <- summary(ivreg(Y3all ~ X3all  + GX3all + GY3all | X3all + GX3all + G2X3call), diagnostic = TRUE)
   lest3.1     <- c(sest3.1$coefficients[, 1], sest3.1$diagnostics[, 3])
   
-  #Y is not observed
-  sest3.2     <- summary(ivreg(Y3allm0 ~ Xallm0 + GXallm0 + GXc0allm0 + GY3callm0 | Xallm0 + GXallm0 + GXc0allm0 + G2Xcallm0), diagnostic = TRUE)
+  #Gy is not observed
+  sest3.2     <- summary(ivreg(Y3all ~ X3all + GX3all + GX3c0all + GY3call | X3all + GX3all + GX3c0all + G2X3call), diagnostic = TRUE)
   lest3.2     <- c(sest3.2$coefficients[, 1], sest3.2$diagnostics[, 3])
   
   c(lest1.1.1, lest1.1.2, lest1.2.1.1, lest1.2.1.2, lest1.2.2.1,

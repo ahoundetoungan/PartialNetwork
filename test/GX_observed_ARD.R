@@ -43,8 +43,9 @@ f.mc  <- function(l){
   
   
   # Some useful variables
-  W    <- Y1   <- Y2   <- Y3  <- X    <- GY1 <- GY2  <- GY3  <- GX       <- list(M)
-  GY1c <- GY2c <- GY3c <- GXc <- G2Xc <-GXc0 <-G2Xc0 <- G3Xc <- indexall <- list(M)
+  W     <- Y1    <- Y2   <- Y3    <- X     <- GY1   <- GY2    <- GY3      <- GX  <- list(M)
+  GY1c  <- GY2c  <- GY3c <- GX1c  <- G2X1c <-GX1c0  <- G2X1c0 <- indexall <- list(M)
+  GX2c  <- G2X2c <-GX2c0 <-G2X2c0 <- GX3c  <- G2X3c <- GX3c0  <-G2X3c0    <- list(M)
   
   #loop over group to estimate dnetwork
   for (m in 1:M) {
@@ -272,9 +273,6 @@ f.mc  <- function(l){
   #Gy is not observed
   sest3.2     <- summary(ivreg(Y3all ~ X3all + GX3all + GX3c0all + GY3call | X3all + GX3all + GX3c0all + G2X3call), diagnostic = TRUE)
   lest3.2     <- c(sest3.2$coefficients[, 1], sest3.2$diagnostics[, 3])
-  
-  #network correlation
-  cornet      <- cor(Gvec, G0vec)
   
   c(lest1.1.1, lest1.1.2, lest1.2.1.1, lest1.2.1.2, lest1.2.2.1,
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)

@@ -4,7 +4,7 @@ Title: Estimating Peer Effects Using Partial Network Data
 Version: 0.1
 Date: 2020-03-05
 Authors@R: c(person("Elysée Aristide", "Houndetoungan",  role = c("cre","aut"), email =  "ariel92and@gmail.com"), person("Vincent", "Boucher",  role = c("aut"), email =  "vincent.boucher@ecn.ulaval.ca"))
-Description: Compute IV-estimator and Bayesian estimator for linear-in-mean SAR models using only the distribution of network.
+Description: Compute IV-estimator and Bayesian estimator for linear-in-mean Spatial Autoregressive (SAR) models using only the distribution of network.
 License: GPL (>= 2)
 Encoding: UTF-8
 BugReports: https://github.com/ahoundetoungan/PartialNetwork/issues

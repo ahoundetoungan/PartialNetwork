@@ -70,7 +70,7 @@ G2Xc1         <- instr[[1]]$G1X[,,2]  # proxy for GGX (draw 1)
 GXc2          <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 G2Xc2         <- instr[[1]]$G2X[,,2]  # proxy for GGX (draw 2)
 ```
-Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the [**AER**](https://cran.r-project.org/web/packages/AER/index.html) package. For example:
+Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the [**AER**](https://cran.r-project.org/package=AER) package. For example:
   ```R
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy

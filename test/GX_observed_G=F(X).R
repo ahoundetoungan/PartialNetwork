@@ -179,20 +179,20 @@ f.mc <- function(l){
   #Same draw
   #We use GX constructed as instruments
   sest1.2.1.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1c0all) , diagnostic=TRUE)
-  lest1.2.1.1 <- c(sest1.2.1.1$coefficients[,1],sest1.2.1.1$diagnostics[,3])
+  lest1.2.1.1 <- c(sest1.2.1.1$coefficients[,1],sest1.2.1.1$diagnostics[,3], cor((GY1all-GY1call),GX1c0all))
   
   #We use GX and GGX constructed as instruments
   sest1.2.1.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1c0all + G2X1c0all), diagnostic=TRUE)
-  lest1.2.1.2 <- c(sest1.2.1.2$coefficients[,1],sest1.2.1.2$diagnostics[,3])
+  lest1.2.1.2 <- c(sest1.2.1.2$coefficients[,1],sest1.2.1.2$diagnostics[,3], cor((GY1all-GY1call),cbind(GX1c0all,G2X1call)))
   
   #different draw
   #We use GX constructed as instruments
   sest1.2.2.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1call), diagnostic=TRUE)
-  lest1.2.2.1 <- c(sest1.2.2.1$coefficients[,1],sest1.2.2.1$diagnostics[,3])
+  lest1.2.2.1 <- c(sest1.2.2.1$coefficients[,1],sest1.2.2.1$diagnostics[,3], cor((GY1all-GY1call),GX1call))
   
   #We use GX and GGX constructed as instruments
   sest1.2.2.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1call + G2X1call), diagnostic=TRUE)
-  lest1.2.2.2 <- c(sest1.2.2.2$coefficients[,1],sest1.2.2.2$diagnostics[,3])
+  lest1.2.2.2 <- c(sest1.2.2.2$coefficients[,1],sest1.2.2.2$diagnostics[,3], cor((GY1all-GY1call),cbind(GX1call,G2X1call)))
   
   #estimation section 3.2
   #GY is observed
@@ -202,7 +202,7 @@ f.mc <- function(l){
   #GY is not observed
   sest2.2     <- summary(ivreg(Y2all ~ Xall + GXall +  GX2c0all + GY2call | Xall  + GXall + GX2c0all + G2X2call), diagnostic = TRUE)
   lest2.2     <- c(sest2.2$coefficients[, 1], sest2.2$diagnostics[, 3])
-
+  
   # estimation section 3.3
   #Gy is observed
   sest3.1     <- summary(ivreg(Y3all ~ X3all  + GX3all + GY3all | X3all + GX3all + G2X3call), diagnostic = TRUE)
@@ -212,8 +212,6 @@ f.mc <- function(l){
   sest3.2     <- summary(ivreg(Y3all ~ X3all + GX3all + GX3c0all + GY3call | X3all + GX3all + GX3c0all + G2X3call), diagnostic = TRUE)
   lest3.2     <- c(sest3.2$coefficients[, 1], sest3.2$diagnostics[, 3])
   
-  #network correlation
-  cornet      <- cor(Gvec, G0vec)
   
   c(lest1.1.1, lest1.1.2, lest1.2.1.1, lest1.2.1.2, lest1.2.2.1,
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)
@@ -234,7 +232,7 @@ c1  <- paste0("No Con - GY obs - ins GX ", tmp)
 c2  <- paste0("No Con - GY obs - ins GX GGX ", tmp)
 c3  <- paste0("No Con - GY notobs - ins GX - sam draw ", c(tmp,"corGX1e","corGX2e"))
 c4  <- paste0("No Con - GY notobs - ins GX GGX - sam draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
-c5  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e"))
+c5  <- paste0("No Con - GY notobs - ins GX - dif draw ", c(tmp,"corGX1e","corGX2e"))
 c6  <- paste0("No Con - GY notobs - ins GX GGX - dif draw ", c(tmp,"corGX1e","corGX2e","corGGX1e","corGGX2e"))
 
 tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), "alpha", "Weak", "Wu", "Sargan")

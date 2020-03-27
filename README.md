@@ -100,7 +100,7 @@ The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contex
 ### Simulate data
 ```R
 # Number of groups
-M             <- 100
+M             <- 20
 # size of each group
 N             <- rep(50,M)
 # precision parameter for the network formation process
@@ -169,7 +169,8 @@ hyperparms    <- list("dnetwork" = prior)
 
 
 # launch the MCMC
-out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
+ctrl          <- list(print.level = 2)
+out           <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
 
 # the packahe has summary and plot methods of class S3
 # summary

@@ -100,7 +100,7 @@ The Bayesian estimator is neatly packed in the function `mcmcSAR(formula, contex
 ### Simulate data
 ```R
 # Number of groups
-M             <- 20
+M             <- 50
 # size of each group
 N             <- rep(50,M)
 # precision parameter for the network formation process

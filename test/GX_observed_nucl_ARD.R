@@ -125,10 +125,7 @@ fsim <- function(l, parlambda){
     #Y for section with Sub-Population Unobserved Fixed Effect
     Y3[[m]]  <- solve(diag(rep(1, N[m])) - alpha * W[[m]]) %*% (feffect + X[[m]] %*% beta[-1] +  GX[[m]] %*% gamma + rnorm(N[m], 0, se))
     GY3[[m]] <- W[[m]] %*% Y3[[m]]
-    
-    
-    #Estimate the network distribution
-    distr  <- sim.network(distr)
+
     
     #Compute instruments
     instr1 <- sim.IV(dnetwork = distr, X[[m]], Y1[[m]], replication = 1, power = 2)
@@ -223,20 +220,20 @@ fsim <- function(l, parlambda){
   #Same draw
   #We use GX constructed as instruments
   sest1.2.1.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1c0all) , diagnostic=TRUE)
-  lest1.2.1.1 <- c(sest1.2.1.1$coefficients[,1],sest1.2.1.1$diagnostics[,3])
+  lest1.2.1.1 <- c(sest1.2.1.1$coefficients[,1],sest1.2.1.1$diagnostics[,3], cor((GY1all-GY1call),GX1c0all))
   
   #We use GX and GGX constructed as instruments
   sest1.2.1.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1c0all + G2X1c0all), diagnostic=TRUE)
-  lest1.2.1.2 <- c(sest1.2.1.2$coefficients[,1],sest1.2.1.2$diagnostics[,3])
+  lest1.2.1.2 <- c(sest1.2.1.2$coefficients[,1],sest1.2.1.2$diagnostics[,3], cor((GY1all-GY1call),cbind(GX1c0all,G2X1call)))
   
   #different draw
   #We use GX constructed as instruments
   sest1.2.2.1 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1call), diagnostic=TRUE)
-  lest1.2.2.1 <- c(sest1.2.2.1$coefficients[,1],sest1.2.2.1$diagnostics[,3])
+  lest1.2.2.1 <- c(sest1.2.2.1$coefficients[,1],sest1.2.2.1$diagnostics[,3], cor((GY1all-GY1call),GX1call))
   
   #We use GX and GGX constructed as instruments
   sest1.2.2.2 <- summary(ivreg(Y1all ~ Xall + GY1call | Xall +  GX1call + G2X1call), diagnostic=TRUE)
-  lest1.2.2.2 <- c(sest1.2.2.2$coefficients[,1],sest1.2.2.2$diagnostics[,3])
+  lest1.2.2.2 <- c(sest1.2.2.2$coefficients[,1],sest1.2.2.2$diagnostics[,3], cor((GY1all-GY1call),cbind(GX1call,G2X1call)))
   
   #estimation section 3.2
   #GY is observed
@@ -255,6 +252,7 @@ fsim <- function(l, parlambda){
   #Gy is not observed
   sest3.2     <- summary(ivreg(Y3all ~ X3all + GX3all + GX3c0all + GY3call | X3all + GX3all + GX3c0all + G2X3call), diagnostic = TRUE)
   lest3.2     <- c(sest3.2$coefficients[, 1], sest3.2$diagnostics[, 3])
+  
   
   c(lest1.1.1, lest1.1.2, lest1.2.1.1, lest1.2.1.2, lest1.2.2.1,
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)

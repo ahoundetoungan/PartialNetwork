@@ -159,14 +159,9 @@ for (m in 1:M) {
 
 ### Estimate the model on simulated data
 ```R
-# number of exogenous variables
-# Here: X, GX + constant
-Kv            <- 2*ncol(X) + 1 
-
 # set the hyperparameter
 # the hyperparameter is a list
 hyperparms    <- list("dnetwork" = prior) 
-
 
 # launch the MCMC
 ctrl          <- list(print.level = 2)

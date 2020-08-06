@@ -72,7 +72,7 @@
 #' # generate b
 #' genb        <- numeric(K)
 #' for(k in 1:K){
-#'   genb[k]   <- sum(G[,trait[,k]==1])/sum(G)
+#'   genb[k]   <- sum(colSums(G[,trait[,k]==1]))/sum(colSums(G))
 #' }
 #' 
 #' ############ ARD Posterior distribution ################### 

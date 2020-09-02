@@ -9,7 +9,7 @@ The **PartialNetwork** package includes all functions for the replication of the
 - (*Only for windows users*) Windows users should install  [**Rtools**](https://cran.r-project.org/bin/windows/Rtools/) compatible with their [**R**](https://cran.r-project.org/) version. 
 
 ### How to install
-**PartialNetwork** package can be installed from this GitHub repos using the `install_github` function of the [**devtools**](https://cran.r-project.org/package=devtools) package. All the denpendencies will also be installed automatically.
+**PartialNetwork** package can be installed from this GitHub repos using the `install_github` function of the [**devtools**](https://cran.r-project.org/package=devtools) package. All the dependencies will also be installed automatically.
 ```R
 library(devtools) 
 install_github("ahoundetoungan/PartialNetwork")

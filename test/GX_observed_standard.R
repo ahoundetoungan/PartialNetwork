@@ -272,10 +272,12 @@ veclambda <- c(seq(0, 2, 0.01), Inf)
 out       <- lapply(veclambda, function(lambda) f.mc(iteration, lambda))
 
 # results for specific lambda
+# This reproduce Tables  1, 2, 3 and 10
 lambda    <- 1
 ilambda   <- which(veclambda == lambda)
 out[[ilambda]]
 
+# This reproduce Tables 9, 11 and 12
 lambda    <- Inf
 ilambda   <- which(veclambda == lambda)
 out[[ilambda]]
@@ -356,18 +358,21 @@ f.graph    <- function(row.n.i) {
 }
 
 # model without contextual effects
+# This reproduces Figure 1
 g11 <- f.graph("No Con - GY obs - ins GX alpha")
 g12 <- f.graph("No Con - GY notobs - ins GX - dif draw alpha")
 multiplot(g11, g12, cols = 2)
 # size 10x4.35 inch
 
 # model with contextual effects
+# This reproduces Figure 2
 g21 <- f.graph("Wit Con - GY obs alpha")
 g22 <- f.graph("Wit Con - GY notobs alpha")
 multiplot(g21, g22, cols = 2)
 # size 10x4.35 inch
 
 # model with fixed effects
+# This reproduces Figure 1
 g31 <- f.graph("Fix eff - GY obs alpha" )
 g32 <- f.graph("Fix eff - GY notobs alpha" )
 multiplot(g31, g32, cols = 2)

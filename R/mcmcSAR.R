@@ -11,7 +11,7 @@
 #' @param  start (optional) is the vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se2)'},
 #' where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
 #' and \eqn{\sigma^2}{se2} the variance of the error term. If the `start` is missing, a Maximum Likelihood estimator will be used, where
-#' the newotk matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).
+#' the network matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).
 #' @param hyperparms is a list of hyperparameter parameter. It should contain at least `dnetwork`, the linking probabilities. As there are `M` groups and
 #' individual from different groups are not linked, `dnetwork` is a list of `M` matrices where each matrix give the link probabilities in one group.
 #' @param G0 (optional) is the starting value of the (row normalized) network as a list of `M` sub-network.
@@ -51,10 +51,10 @@
 #' \item{`print.level`}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
 #'  If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
 #'  the simulations from the posterior distribution are printed.
-#' \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It mighit be 
+#' \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It might be 
 #' more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2020). 
 #' }
-#' If `block.max` > 1, several entries are ramdomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
+#' If `block.max` > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
 #' chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
 #' then the entries (i, 1), (i, 3), (i, 8), and so on. 
 #' @return A list consisting of:
@@ -153,7 +153,7 @@
 #' @references 
 #' Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 #' @references 
-#' Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
+#' Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data. 
 #' @importFrom Formula as.Formula
 #' @importFrom stats model.frame
 #' @seealso \code{\link{sim.IV}}

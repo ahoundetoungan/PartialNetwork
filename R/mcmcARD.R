@@ -52,7 +52,7 @@
 #'     \item{time}{elapsed time in second.}
 #'     \item{iteration}{number of MCMC steps performed.}
 #'     \item{simulations}{simulations from the posterior distribution.}
-#'     \item{hyperparms}{retrun value of hyperparameters (updated and non updated).}
+#'     \item{hyperparms}{return value of hyperparameters (updated and non updated).}
 #'     \item{accept.rate}{list of acceptance rates.}
 #'     \item{start}{starting values.}
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}

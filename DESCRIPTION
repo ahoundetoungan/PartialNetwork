@@ -2,7 +2,7 @@ Package: PartialNetwork
 Type: Package
 Title: Estimating Peer Effects Using Partial Network Data
 Version: 0.1
-Date: 2020-03-05
+Date: 2020-09-02
 Authors@R: c(person("Elysée Aristide", "Houndetoungan",  role = c("cre","aut"), email =  "ariel92and@gmail.com"), person("Vincent", "Boucher",  role = c("aut"), email =  "vincent.boucher@ecn.ulaval.ca"))
 Description: Compute IV-estimator and Bayesian estimator for linear-in-mean Spatial Autoregressive (SAR) models using only the distribution of network.
 License: GPL (>= 2)
@@ -14,4 +14,4 @@ Imports: Rcpp (>= 1.0.0), Formula, abind
 Depends: R (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen, RcppNumerical, RcppProgress, BH
 Suggests: AER
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

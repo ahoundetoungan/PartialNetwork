@@ -7,7 +7,7 @@
 \title{The PartialNetwork package}
 \description{
 The \pkg{PartialNetwork} package implements instrumental variables (IV) and Bayesian estimators for the linear-in-mean SAR model (e.g. Bramoullé et al., 2009) when
-the distribution of the network is availaible, but not the network itself. To make the computations faster \pkg{PartialNetwork} uses \code{C++} through the \pkg{Rcpp} package (Eddelbuettel et al., 2011).
+the distribution of the network is available, but not the network itself. To make the computations faster \pkg{PartialNetwork} uses \code{C++} through the \pkg{Rcpp} package (Eddelbuettel et al., 2011).
 }
 \details{
 Two main functions are provided to estimate the linear-in-mean SAR model using only the distribution of the network. The function
@@ -21,7 +21,7 @@ relies on the functions \link{rvMF}, \link{dvMF} and \link{logCpvMF} partly impl
 \references{
 Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 
-Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data. \emph{Draft avaliable at} \url{https://houndetoungan.wixsite.com/aristide/research}.
+Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data.
 
 Bramoullé, Y., Djebbari, H., & Fortin, B. (2009). Identification of peer effects through social networks. \emph{Journal of econometrics}, 150(1), 41-55. \url{https://www.sciencedirect.com/science/article/abs/pii/S0304407609000335}.
 

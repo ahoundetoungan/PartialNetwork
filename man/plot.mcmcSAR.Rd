@@ -3,7 +3,7 @@
 \name{plot.mcmcSAR}
 \alias{plot.mcmcSAR}
 \alias{print.plot.mcmcSAR}
-\title{Plotting esitmation of Bayesian SAR model}
+\title{Plotting estimation of Bayesian SAR model}
 \usage{
 \method{plot}{mcmcSAR}(x, plot.type = "sim", burnin = NULL, ...)
 
@@ -36,7 +36,7 @@ A list consisting of:
 }
 \description{
 Plotting the simulation from the posterior distribution as well as the 
-density functions of Baysian SAR model parameter. For more details about the graphical
+density functions of Bayesian SAR model parameter. For more details about the graphical
 parameter arguments, see \link[graphics]{par}.
 }
 \examples{

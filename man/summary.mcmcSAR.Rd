@@ -15,7 +15,7 @@
 \arguments{
 \item{object}{an object of class "mcmcSAR", output of the function \code{\link{mcmcSAR}}.}
 
-\item{alpha}{(optional, defaul = 0.95), the significance level of parameter.}
+\item{alpha}{(optional, default = 0.95), the significance level of parameter.}
 
 \item{plot.type}{(optional) a character that indicate if the simulations from the posterior distribution should be printed
 (if `plot.type = "sim"`) or if the posterior distribution densities should be plotted (`plot.type = "dens"`). The plots can also

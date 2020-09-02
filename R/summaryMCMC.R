@@ -3,7 +3,7 @@
 #' @param object an object of class "mcmcSAR", output of the function \code{\link{mcmcSAR}}.
 #' @param x an object of class "summary.mcmcSAR" or "mcmcSAR, output of thes functions \code{\link{summary.mcmcSAR}} and
 #' \code{\link{print.summary.mcmcSAR}}.
-#' @param alpha (optional, defaul = 0.95), the significance level of parameter.
+#' @param alpha (optional, default = 0.95), the significance level of parameter.
 #' @param plot.type (optional) a character that indicate if the simulations from the posterior distribution should be printed
 #' (if `plot.type = "sim"`) or if the posterior distribution densities should be plotted (`plot.type = "dens"`). The plots can also
 #' done using the method \link[graphics]{plot}.
@@ -176,9 +176,9 @@
   print(summary(x, ...))
 }
 
-#' @title Plotting esitmation of Bayesian SAR model
+#' @title Plotting estimation of Bayesian SAR model
 #' @description Plotting the simulation from the posterior distribution as well as the 
-#' density functions of Baysian SAR model parameter. For more details about the graphical
+#' density functions of Bayesian SAR model parameter. For more details about the graphical
 #' parameter arguments, see \link[graphics]{par}.
 #' @param x an object of class "mcmcSAR", output of the function \code{\link{mcmcSAR}}.
 #' @param x an object of class "plot.mcmcSAR", output of the function \code{\link{plot.mcmcSAR}}.

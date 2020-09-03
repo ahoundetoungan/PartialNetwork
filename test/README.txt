@@ -12,4 +12,4 @@ File GX_observed_nucl_ARD.R produces Table 16, 17 and 18
 --------------------------------------------- ADD HEALTH ---------------------------------------------
 File Inschool.do cleans Inschool AddHealth data and the network data used for the application
 
-File AddHealth.R produces tables 7, 8 as well as Figures 4, 5, 6, 7
+File AddHealth.R produces Tables 7, 8 as well as Figures 4, 5, 6, 7

@@ -90,10 +90,11 @@ mislistmis   <- c(55555555, 99999999, 99959995)
 
 
 # This function prepares the data and the network 
-gen.data   <- function(db) {
+gen.data  <- function(db) {
   G       <- vector("list", nsch)
   P       <- vector("list", nsch)
   nmatch  <- vector("list", nsch)
+  X       <- as.matrix(db[, va.names[-length(va.names)]])    
   Y       <- db$y
   
   
@@ -122,11 +123,6 @@ gen.data   <- function(db) {
     diag(Gi)     <- 0
     G[[i]]       <- Gi
     
-    # store X
-    X            <- as.matrix(db[, va.names[-length(va.names)]])    
-    
-    # Store Y
-    Y            <- db$y
     
     # unmatched
     nmatch[[i]]  <- nmatchi

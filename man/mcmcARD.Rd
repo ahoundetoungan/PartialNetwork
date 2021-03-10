@@ -22,8 +22,8 @@ mcmcARD(
 
 \item{traitARD}{is the matrix of traits for individuals with ARD. The entry (i, k) is equal to 1 if i has the trait k and 0 otherwise.}
 
-\item{start}{is a list containing starting values of `z` (matrix of dimension \eqn{N \times p}), `v` (matrix of dimension \eqn{K \times p}),
-`d` (vector of dimension \eqn{N}), `b` (vector of dimension \eqn{K}), `eta` (vector of dimension \eqn{K}) and `zeta` (scalar).}
+\item{start}{is a list containing starting values of \code{z} (matrix of dimension \eqn{N \times p}), \code{v} (matrix of dimension \eqn{K \times p}),
+\code{d} (vector of dimension \eqn{N}), \code{b} (vector of dimension \eqn{K}), \code{eta} (vector of dimension \eqn{K}) and \code{zeta} (scalar).}
 
 \item{fixv}{is a vector setting which location parameters are fixed for identifiability.
 These fixed positions are used to rotate the latent surface back to a common orientation at each iteration using
@@ -33,30 +33,30 @@ a Procrustes transformation (see McCormick and Zheng, 2015; Breza et al., 2017 a
 
 \item{iteration}{is the number of MCMC steps to be performed.}
 
-\item{sim.d}{is logical indicating weather the degree `d` will be updated in the MCMC. If `sim.d = FALSE`,
-the starting value of `d` in the argument `start` is set fixed along the process.}
+\item{sim.d}{is logical indicating weather the degree \code{d} will be updated in the MCMC. If \code{sim.d = FALSE},
+the starting value of \code{d} in the argument \code{start} is set fixed along the process.}
 
-\item{sim.zeta}{is logical indicating weather the degree `zeta` will be updated in the MCMC. If `sim.zeta = FALSE`,
-the starting value of `zeta` in the argument `start` is set fixed along the process.}
+\item{sim.zeta}{is logical indicating weather the degree \code{zeta} will be updated in the MCMC. If \code{sim.zeta = FALSE},
+the starting value of \code{zeta} in the argument \code{start} is set fixed along the process.}
 
 \item{hyperparms}{is an 8-dimensional vector of hyperparameters such that, \eqn{\mu_d}{mud},  \eqn{\sigma_d}{sigmad},
-\eqn{\mu_b}{mub}, \eqn{\sigma_b}{sigmab}, \eqn{\alpha_{\eta}}{alphaeta}, \eqn{\beta_{\eta}}{betaeta}, 
+\eqn{\mu_b}{mub}, \eqn{\sigma_b}{sigmab}, \eqn{\alpha_{\eta}}{alphaeta}, \eqn{\beta_{\eta}}{betaeta},
 \eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_{\zeta}}{betazeta} (see details).}
 
 \item{ctrl.mcmc}{is a list of MCMC controls (See details).}
 }
 \value{
 A list consisting of:
-    \item{n}{dimension of the sample with ARD.}
-    \item{K}{number of traits.}
-    \item{p}{hypersphere dimension.}
-    \item{time}{elapsed time in second.}
-    \item{iteration}{number of MCMC steps performed.}
-    \item{simulations}{simulations from the posterior distribution.}
-    \item{hyperparms}{return value of hyperparameters (updated and non updated).}
-    \item{accept.rate}{list of acceptance rates.}
-    \item{start}{starting values.}
-    \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
+\item{n}{dimension of the sample with ARD.}
+\item{K}{number of traits.}
+\item{p}{hypersphere dimension.}
+\item{time}{elapsed time in second.}
+\item{iteration}{number of MCMC steps performed.}
+\item{simulations}{simulations from the posterior distribution.}
+\item{hyperparms}{return value of hyperparameters (updated and non updated).}
+\item{accept.rate}{list of acceptance rates.}
+\item{start}{starting values.}
+\item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
 }
 \description{
 \code{mcmcARD} estimates the network model proposed by McCormick and Zheng (2015).
@@ -76,22 +76,22 @@ prior distributions are defined.
 \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \cr
 
 For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to be exogenously fixed around their given starting value
-(see McCormick and Zheng, 2015 for more details). The parameter `fixv` can be used
-to set the desired value for \eqn{\mathbf{v}_k}{vk} while `fixb` can be used to set the desired values for \eqn{b_k}{bk}.\cr
+(see McCormick and Zheng, 2015 for more details). The parameter \code{fixv} can be used
+to set the desired value for \eqn{\mathbf{v}_k}{vk} while \code{fixb} can be used to set the desired values for \eqn{b_k}{bk}.\cr
 
-During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
-requires to set minimal and maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
+During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the \code{target} values. This
+requires to set minimal and maximal jumping scales through the parameter \code{ctrl.mcmc}. The parameter \code{ctrl.mcmc} is a list which can contain the following named components.
 \itemize{
-\item{`target`}: The default value is \code{rep(0.44, 5)}. 
+\item{\code{target}}: The default value is \code{rep(0.44, 5)}.
 The target of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is  0.44.
-\item{`jumpmin`}: The default value is \code{rep(1e-12, 5)}. 
+\item{\code{jumpmin}}: The default value is \code{c(0,1,1e-7,1e-7,1e-7)*1e-5}.
 The minimal jumping of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is \eqn{10^{-12}}{1e-12}.
-\item{`jumpmax`}: The default value is \code{c(10, 1, 1, 1, ,1)*20)}. The maximal jumping scale is 10 except for \eqn{\mathbf{z}_i}{zi} which is set to 200.
-\item{`print`}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is `TRUE`.
+\item{\code{jumpmax}}: The default value is \code{c(100,1,1,1,1)*20}. The maximal jumping scale is 10 except for \eqn{\mathbf{z}_i}{zi} which is set to 200.
+\item{\code{print}}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is \code{TRUE}.
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # Sample size
 N       <- 500 
 
@@ -137,13 +137,14 @@ for(k in 1:K){
 trait       <- matrix(0,N,K)
 
 for(k in 1:K){
-  trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
+  tmp       <- exp(geneta[k] + logCpvMF(3, geneta[k]))
+  trait[,k] <- runif(N, 0.5*tmp, tmp) < densityatz[,k]
 }
 # print a percentage of people having a trait
 colSums(trait)*100/N
   
 # Build ARD
-ARD         <- G\\%*\\%trait
+ARD         <- G \%*\% trait
   
 # generate b
 genb        <- numeric(K)
@@ -157,7 +158,7 @@ d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
   
 # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-vfixcolumn      <- 1:5
+vfixcolumn      <- 1:6
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]
 v0[vfixcolumn,] <- genv[vfixcolumn,]
@@ -169,8 +170,8 @@ out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
                    
 # plot simulations
 # plot d
-plot(out$simulations$d[,4], type = "l", col = "blue", ylab = "")
-abline(h = gend[4], col = "red")
+plot(out$simulations$d[,100], type = "l", col = "blue", ylab = "")
+abline(h = gend[100], col = "red")
   
 # plot coordinates of individuals
 i <- 123 # individual 123
@@ -200,8 +201,8 @@ k <- 8
 Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
 
 Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
- identify network structure without network data. \emph{American Economic Review, forthcoming}. \url{https://arxiv.org/abs/1703.04157}
+identify network structure without network data. \emph{American Economic Review, forthcoming}. \url{https://arxiv.org/abs/1703.04157}
 
-McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
+McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data.
 \emph{Journal of the American Statistical Association}, 110(512), 1684-1695. \url{https://amstat.tandfonline.com/doi/full/10.1080/01621459.2014.991395}.
 }

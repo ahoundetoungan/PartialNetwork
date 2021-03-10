@@ -12,26 +12,24 @@
 #' relies on the functions \link{rvMF}, \link{dvMF} and \link{logCpvMF} partly implemented in C++, but using code from \pkg{movMF} (Hornik and Grün, 2014).
 #' 
 #' @references 
-#' Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
+#' Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
 #' @references 
-#' Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data.
+#' Boucher, V., & Houndetoungan, A., 2020, Estimating peer effects using partial network data, \emph{Centre de recherche sur les risques les enjeux économiques et les politiques publiques}, \url{http://www.crrep.ca/estimating-peer-effects-using-partial-network-data}.
 #' @references 
-#' Bramoullé, Y., Djebbari, H., & Fortin, B. (2009). Identification of peer effects through social networks. \emph{Journal of econometrics}, 150(1), 41-55. \url{https://www.sciencedirect.com/science/article/abs/pii/S0304407609000335}.
-#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
-#'  identify network structure without network data. \emph{American Economic Review, forthcoming.}, \url{https://arxiv.org/abs/1703.04157}
-#' @references Eddelbuettel, D., François, R., Allaire, J., Ushey, K., Kou, Q., Russel, N., ... & Bates, D. (2011),
-#' \pkg{Rcpp}: Seamless \R and \code{C++} integration. \emph{Journal of Statistical Software}, 40(8), 1-18.
-#' \url{http://www.jstatsoft.org/v40/i08/}.
-#' @references Hornik, K., & Grün, B. (2014). \pkg{movMF}: An \R package for fitting mixtures of von Mises-Fisher distributions. \emph{Journal of Statistical Software}, 58(10), 1-31.
-#' \url{https://epub.wu.ac.at/4893/}.
-#' @references 
-#' Kleiber, C., Zeileis, A., & Zeileis, M. A. (2020). Package ‘AER’. \R package version 1.2, 4. \url{https://cran.r-project.org/package=AER}.
-#' @references 
-#' Mardia, K. V. (2014). Statistics of directional data. Academic press. \url{https://www.elsevier.com/books/statistics-of-directional-data/mardia/978-0-12-471150-1}.
-#' @references McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data. 
-#' Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.
+#' Bramoullé, Y., Djebbari, H., & Fortin, B., 2009, Identification of peer effects through social networks, \emph{Journal of econometrics}, 150(1), 41-55, \doi{10.1016/j.jeconom.2008.12.021}.
+#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
+#' @references Eddelbuettel, D., François, R., Allaire, J., Ushey, K., Kou, Q., Russel, N., ... & Bates, D., 2011,
+#' \pkg{Rcpp}: Seamless \R and \code{C++} integration, \emph{Journal of Statistical Software}, 40(8), 1-18, \doi{10.18637/jss.v040.i08}
 #' @references  
-#' Wood, A. T. (1994). Simulation of the von Mises Fisher distribution. Communications in statistics-simulation and computation, 23(1), 157-164. \url{https://www.tandfonline.com/doi/abs/10.1080/03610919408813161}.
+#' Lee, L. F., 2004, Asymptotic distributions of quasi-maximum likelihood estimators for spatial autoregressive models. Econometrica, 72(6), 1899-1925, \doi{10.1111/j.1468-0262.2004.00558.x}
+#' @references 
+#' LeSage, J. P. 1997, Bayesian estimation of spatial autoregressive models, \emph{International regional science review}, 20(1-2), 113-129, \doi{10.1177/016001769702000107}.
+#' @references 
+#' Mardia, K. V., 2014, Statistics of directional data, \emph{Academic press}.
+#' @references McCormick, T. H., & Zheng, T., 2015, Latent surface models for networks using Aggregated Relational Data, 
+#' \emph{Journal of the American Statistical Association}, 110(512), 1684-1695, \doi{10.1080/01621459.2014.991395}.
+#' @references  
+#' Wood, A. T., 1994, Simulation of the von Mises Fisher distribution. \emph{Communications in statistics-simulation and computation}, 23(1), 157-164. \doi{10.1080/03610919408813161}.
 #' @useDynLib PartialNetwork, .registration = TRUE
 "_PACKAGE"
 NULL

@@ -211,3 +211,5 @@ void updzeta (double& zeta,
     zetaaccept +=1;     //Increase acceptance number to 1 
   }
 }
+
+

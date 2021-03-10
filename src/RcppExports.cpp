@@ -7,43 +7,6 @@
 
 using namespace Rcpp;
 
-// rvMFcpp
-arma::mat rvMFcpp(const int& size, const arma::vec& theta);
-RcppExport SEXP _PartialNetwork_rvMFcpp(SEXP sizeSEXP, SEXP thetaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int& >::type size(sizeSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
-    rcpp_result_gen = Rcpp::wrap(rvMFcpp(size, theta));
-    return rcpp_result_gen;
-END_RCPP
-}
-// logCpvMFcpp
-double logCpvMFcpp(const int& p, const double& k);
-RcppExport SEXP _PartialNetwork_logCpvMFcpp(SEXP pSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< const double& >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(logCpvMFcpp(p, k));
-    return rcpp_result_gen;
-END_RCPP
-}
-// dvMFcpp
-NumericVector dvMFcpp(const arma::mat& z, const arma::vec& theta, const bool& logp);
-RcppExport SEXP _PartialNetwork_dvMFcpp(SEXP zSEXP, SEXP thetaSEXP, SEXP logpSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type z(zSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type logp(logpSEXP);
-    rcpp_result_gen = Rcpp::wrap(dvMFcpp(z, theta, logp));
-    return rcpp_result_gen;
-END_RCPP
-}
 // updateGP
 List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, const arma::mat& v0, const arma::vec& d0, const arma::rowvec& b0, const arma::rowvec& eta0, const double& zeta0, const arma::uvec& fixv, const arma::uvec& consb, const double& nsimul, const bool& fdegrees, const bool& fzeta, const NumericVector& hyperparms, const NumericVector& target, const NumericVector& jumpmin, const NumericVector& jumpmax, const int& c, const bool& display_progress);
 RcppExport SEXP _PartialNetwork_updateGP(SEXP YSEXP, SEXP traitSEXP, SEXP z0SEXP, SEXP v0SEXP, SEXP d0SEXP, SEXP b0SEXP, SEXP eta0SEXP, SEXP zeta0SEXP, SEXP fixvSEXP, SEXP consbSEXP, SEXP nsimulSEXP, SEXP fdegreesSEXP, SEXP fzetaSEXP, SEXP hyperparmsSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP display_progressSEXP) {
@@ -74,8 +37,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // dnetwork1
-arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const unsigned int Metrostart, const bool& display_progress);
-RcppExport SEXP _PartialNetwork_dnetwork1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
+List dnetwork1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const unsigned int& N, const unsigned int& Metrostart, const bool& display_progress);
+RcppExport SEXP _PartialNetwork_dnetwork1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP NSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -84,16 +47,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type traitard(traitardSEXP);
-    Rcpp::traits::input_parameter< const unsigned int >::type Metrostart(MetrostartSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type Metrostart(MetrostartSEXP);
     Rcpp::traits::input_parameter< const bool& >::type display_progress(display_progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(dnetwork1(T, P, z, d, zeta, traitard, Metrostart, display_progress));
+    rcpp_result_gen = Rcpp::wrap(dnetwork1(T, P, z, d, zeta, N, Metrostart, display_progress));
     return rcpp_result_gen;
 END_RCPP
 }
 // dnetwork2
-arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& traitard, const arma::mat& traitnonard, const unsigned int& M, const unsigned int& Metrostart, const bool& display_progress);
-RcppExport SEXP _PartialNetwork_dnetwork2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP traitardSEXP, SEXP traitnonardSEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
+List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, const arma::uvec& iARD, const arma::uvec& inonARD, const unsigned int& M, const unsigned int& Metrostart, const bool& display_progress);
+RcppExport SEXP _PartialNetwork_dnetwork2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP XardSEXP, SEXP XnonardSEXP, SEXP iARDSEXP, SEXP inonARDSEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -102,138 +65,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type traitard(traitardSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type traitnonard(traitnonardSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Xard(XardSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Xnonard(XnonardSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type iARD(iARDSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type inonARD(inonARDSEXP);
     Rcpp::traits::input_parameter< const unsigned int& >::type M(MSEXP);
     Rcpp::traits::input_parameter< const unsigned int& >::type Metrostart(MetrostartSEXP);
     Rcpp::traits::input_parameter< const bool& >::type display_progress(display_progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(dnetwork2(T, P, z, d, zeta, traitard, traitnonard, M, Metrostart, display_progress));
-    return rcpp_result_gen;
-END_RCPP
-}
-// peerMCMC
-List peerMCMC(const List& y, const List& X, const List& Xone, List& Gnorm, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const List& prior, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec parms0, int iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& progress);
-RcppExport SEXP _PartialNetwork_peerMCMC(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP priorSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
-    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
-    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
-    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
-    Rcpp::traits::input_parameter< const List& >::type prior(priorSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
-    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type parms0(parms0SEXP);
-    Rcpp::traits::input_parameter< int >::type iteration(iterationSEXP);
-    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
-    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(peerMCMC(y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress));
-    return rcpp_result_gen;
-END_RCPP
-}
-// peerMCMCblock
-List peerMCMCblock(const List& y, const List& X, const List& Xone, List& Gnorm, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const List& prior, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec parms0, int iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& nupmax, const int& progress);
-RcppExport SEXP _PartialNetwork_peerMCMCblock(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP priorSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP nupmaxSEXP, SEXP progressSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
-    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
-    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
-    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
-    Rcpp::traits::input_parameter< const List& >::type prior(priorSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
-    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type parms0(parms0SEXP);
-    Rcpp::traits::input_parameter< int >::type iteration(iterationSEXP);
-    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
-    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
-    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(peerMCMCblock(y, X, Xone, Gnorm, M, N, kbeta, kgamma, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress));
-    return rcpp_result_gen;
-END_RCPP
-}
-// peerMCMCnoc
-List peerMCMCnoc(const List& y, const List& V, List& Gnorm, const int& M, const IntegerVector& N, const int& kbeta, const List& prior, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec parms0, int iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& progress);
-RcppExport SEXP _PartialNetwork_peerMCMCnoc(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP priorSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
-    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
-    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
-    Rcpp::traits::input_parameter< const List& >::type prior(priorSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
-    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type parms0(parms0SEXP);
-    Rcpp::traits::input_parameter< int >::type iteration(iterationSEXP);
-    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
-    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(peerMCMCnoc(y, V, Gnorm, M, N, kbeta, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress));
-    return rcpp_result_gen;
-END_RCPP
-}
-// peerMCMCblocknoc
-List peerMCMCblocknoc(const List& y, const List& V, List& Gnorm, const int& M, const IntegerVector& N, const int& kbeta, const List& prior, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec parms0, int iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& nupmax, const int& progress);
-RcppExport SEXP _PartialNetwork_peerMCMCblocknoc(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP priorSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP nupmaxSEXP, SEXP progressSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
-    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
-    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
-    Rcpp::traits::input_parameter< const List& >::type prior(priorSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
-    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type parms0(parms0SEXP);
-    Rcpp::traits::input_parameter< int >::type iteration(iterationSEXP);
-    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
-    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
-    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
-    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
-    rcpp_result_gen = Rcpp::wrap(peerMCMCblocknoc(y, V, Gnorm, M, N, kbeta, prior, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, nupmax, progress));
+    rcpp_result_gen = Rcpp::wrap(dnetwork2(T, P, z, d, zeta, Xard, Xnonard, iARD, inonARD, M, Metrostart, display_progress));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -292,62 +131,540 @@ BEGIN_RCPP
 END_RCPP
 }
 // flistGnorm1
-List flistGnorm1(List& dnetwork, arma::vec y, arma::mat Xone, arma::mat X, const int& M);
+List flistGnorm1(List& dnetwork, arma::vec& y, arma::mat& Xone, arma::mat& X, const int& M);
 RcppExport SEXP _PartialNetwork_flistGnorm1(SEXP dnetworkSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP XSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List& >::type dnetwork(dnetworkSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xone(XoneSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
     rcpp_result_gen = Rcpp::wrap(flistGnorm1(dnetwork, y, Xone, X, M));
     return rcpp_result_gen;
 END_RCPP
 }
 // flistGnorm2
-List flistGnorm2(List& dnetwork, List& Gnorm, arma::vec y, arma::mat Xone, arma::mat X, const int& M);
-RcppExport SEXP _PartialNetwork_flistGnorm2(SEXP dnetworkSEXP, SEXP GnormSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP XSEXP, SEXP MSEXP) {
+List flistGnorm2(List& Gnorm, arma::vec& y, arma::mat& Xone, arma::mat& X, const int& M);
+RcppExport SEXP _PartialNetwork_flistGnorm2(SEXP GnormSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP XSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List& >::type dnetwork(dnetworkSEXP);
     Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xone(XoneSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(flistGnorm2(dnetwork, Gnorm, y, Xone, X, M));
+    rcpp_result_gen = Rcpp::wrap(flistGnorm2(Gnorm, y, Xone, X, M));
     return rcpp_result_gen;
 END_RCPP
 }
 // flistGnorm1nc
-List flistGnorm1nc(List& dnetwork, arma::vec y, arma::mat Xone, const int& M);
+List flistGnorm1nc(List& dnetwork, arma::vec& y, arma::mat& Xone, const int& M);
 RcppExport SEXP _PartialNetwork_flistGnorm1nc(SEXP dnetworkSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List& >::type dnetwork(dnetworkSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Xone(XoneSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
     rcpp_result_gen = Rcpp::wrap(flistGnorm1nc(dnetwork, y, Xone, M));
     return rcpp_result_gen;
 END_RCPP
 }
 // flistGnorm2nc
-List flistGnorm2nc(List& dnetwork, List& Gnorm, arma::vec y, arma::mat Xone, const int& M);
-RcppExport SEXP _PartialNetwork_flistGnorm2nc(SEXP dnetworkSEXP, SEXP GnormSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP MSEXP) {
+List flistGnorm2nc(List& Gnorm, arma::vec& y, arma::mat& Xone, const int& M);
+RcppExport SEXP _PartialNetwork_flistGnorm2nc(SEXP GnormSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(flistGnorm2nc(Gnorm, y, Xone, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simG
+List simG(List& dnetwork, const arma::vec& N, const int& M);
+RcppExport SEXP _PartialNetwork_simG(SEXP dnetworkSEXP, SEXP NSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List& >::type dnetwork(dnetworkSEXP);
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(flistGnorm2nc(dnetwork, Gnorm, y, Xone, M));
+    rcpp_result_gen = Rcpp::wrap(simG(dnetwork, N, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simGnorm
+List simGnorm(List& dnetwork, const arma::vec& N, const int& M);
+RcppExport SEXP _PartialNetwork_simGnorm(SEXP dnetworkSEXP, SEXP NSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type dnetwork(dnetworkSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(simGnorm(dnetwork, N, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCnoc_none
+List peerMCMCnoc_none(const List& y, const List& V, List& Gnorm, List& prior, List ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec& parms0, const int& iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& progress);
+RcppExport SEXP _PartialNetwork_peerMCMCnoc_none(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCnoc_none(y, V, Gnorm, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCblocknoc_none
+List peerMCMCblocknoc_none(const List& y, const List& V, List& Gnorm, List& prior, List ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec& parms0, const int& iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& progress, const int& nupmax);
+RcppExport SEXP _PartialNetwork_peerMCMCblocknoc_none(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP, SEXP nupmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCblocknoc_none(y, V, Gnorm, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMC_none
+List peerMCMC_none(const List& y, const List& X, const List& Xone, List& Gnorm, List& prior, List ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec& parms0, const int& iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& progress);
+RcppExport SEXP _PartialNetwork_peerMCMC_none(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMC_none(y, X, Xone, Gnorm, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCblock_none
+List peerMCMCblock_none(const List& y, const List& X, const List& Xone, List& Gnorm, List& prior, List ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::vec& parms0, const int& iteration, const double& target, const double& jumpmin, const double& jumpmax, const double& c, const int& progress, const int& nupmax);
+RcppExport SEXP _PartialNetwork_peerMCMCblock_none(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP, SEXP nupmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const double& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const double& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCblock_none(y, X, Xone, Gnorm, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCnoc_ard
+List peerMCMCnoc_ard(const List& y, const List& V, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, List& d, const arma::vec& zetaard, List& murho, List& Vrho, const arma::vec& Krho, const int& P, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const arma::vec& type, const int& progress);
+RcppExport SEXP _PartialNetwork_peerMCMCnoc_ard(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dSEXP, SEXP zetaardSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP PSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP typeSEXP, SEXP progressSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< List& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zetaard(zetaardSEXP);
+    Rcpp::traits::input_parameter< List& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< List& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCnoc_ard(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCblocknoc_ard
+List peerMCMCblocknoc_ard(const List& y, const List& V, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, List& d, const arma::vec& zetaard, List& murho, List& Vrho, const arma::vec& Krho, const int& P, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const arma::vec& type, const int& progress, const int& nupmax);
+RcppExport SEXP _PartialNetwork_peerMCMCblocknoc_ard(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dSEXP, SEXP zetaardSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP PSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP typeSEXP, SEXP progressSEXP, SEXP nupmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< List& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zetaard(zetaardSEXP);
+    Rcpp::traits::input_parameter< List& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< List& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCblocknoc_ard(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMC_ard
+List peerMCMC_ard(const List& y, const List& X, const List& Xone, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const List& d, const arma::vec& zetaard, const List& murho, const List& Vrho, const arma::vec& Krho, const int& P, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const arma::vec& type, const int& progress);
+RcppExport SEXP _PartialNetwork_peerMCMC_ard(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dSEXP, SEXP zetaardSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP PSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP typeSEXP, SEXP progressSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const List& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zetaard(zetaardSEXP);
+    Rcpp::traits::input_parameter< const List& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMC_ard(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCblock_ard
+List peerMCMCblock_ard(const List& y, const List& X, const List& Xone, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, List& d, const arma::vec& zetaard, List& murho, List& Vrho, const arma::vec& Krho, const int& P, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const arma::vec& type, const int& progress, const int& nupmax);
+RcppExport SEXP _PartialNetwork_peerMCMCblock_ard(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dSEXP, SEXP zetaardSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP PSEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP typeSEXP, SEXP progressSEXP, SEXP nupmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< List& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zetaard(zetaardSEXP);
+    Rcpp::traits::input_parameter< List& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< List& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCblock_ard(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCnoc_pl
+List peerMCMCnoc_pl(const List& y, const List& V, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::mat& dZ, const arma::vec& murho, const arma::mat& Vrho, const int& Krho, Eigen::VectorXd& lFdZrho1, Eigen::VectorXd& lFdZrho0, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const int& progress, const int& type);
+RcppExport SEXP _PartialNetwork_peerMCMCnoc_pl(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dZSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP lFdZrho1SEXP, SEXP lFdZrho0SEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type dZ(dZSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho1(lFdZrho1SEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho0(lFdZrho0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCnoc_pl(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCblocknoc_pl
+List peerMCMCblocknoc_pl(const List& y, const List& V, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::mat& dZ, const arma::vec& murho, const arma::mat& Vrho, const int& Krho, Eigen::VectorXd& lFdZrho1, Eigen::VectorXd& lFdZrho0, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const int& progress, const int& nupmax, const int& type);
+RcppExport SEXP _PartialNetwork_peerMCMCblocknoc_pl(SEXP ySEXP, SEXP VSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dZSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP lFdZrho1SEXP, SEXP lFdZrho0SEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP, SEXP nupmaxSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type V(VSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type dZ(dZSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho1(lFdZrho1SEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho0(lFdZrho0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
+    Rcpp::traits::input_parameter< const int& >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCblocknoc_pl(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMC_pl
+List peerMCMC_pl(const List& y, const List& X, const List& Xone, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::mat& dZ, const arma::vec& murho, const arma::mat& Vrho, const int& Krho, Eigen::VectorXd& lFdZrho1, Eigen::VectorXd& lFdZrho0, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const int& progress, const int& type);
+RcppExport SEXP _PartialNetwork_peerMCMC_pl(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dZSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP lFdZrho1SEXP, SEXP lFdZrho0SEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type dZ(dZSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho1(lFdZrho1SEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho0(lFdZrho0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMC_pl(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// peerMCMCblock_pl
+List peerMCMCblock_pl(const List& y, const List& X, const List& Xone, List& Gnorm, List& G0obs, List& prior, List& ListIndex, const int& M, const IntegerVector& N, const int& kbeta, const int& kgamma, const arma::vec& theta0, const arma::mat& invsigmatheta, const double& zeta0, const double& invsigma2zeta, const double& a, const double& b, const arma::mat& dZ, const arma::vec murho, const arma::mat& Vrho, const int& Krho, Eigen::VectorXd& lFdZrho1, Eigen::VectorXd& lFdZrho0, const arma::vec& parms0, const int& iteration, const arma::vec& target, const arma::vec& jumpmin, const arma::vec& jumpmax, const double& c, const int& progress, const int& nupmax, const int& type);
+RcppExport SEXP _PartialNetwork_peerMCMCblock_pl(SEXP ySEXP, SEXP XSEXP, SEXP XoneSEXP, SEXP GnormSEXP, SEXP G0obsSEXP, SEXP priorSEXP, SEXP ListIndexSEXP, SEXP MSEXP, SEXP NSEXP, SEXP kbetaSEXP, SEXP kgammaSEXP, SEXP theta0SEXP, SEXP invsigmathetaSEXP, SEXP zeta0SEXP, SEXP invsigma2zetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP dZSEXP, SEXP murhoSEXP, SEXP VrhoSEXP, SEXP KrhoSEXP, SEXP lFdZrho1SEXP, SEXP lFdZrho0SEXP, SEXP parms0SEXP, SEXP iterationSEXP, SEXP targetSEXP, SEXP jumpminSEXP, SEXP jumpmaxSEXP, SEXP cSEXP, SEXP progressSEXP, SEXP nupmaxSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const List& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type Xone(XoneSEXP);
+    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type ListIndex(ListIndexSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kbeta(kbetaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type kgamma(kgammaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type invsigmatheta(invsigmathetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type zeta0(zeta0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type invsigma2zeta(invsigma2zetaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type dZ(dZSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type murho(murhoSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Vrho(VrhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type Krho(KrhoSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho1(lFdZrho1SEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lFdZrho0(lFdZrho0SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type parms0(parms0SEXP);
+    Rcpp::traits::input_parameter< const int& >::type iteration(iterationSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmin(jumpminSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type jumpmax(jumpmaxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const int& >::type progress(progressSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nupmax(nupmaxSEXP);
+    Rcpp::traits::input_parameter< const int& >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(peerMCMCblock_pl(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -385,28 +702,218 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fListIndex
+List fListIndex(List& prior, List& G0obs, const int& M, const IntegerVector& N);
+RcppExport SEXP _PartialNetwork_fListIndex(SEXP priorSEXP, SEXP G0obsSEXP, SEXP MSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type prior(priorSEXP);
+    Rcpp::traits::input_parameter< List& >::type G0obs(G0obsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(fListIndex(prior, G0obs, M, N));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fGnormalise
+List fGnormalise(List& u, const double& M);
+RcppExport SEXP _PartialNetwork_fGnormalise(SEXP uSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type u(uSEXP);
+    Rcpp::traits::input_parameter< const double& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(fGnormalise(u, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// frVtoM
+List frVtoM(const Eigen::VectorXd& u, const Rcpp::IntegerVector& N, const double& M);
+RcppExport SEXP _PartialNetwork_frVtoM(SEXP uSEXP, SEXP NSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type u(uSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(frVtoM(u, N, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// frVtoMnorm
+List frVtoMnorm(const arma::vec& u, const IntegerVector& N, const double& M);
+RcppExport SEXP _PartialNetwork_frVtoMnorm(SEXP uSEXP, SEXP NSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(frVtoMnorm(u, N, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// frMtoV
+Eigen::VectorXd frMtoV(List& u, const Rcpp::IntegerVector& N, const double& M);
+RcppExport SEXP _PartialNetwork_frMtoV(SEXP uSEXP, SEXP NSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type u(uSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(frMtoV(u, N, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// frMceiltoV
+Eigen::VectorXd frMceiltoV(List& u, const Rcpp::IntegerVector& N, const double& M);
+RcppExport SEXP _PartialNetwork_frMceiltoV(SEXP uSEXP, SEXP NSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type u(uSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double& >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(frMceiltoV(u, N, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// flspacerho1
+List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const unsigned int& N1, const unsigned int& Metrostart);
+RcppExport SEXP _PartialNetwork_flspacerho1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP N1SEXP, SEXP MetrostartSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
+    Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type N1(N1SEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type Metrostart(MetrostartSEXP);
+    rcpp_result_gen = Rcpp::wrap(flspacerho1(T, P, z, d, zeta, N1, Metrostart));
+    return rcpp_result_gen;
+END_RCPP
+}
+// flspacerho2
+List flspacerho2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, const unsigned int& N1, const unsigned int& N2, const unsigned int& M, const unsigned int& Metrostart, const arma::uvec& iARD, const arma::uvec& inonARD);
+RcppExport SEXP _PartialNetwork_flspacerho2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP XardSEXP, SEXP XnonardSEXP, SEXP N1SEXP, SEXP N2SEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP iARDSEXP, SEXP inonARDSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
+    Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Xard(XardSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Xnonard(XnonardSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type N1(N1SEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type N2(N2SEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const unsigned int& >::type Metrostart(MetrostartSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type iARD(iARDSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type inonARD(inonARDSEXP);
+    rcpp_result_gen = Rcpp::wrap(flspacerho2(T, P, z, d, zeta, Xard, Xnonard, N1, N2, M, Metrostart, iARD, inonARD));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fdnetARD
+arma::mat fdnetARD(const double& zeta, const arma::vec& z, const arma::vec& nu, const arma::vec& dm, const int& Nm, const int& P);
+RcppExport SEXP _PartialNetwork_fdnetARD(SEXP zetaSEXP, SEXP zSEXP, SEXP nuSEXP, SEXP dmSEXP, SEXP NmSEXP, SEXP PSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type dm(dmSEXP);
+    Rcpp::traits::input_parameter< const int& >::type Nm(NmSEXP);
+    Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
+    rcpp_result_gen = Rcpp::wrap(fdnetARD(zeta, z, nu, dm, Nm, P));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rvMFcpp
+arma::mat rvMFcpp(const int& size, const arma::vec& theta);
+RcppExport SEXP _PartialNetwork_rvMFcpp(SEXP sizeSEXP, SEXP thetaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type size(sizeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
+    rcpp_result_gen = Rcpp::wrap(rvMFcpp(size, theta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logCpvMFcpp
+double logCpvMFcpp(const int& p, const double& k);
+RcppExport SEXP _PartialNetwork_logCpvMFcpp(SEXP pSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const double& >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(logCpvMFcpp(p, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dvMFcpp
+NumericVector dvMFcpp(const arma::mat& z, const arma::vec& theta, const bool& logp);
+RcppExport SEXP _PartialNetwork_dvMFcpp(SEXP zSEXP, SEXP thetaSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(dvMFcpp(z, theta, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PartialNetwork_rvMFcpp", (DL_FUNC) &_PartialNetwork_rvMFcpp, 2},
-    {"_PartialNetwork_logCpvMFcpp", (DL_FUNC) &_PartialNetwork_logCpvMFcpp, 2},
-    {"_PartialNetwork_dvMFcpp", (DL_FUNC) &_PartialNetwork_dvMFcpp, 3},
     {"_PartialNetwork_updateGP", (DL_FUNC) &_PartialNetwork_updateGP, 19},
     {"_PartialNetwork_dnetwork1", (DL_FUNC) &_PartialNetwork_dnetwork1, 8},
-    {"_PartialNetwork_dnetwork2", (DL_FUNC) &_PartialNetwork_dnetwork2, 10},
-    {"_PartialNetwork_peerMCMC", (DL_FUNC) &_PartialNetwork_peerMCMC, 22},
-    {"_PartialNetwork_peerMCMCblock", (DL_FUNC) &_PartialNetwork_peerMCMCblock, 23},
-    {"_PartialNetwork_peerMCMCnoc", (DL_FUNC) &_PartialNetwork_peerMCMCnoc, 20},
-    {"_PartialNetwork_peerMCMCblocknoc", (DL_FUNC) &_PartialNetwork_peerMCMCblocknoc, 21},
+    {"_PartialNetwork_dnetwork2", (DL_FUNC) &_PartialNetwork_dnetwork2, 12},
     {"_PartialNetwork_Prob", (DL_FUNC) &_PartialNetwork_Prob, 4},
     {"_PartialNetwork_Graph", (DL_FUNC) &_PartialNetwork_Graph, 1},
     {"_PartialNetwork_instruments1", (DL_FUNC) &_PartialNetwork_instruments1, 5},
     {"_PartialNetwork_instruments2", (DL_FUNC) &_PartialNetwork_instruments2, 4},
     {"_PartialNetwork_flistGnorm1", (DL_FUNC) &_PartialNetwork_flistGnorm1, 5},
-    {"_PartialNetwork_flistGnorm2", (DL_FUNC) &_PartialNetwork_flistGnorm2, 6},
+    {"_PartialNetwork_flistGnorm2", (DL_FUNC) &_PartialNetwork_flistGnorm2, 5},
     {"_PartialNetwork_flistGnorm1nc", (DL_FUNC) &_PartialNetwork_flistGnorm1nc, 4},
-    {"_PartialNetwork_flistGnorm2nc", (DL_FUNC) &_PartialNetwork_flistGnorm2nc, 5},
+    {"_PartialNetwork_flistGnorm2nc", (DL_FUNC) &_PartialNetwork_flistGnorm2nc, 4},
+    {"_PartialNetwork_simG", (DL_FUNC) &_PartialNetwork_simG, 3},
+    {"_PartialNetwork_simGnorm", (DL_FUNC) &_PartialNetwork_simGnorm, 3},
+    {"_PartialNetwork_peerMCMCnoc_none", (DL_FUNC) &_PartialNetwork_peerMCMCnoc_none, 21},
+    {"_PartialNetwork_peerMCMCblocknoc_none", (DL_FUNC) &_PartialNetwork_peerMCMCblocknoc_none, 22},
+    {"_PartialNetwork_peerMCMC_none", (DL_FUNC) &_PartialNetwork_peerMCMC_none, 23},
+    {"_PartialNetwork_peerMCMCblock_none", (DL_FUNC) &_PartialNetwork_peerMCMCblock_none, 24},
+    {"_PartialNetwork_peerMCMCnoc_ard", (DL_FUNC) &_PartialNetwork_peerMCMCnoc_ard, 29},
+    {"_PartialNetwork_peerMCMCblocknoc_ard", (DL_FUNC) &_PartialNetwork_peerMCMCblocknoc_ard, 30},
+    {"_PartialNetwork_peerMCMC_ard", (DL_FUNC) &_PartialNetwork_peerMCMC_ard, 31},
+    {"_PartialNetwork_peerMCMCblock_ard", (DL_FUNC) &_PartialNetwork_peerMCMCblock_ard, 32},
+    {"_PartialNetwork_peerMCMCnoc_pl", (DL_FUNC) &_PartialNetwork_peerMCMCnoc_pl, 29},
+    {"_PartialNetwork_peerMCMCblocknoc_pl", (DL_FUNC) &_PartialNetwork_peerMCMCblocknoc_pl, 30},
+    {"_PartialNetwork_peerMCMC_pl", (DL_FUNC) &_PartialNetwork_peerMCMC_pl, 31},
+    {"_PartialNetwork_peerMCMCblock_pl", (DL_FUNC) &_PartialNetwork_peerMCMCblock_pl, 32},
     {"_PartialNetwork_sartpoint", (DL_FUNC) &_PartialNetwork_sartpoint, 8},
     {"_PartialNetwork_sartpointnoc", (DL_FUNC) &_PartialNetwork_sartpointnoc, 6},
+    {"_PartialNetwork_fListIndex", (DL_FUNC) &_PartialNetwork_fListIndex, 4},
+    {"_PartialNetwork_fGnormalise", (DL_FUNC) &_PartialNetwork_fGnormalise, 2},
+    {"_PartialNetwork_frVtoM", (DL_FUNC) &_PartialNetwork_frVtoM, 3},
+    {"_PartialNetwork_frVtoMnorm", (DL_FUNC) &_PartialNetwork_frVtoMnorm, 3},
+    {"_PartialNetwork_frMtoV", (DL_FUNC) &_PartialNetwork_frMtoV, 3},
+    {"_PartialNetwork_frMceiltoV", (DL_FUNC) &_PartialNetwork_frMceiltoV, 3},
+    {"_PartialNetwork_flspacerho1", (DL_FUNC) &_PartialNetwork_flspacerho1, 7},
+    {"_PartialNetwork_flspacerho2", (DL_FUNC) &_PartialNetwork_flspacerho2, 13},
+    {"_PartialNetwork_fdnetARD", (DL_FUNC) &_PartialNetwork_fdnetARD, 6},
+    {"_PartialNetwork_rvMFcpp", (DL_FUNC) &_PartialNetwork_rvMFcpp, 2},
+    {"_PartialNetwork_logCpvMFcpp", (DL_FUNC) &_PartialNetwork_logCpvMFcpp, 2},
+    {"_PartialNetwork_dvMFcpp", (DL_FUNC) &_PartialNetwork_dvMFcpp, 3},
     {NULL, NULL, 0}
 };
 

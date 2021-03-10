@@ -6,39 +6,48 @@
 \usage{
 fit.dnetwork(
   object,
-  traitARD,
-  traitnonARD = NULL,
-  m,
+  X = NULL,
+  obsARD = NULL,
+  m = NULL,
   burnin = NULL,
   print = TRUE
 )
 }
 \arguments{
-\item{object}{is an `estim.ARD` object returned by \code{\link{mcmcARD}}.}
+\item{object}{\code{estim.ARD} object returned by \code{\link{mcmcARD}}.}
 
-\item{traitARD}{is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.}
+\item{X}{matrix of variables (describing individuals with ARD and those without ARD) used to compute distances between individuals. Necessary when ARD are available for a sample of individuals.
+This could be the matrix of traits (see details).}
 
-\item{traitnonARD}{is the matrix of traits for individuals without ARD. The entry (j, k) is 1 if j has the trait k and 0 otherwise.}
+\item{obsARD}{logical vector of length \code{nrow(X)} (number of individuals with and without ARD), where the i-th entry equal to \code{TRUE} if the i-th individual in \code{X} has ARD and \code{FALSE} otherwise.
+If missing, \code{obsARD = rep(c(TRUE, FALSE), n1, n2)}, where \code{n1} is the number of individuals with ARD (see details).}
 
-\item{m}{is the number of neighbors used to compute the gregariousness and the degree for individuals without ARD.}
+\item{m}{number of neighbors used to compute the gregariousness and the degree for individuals without ARD.}
 
-\item{burnin}{is the number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
+\item{burnin}{number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
 used the simulation from the iteration \code{burnin + 1}.}
 
-\item{print}{is logical; if TRUE, the progression will be printed in the console.}
+\item{print}{logical; if TRUE, the progression will be printed in the console.}
 }
 \value{
-a matrix of linking probabilities.
+A list consisting of:
+\item{dnetwork}{posterior mean of the network distribution.}
+\item{degree}{posterior mean of the degree.}
+\item{nu}{posterior mean of the gregariousness, nu.}
 }
 \description{
-\code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the 
+\code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the
 ARD network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
 The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a m-nearest neighbors method.
 }
+\details{
+Care should be taken about the order of individuals provided through the arguments \code{traitARD}, \code{ARD} when calling the function \code{\link{mcmcARD}}, and the order of individuals in
+\code{X} and \code{obsARD}. Especially, the i-th row of \code{X[obsARD,]} should correspond to the i-th row in \code{traitARD} or \code{ARD}. That is, the order of the
+individuals with ARD in \code{obsARD} should match with their order when calling the function \code{\link{mcmcARD}}.
+}
 \examples{
-\dontrun{
+\donttest{
 set.seed(123)
-
 # GENERATE DATA
 # Sample size
 N  <- 500 
@@ -83,16 +92,17 @@ for(k in 1:K){
   densityatz[,k] <- dvMF(genz,genv[k,]*geneta[k])
 }
 
-trait       <- matrix(0,N,K)
+trait       <- matrix(0, N, K)
 for(k in 1:K){
-  trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
+  tmp       <- exp(geneta[k] + logCpvMF(3, geneta[k]))
+  trait[,k] <- runif(N, 0.5*tmp, tmp) < densityatz[,k]
 }
 
 # print a percentage of peaople having a trait
 colSums(trait)*100/N
 
 # Build ARD
-ARD         <- G \\%*\\% trait
+ARD         <- G \%*\% trait
 
 # generate b
 genb        <- numeric(K)
@@ -107,7 +117,7 @@ d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 1; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 
 # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-vfixcolumn      <- 1:5
+vfixcolumn      <- 1:6
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]
 v0[vfixcolumn,] <- genv[vfixcolumn,]
@@ -118,22 +128,24 @@ out    <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
                   consb = bfixcolumn, iteration = 5000)
                   
 # fit network distribution
-dist   <- fit.dnetwork(out, traitARD = trait)
+dist   <- fit.dnetwork(out)
 
-plot(rowSums(dist), gend)
+plot(rowSums(dist$dnetwork), gend)
+abline(0, 1, col = "red")
 
 # EXAMPLE 2: ARD observed for a sample of the population
 # observed sample
-traitard    <- trait[1:n, ]
-traitnonard <- trait[(n + 1):N, ]
-ARD         <- ARD[1:n,]
+selectARD   <- sort(sample(1:N, n, FALSE))
+traitard    <- trait[selectARD,]
+ARD         <- ARD[selectARD,]
+logicalARD  <- (1:N) \%in\% selectARD
 
 # initianalization 
 d0     <- exp(rnorm(n)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 1; z0 <- matrix(rvMF(n,rep(0,P)),n); v0 <- matrix(rvMF(K,rep(0,P)),K)
 
 # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-vfixcolumn      <- 1:5
+vfixcolumn      <- 1:6
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]
 v0[vfixcolumn,] <- genv[vfixcolumn,]
@@ -144,9 +156,13 @@ out    <- mcmcARD(Y = ARD, traitARD = traitard, start = start, fixv = vfixcolumn
                   consb = bfixcolumn, iteration = 5000)
                   
 # fit network distribution
-dist   <- fit.dnetwork(out, traitARD = traitard, traitnonARD = traitnonard, m = 5)
+dist   <- fit.dnetwork(out, X = trait, obsARD = logicalARD, m = 1)
 
-plot(rowSums(dist)[1:n], gend[1:n], col = "blue")   # observed ard
-points(rowSums(dist)[(n + 1):N], gend[(n + 1):N], col = "red")
+library(ggplot2)
+ggplot(data.frame("etimated.degree" = dist$degree,
+                  "true.degree"     = gend,
+                  "observed"            = ifelse(logicalARD, TRUE, FALSE)),
+       aes(x = etimated.degree, y = true.degree, colour = observed)) +
+  geom_point()
 }
 }

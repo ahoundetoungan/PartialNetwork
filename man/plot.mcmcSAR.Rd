@@ -5,50 +5,40 @@
 \alias{print.plot.mcmcSAR}
 \title{Plotting estimation of Bayesian SAR model}
 \usage{
-\method{plot}{mcmcSAR}(x, plot.type = "sim", burnin = NULL, ...)
+\method{plot}{mcmcSAR}(x, plot.type = "sim", burnin = NULL, which.parms = "theta", ...)
 
 \method{print}{plot.mcmcSAR}(x, ...)
 }
 \arguments{
-\item{x}{an object of class "plot.mcmcSAR", output of the function \code{\link{plot.mcmcSAR}}.}
+\item{x}{object of class "plot.mcmcSAR", output of the function \code{\link{plot.mcmcSAR}}.}
 
-\item{plot.type}{a character that indicate the type of plot: "sim" for plotting the simulation
-from the posterior distribution or "dens" for plotting the posterior density functions.}
+\item{plot.type}{character indicating the type of plot: \code{"sim"} for plotting the simulation
+from the posterior distribution or \code{"dens"} for plotting the posterior density functions.}
 
-\item{burnin}{is the number of MCMC steps which will be considered as burn-in iterations. If `NULL` (default value),
+\item{burnin}{number of MCMC steps which will be considered as burn-in iterations. If \code{NULL} (default value),
 the 50\% first MCMC steps performed are used as burn-in iterations.}
+
+\item{which.parms}{character indicating the parameters whose the posterior distribution will be plotted: \code{"theta"} for
+the parameters of the outcome model and \code{"rho"} for the parameters of the network formation model.}
 
 \item{...}{arguments to be passed to methods, such as \link[graphics]{par}.}
 }
 \value{
 A list consisting of:
-    \item{n.group}{number of groups.}
-    \item{N}{vector of each group size.}
-    \item{iteration}{number of MCMC steps performed.}
-    \item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
-    \item{posterior}{summary of the posterior distribution.}
-    \item{hyperparms}{return value of `hyperparms`.}
-    \item{accept.rate}{acceptance rate of zeta.}
-    \item{formula}{input value of `formula`.}
-    \item{plot.type}{type of the plot.}
-    \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
-    \item{...}{arguments passed to methods.}
+\item{n.group}{number of groups.}
+\item{N}{vector of each group size.}
+\item{iteration}{number of MCMC steps performed.}
+\item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
+\item{posterior}{summary of the posterior distribution.}
+\item{hyperparms}{return value of \code{hyperparms}.}
+\item{accept.rate}{acceptance rate of zeta.}
+\item{formula}{input value of \code{formula}.}
+\item{plot.type}{type of the plot.}
+\item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
+\item{...}{arguments passed to methods.}
 }
 \description{
-Plotting the simulation from the posterior distribution as well as the 
+Plotting the simulation from the posterior distribution as well as the
 density functions of Bayesian SAR model parameter. For more details about the graphical
 parameter arguments, see \link[graphics]{par}.
-}
-\examples{
-\dontrun{
-# Let us consider the example in mcmcSAR function
-out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
-# Print the summary
-plot(out)
-# Print summary with plot and change significance level 
-plot(out, plot.type = "den", col = "blue")
-# Print summary with plot and change significance level and the layout of the plot
-plot(out, plot.type = "dens", col = "blue", mfrow = c(4, 4))
-# All the possible argument with the function summary and the function plot can be passed
-}
 }

@@ -3,6 +3,7 @@
 
 #include <RcppArmadillo.h>
 #include <RcppEigen.h>
+#include "vMF.h"
 
 
 using namespace Rcpp;
@@ -103,4 +104,39 @@ void updzeta (double& zeta,
               const double& invsigma2zeta,
               const Rcpp::IntegerVector N,
               const double M);
+
+void updrhopl (List& Gnorm,
+               List& prior,
+               List& G0obs,
+               List& ListIndex,
+               arma::vec& rho,
+               Eigen::VectorXd& lFdZrhoE1,
+               Eigen::VectorXd& lFdZrhoE0,
+               const arma::mat& dZ,
+               const arma::vec& murho,
+               const arma::mat& iVrho,
+               const arma::mat& jumprho,
+               const int& Krho,
+               const Rcpp::IntegerVector& N,
+               const int& M,
+               double& rhoaccept,
+               const int& type);
+
+void updrhoARD (List& Gnorm,
+                List& prior,
+                List& G0obs,
+                List& ListIndex,
+                List& rho,
+                const List& d,
+                const arma::vec& zeta,
+                const List& murho,
+                const List& iVrho,
+                const List& jumprho,
+                const arma::vec& Krho,
+                const Rcpp::IntegerVector& N,
+                const int& M,
+                const int& P,
+                arma::vec& rhoaccept,
+                const arma::vec& type);
+
 #endif

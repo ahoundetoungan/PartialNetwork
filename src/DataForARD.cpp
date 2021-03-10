@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#define NDEBUG 1
 
 using namespace Rcpp;
 using namespace arma;

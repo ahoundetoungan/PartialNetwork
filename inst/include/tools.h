@@ -32,16 +32,49 @@ void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove);
 void removeColumn(Eigen::MatrixXd& matrix, unsigned int colToRemove);
 arma::mat possentries(int& nupdate, const int& pow_nupdate);
 void updselel (
-    Eigen::MatrixXd& Gmnorm,
-    double& prior_blockl,
-    const Eigen::MatrixXd priorm,
-    const int& i,
-    const arma::vec& index_col,
-    const arma::rowvec& newval,
-    const int& nupdate
+        Eigen::MatrixXd& Gmnorm,
+        double& prior_blockl,
+        const Eigen::MatrixXd priorm,
+        const int& i,
+        const arma::vec& index_col,
+        const arma::rowvec& newval,
+        const int& nupdate
 );
 arma::vec cBlock(
-    const int& nupmax, 
-    const int& NJ, 
-    int& NJeff);
+        const int& nupmax, 
+        const int& NJ, 
+        int& NJeff);
+
+Rcpp::List frVtoM(const Eigen::VectorXd& u,
+                  const Rcpp::IntegerVector& N,
+                  const double& M);
+
+Eigen::VectorXd frMtoV(Rcpp::List& u,
+                       const Rcpp::IntegerVector& N,
+                       const double& M);
+
+Rcpp::List fListIndex(Rcpp::List& prior,
+                      Rcpp::List& G0obs,
+                      const int& M,
+                      const Rcpp::IntegerVector& N);
+void fsetjump_dm(double& jump, const double& jumpmin,
+                const double& jumpmax, arma::mat& jumpl, const arma::mat& Vparms);
+void fsetjump_vl(arma::vec& jump, const double& jumpmin,
+            const double& jumpmax, const int& M,
+            Rcpp::List& jumpl, const Rcpp::List& Vparms);
+void fsetjump_v(arma::vec& jump, const double& jumpmin,
+                const double& jumpmax);
+void fsetjump_r(arma::rowvec& jump, const double& jumpmin,
+                const double& jumpmax);
+void fsetjump_d(double& jump, const double& jumpmin,
+                const double& jumpmax);
+void cneighbor(const double& N1, const double& N2, const double& N,
+               const arma::mat& trait, const arma::mat& Xnonard, 
+               const int& m, arma::mat &neighbor, arma::mat& weight);
+
+arma::mat fdnetARD(const double& zeta, const arma::vec& z, const arma::vec& nu,
+                   const arma::vec& dm, const int& Nm, const int& P);
+
+Rcpp::List createlistmat(const int& M, const arma::vec& Krho);
+void addtolistmat(const int& M, Rcpp::List& listmat, Rcpp::List& Rho);
 #endif

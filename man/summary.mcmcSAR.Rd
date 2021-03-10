@@ -18,49 +18,36 @@
 \item{alpha}{(optional, default = 0.95), the significance level of parameter.}
 
 \item{plot.type}{(optional) a character that indicate if the simulations from the posterior distribution should be printed
-(if `plot.type = "sim"`) or if the posterior distribution densities should be plotted (`plot.type = "dens"`). The plots can also
+(if \code{plot.type = "sim"}) or if the posterior distribution densities should be plotted (\code{plot.type = "dens"}). The plots can also
 done using the method \link[graphics]{plot}.}
 
-\item{burnin}{is the number of MCMC steps which will be considered as burn-in iterations. If `NULL` (default value),
+\item{burnin}{is the number of MCMC steps which will be considered as burn-in iterations. If \code{NULL} (default value),
 the 50\% first MCMC steps performed are used as burn-in iterations.}
 
 \item{...}{further arguments passed to or from other methods.}
 
-\item{x}{an object of class "summary.mcmcSAR" or "mcmcSAR, output of thes functions \code{\link{summary.mcmcSAR}} and
+\item{x}{an object of class "summary.mcmcSAR" or "mcmcSAR, output of the functions \code{\link{summary.mcmcSAR}} and
 \code{\link{print.summary.mcmcSAR}}.}
 }
 \value{
 A list consisting of:
-    \item{n.group}{number of groups.}
-    \item{N}{vector of each group size.}
-    \item{iteration}{number of MCMC steps performed.}
-    \item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
-    \item{posterior}{matrix containing the simulations.}
-    \item{hyperparms}{return value of `hyperparms`.}
-    \item{accept.rate}{acceptance rate of zeta.}
-    \item{formula}{input value of `formula`.}
-    \item{alpha}{significance level of parameter.}
-    \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
-    \item{...}{arguments passed to methods.}
+\item{n.group}{number of groups.}
+\item{N}{vector of each group size.}
+\item{iteration}{number of MCMC steps performed.}
+\item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
+\item{posterior}{matrix containing the simulations.}
+\item{hyperparms}{return value of \code{hyperparms}.}
+\item{accept.rate}{acceptance rate of zeta.}
+\item{formula}{input value of \code{formula}.}
+\item{alpha}{significance level of parameter.}
+\item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
+\item{...}{arguments passed to methods.}
 }
 \description{
-Summary and print methods for the class `mcmcSAR`.
+Summary and print methods for the class \code{mcmcSAR}.
 }
 \details{
-The function is smart and allows all the possible arguments with the functions \link[base]{summary}, 
-\link[graphics]{plot}, \link[graphics]{par}... such as `col`, `lty`, `mfrow`... \code{summary.mcmcSAR},
+The function is smart and allows all the possible arguments with the functions \link[base]{summary},
+\link[graphics]{plot}, \link[graphics]{par}... such as \code{col}, \code{lty}, \code{mfrow}... \code{summary.mcmcSAR},
 \code{print.summary.mcmcSAR} and \code{print.mcmcSAR} can be called by \code{summary} or \code{print}.
-}
-\examples{
-\dontrun{
-# Let us consider the example from the mcmcSAR function
-out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
-# Print the summary
-summary(out)
-# Print summary with plot and change significance level 
-summary(out, alpha = 0.90, plot.type = "sim", col = "blue")
-# Print summary with plot and change significance level and the layout of the plot
-summary(out, alpha = 0.90, plot.type = "sim", col = "blue", mfrow = c(4, 4))
-# All the possible argument with the function summary and the function plot can be passed
-}
 }

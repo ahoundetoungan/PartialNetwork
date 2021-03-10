@@ -40,9 +40,9 @@
 #' \itemize{
 #' \item{`target`}: The default value is \code{rep(0.44, 5)}. 
 #' The target of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is  0.44.
-#' \item{`jumpmin`}: The default value is \code{rep(1e-12, 5)}. 
+#' \item{`jumpmin`}: The default value is \code{c(0,1,1e-7,1e-7,1e-7)*1e-5}. 
 #' The minimal jumping of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is \eqn{10^{-12}}{1e-12}.
-#' \item{`jumpmax`}: The default value is \code{c(10, 1, 1, 1, ,1)*20)}. The maximal jumping scale is 10 except for \eqn{\mathbf{z}_i}{zi} which is set to 200.
+#' \item{`jumpmax`}: The default value is \code{c(100,1,1,1,1)*20}. The maximal jumping scale is 10 except for \eqn{\mathbf{z}_i}{zi} which is set to 200.
 #' \item{`print`}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is `TRUE`.
 #' }
 #' @return A list consisting of:
@@ -57,7 +57,7 @@
 #'     \item{start}{starting values.}
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # Sample size
 #' N       <- 500 
 #' 
@@ -103,13 +103,14 @@
 #' trait       <- matrix(0,N,K)
 #' 
 #' for(k in 1:K){
-#'   trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
+#'   tmp       <- exp(geneta[k] + logCpvMF(3, geneta[k]))
+#'   trait[,k] <- runif(N, 0.5*tmp, tmp) < densityatz[,k]
 #' }
 #' # print a percentage of people having a trait
 #' colSums(trait)*100/N
 #'   
 #' # Build ARD
-#' ARD         <- G\%*\%trait
+#' ARD         <- G %*% trait
 #'   
 #' # generate b
 #' genb        <- numeric(K)
@@ -123,7 +124,7 @@
 #' zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 #'   
 #' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-#' vfixcolumn      <- 1:5
+#' vfixcolumn      <- 1:6
 #' bfixcolumn      <- c(3, 5)
 #' b0[bfixcolumn]  <- genb[bfixcolumn]
 #' v0[vfixcolumn,] <- genv[vfixcolumn,]
@@ -135,8 +136,8 @@
 #'                    
 #' # plot simulations
 #' # plot d
-#' plot(out$simulations$d[,4], type = "l", col = "blue", ylab = "")
-#' abline(h = gend[4], col = "red")
+#' plot(out$simulations$d[,100], type = "l", col = "blue", ylab = "")
+#' abline(h = gend[100], col = "red")
 #'   
 #' # plot coordinates of individuals
 #' i <- 123 # individual 123
@@ -187,14 +188,14 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
     }
   }
   if (is.null(jumpmin)) {
-    jumpmin    <- c(1,1,1,1,1)*1e-12
+    jumpmin    <- c(0,1,1e-7,1e-7,1e-7)*1e-5
   } else {
     if(length(jumpmin) != 5) {
       stop("jumpmin in ctrl.mcmc should be a 5-dimensional vector")
     }
   }
   if (is.null(jumpmax)) {
-    jumpmax    <- c(10,1,1,1,1)*20
+    jumpmax    <- c(100,1,1,1,1)*20
   } else {
     if(length(jumpmax) != 5) {
       stop("jumpmax in ctrl.mcmc should be a 5-dimensional vector")
@@ -230,6 +231,10 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
   b0           <- start$b
   eta0         <- start$eta
   zeta0        <- start$zeta
+  stopifnot(start$d > 0)
+  stopifnot(start$b > 0)
+  stopifnot(start$eta > 0)
+  stopifnot(start$zeta > 0)
   
   if (is.null(z0) | is.null(v0) | is.null(d0) | is.null(b0) | is.null(eta0) | is.null(zeta0)) {
     stop("Elements in start should be named as z, v, b, d, eta and zeta")
@@ -241,6 +246,18 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
   
   out          <- updateGP(Y, traitARD, z0, v0, d0, b0, eta0, zeta0, fixv, consb, iteration, !sim.d, !sim.zeta,
                            hyperparms, target, jumpmin, jumpmax,  c, print)
+  
+  out$accept.rate$z      <- c(out$accept.rate$z)
+  out$accept.rate$d      <- c(out$accept.rate$d)
+  out$accept.rate$b      <- c(out$accept.rate$b)
+  out$accept.rate$eta    <- c(out$accept.rate$eta)
+  
+  if(!sim.d) {
+    out$accept.rate$d    <- "Fixed"
+  }
+  if(!sim.zeta) {
+    out$accept.rate$zeta <- "Fixed"
+  }
   
   zaccept     <- out$accept.rate$z
   daccept     <- out$accept.rate$d
@@ -260,9 +277,10 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
                         "iteration" = iteration),
                    out,
                    list("start" = start, "ctrl.mcmc" = ctrl.mcmc))
+  
   class(out)  <- "estim.ARD"
   if(print) {
-    cat("\n\n")
+    cat("\n")
     cat("The program successfully executed \n")
     cat("\n")
     cat("********SUMMARY******** \n")
@@ -279,10 +297,10 @@ mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, s
     cat("Elapsed time   : ", nhours, " HH ", nminutes, " mm ", round(nseconds), " ss \n \n")
     cat("Average acceptance rate \n")
     cat("                      z: ", mean(zaccept), "\n")
-    cat("                      d: ", ifelse(sim.d, mean(daccept), "Fixed"), "\n")
+    cat("                      d: ", ifelse(sim.d, mean(daccept), daccept), "\n")
     cat("                      b: ", mean(baccept), "\n")
     cat("                    eta: ", mean(etaaccept), "\n")
-    cat("                   zeta: ", ifelse(sim.zeta, zetaaccept, "Fixed"), "\n")
+    cat("                   zeta: ", zetaaccept, "\n")
   }
   
   out

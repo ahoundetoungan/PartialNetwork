@@ -1,8 +1,11 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(RcppProgress)]]
 #include <RcppArmadillo.h>
+#define NDEBUG 1
 #include <progress.hpp>
 #include <progress_bar.hpp>
+#include "tools.h"
+#include "vMF.h"
 
 using namespace Rcpp;
 using namespace arma;
@@ -27,157 +30,6 @@ using namespace std;
  *  That allows to avoid the loop over n and is faster.
  *  This function is not exported because it is used only in the C++ code.
  */
-
-// rw is a machin function used to sample from vMF distribution
-void rw(const int& size, const double& lambda, const int& d, arma::vec& W){
-  // Step 0
-  // Algebraically equivalent to
-  // (-2. * l + sqrt(4. * l * l + d * d)) / d
-  // but numerically more stable. See 
-  // Hornik, K., & Grün, B. (2014). movMF: An R package for fitting mixtures
-  // of von Mises-Fisher distributions. Journal of Statistical Software, 
-  // 58(10), 1-31.
-  double b = d/ (sqrt(4. * lambda * lambda + d*d) + 2. * lambda);
-  double x = (1. - b) / (1. + b);
-  double c = lambda * x + d * log(1. - x * x);
-  
-  // Step 1
-  // Let's declare the variables we will use
-  double w, Z, U;   // distinguish w from W. W is a vector of w
-  
-  // Start the loop
-  for(int i(0);i<size;++i){
-    Step1: Z = (rbeta(1,d/2.,d/2.))(0);
-    w = (1.-(1.+b)*Z)/(1.-(1.-b)*Z);
-    U = (runif(1,0.,1.))(0);
-    
-    //step 2
-    if(lambda*w+d*log(1-x*w)-c < log(U)){goto Step1;}
-    W(i)=w;
-  }
-}
-
-
-// The following function complete the algorithm by performing the step 4 and
-// the rotation toward the mean directional.
-// It needs the sample size and theta as intensity parameter x mean directional
-
-// [[Rcpp::export]]
-arma::mat rvMFcpp(const int& size,const arma::vec& theta){
-  int p=theta.n_rows;            //hypersphere dimension
-  double lambda=norm(theta);     //intensity parameter
-  arma::mat X;                         //Output matrix
-  
-  // if lambda=0 sample uniform; that is normal/norm
-  if(lambda==0){
-    NumericMatrix Xtemp(size,p,rnorm(size*p).begin());
-    X=normalise(as<arma::mat>(Xtemp),2,1);  //nomalize rows by their norm   
-  }
-  else{
-    double d=p-1;
-    // Compute W
-    arma::vec W(size);        //Void W
-    rw(size, lambda, d, W);   //Fill W using rw
-    arma::mat Wplus=repmat(W,1,d);  //Reshape to [W W W ... W] of dimension (n,d)
-    //mean direction parameter
-    arma::vec mu=theta/lambda;           
-    // Necessary variables declaration
-    NumericMatrix Vtemp(size,d,rnorm(size*d).begin());
-    arma::mat V=normalise(as<arma::mat>(Vtemp),2,1);
-    arma::mat X1=sqrt(1-Wplus % Wplus) % V;
-    X=join_rows(X1,W);
-    //Rotation
-    // To get samples from a vMF distribution with arbitrary mean direction
-    // parameter µ, X is multiplied from the right with a matrix where the
-    // first (m − 1) columns consist of unitary basis vectors of
-    // the subspace orthogonal to µ and the last column is equal to µ. See
-    // Hornik, K., & Grün, B. (2014). movMF: An R package for fitting mixtures
-    // of von Mises-Fisher distributions. Journal of Statistical Software, 
-    // 58(10), 1-31.
-    arma::mat Q,R;
-    qr(Q, R, mu);    //QR decomposition to get subsâce orthogonal to µ
-    IntegerVector seqcol=seq_len(d);
-    Q=Q.cols(as<arma::uvec>(seqcol));
-    Q=join_rows(Q,mu);
-    X=X*Q.t();
-  }
-  return X;
-}
-
-void rwone(const double& lambda, const int& d, double& w){
-  // Step 0
-  // Algebraically equivalent to
-  // (-2. * l + sqrt(4. * l * l + d * d)) / d
-  // in the reference, but numerically more stable:
-  double b = d/ (sqrt(4. * lambda * lambda + d*d) + 2. * lambda);
-  double x = (1. - b) / (1. + b);
-  double c = lambda * x + d * log(1. - x * x);
-  
-  // Step 1
-  // Let's declare the variables we will use
-  double Z, U;   // distinguish w from W. W is a vector of w
-  
-  // Start the loop
-  Step1: Z = (rbeta(1,d/2.,d/2.))(0);
-  w = (1.-(1.+b)*Z)/(1.-(1.-b)*Z);
-  U = (runif(1,0.,1.))(0);
-  // step 2
-  if(lambda*w+d*log(1-x*w)-c < log(U)){goto Step1;}
-}
-
-arma::mat rvMFone(const int p, const arma::vec& theta){  //p is the hypersphere dimension
-  double lambda=norm(theta);  // intensity parameter
-  arma::mat X(1,p);                 // The ouptup matrix
-  // if lambda=0 sample uniform; that is normal/norm
-  if(lambda==0){
-    X=(normalise(as<arma::vec>(rnorm(p,0,1)))).t();
-  }
-  else{
-    double d=p-1;
-    // compute w 
-    double w;
-    rwone(lambda, d, w);
-    //mean direction parameter
-    arma::vec mu=theta/lambda;           
-    // Necessary variables declaration
-    arma::vec V=normalise(as<arma::vec>(rnorm(d,0,1)));
-    arma::vec X1=sqrt(1-w*w)*V; 
-    arma::vec X2(1); X2(0)=w;
-    X=join_rows(X1.t(),X2);
-    arma::mat Q,R;
-    qr(Q, R, mu);    //QR decomposition to get subsâce orthogonal to µ
-    IntegerVector seqcol=seq_len(d);
-    Q=Q.cols(as<arma::uvec>(seqcol));
-    Q=join_rows(Q,mu);
-    X=X*Q.t();
-  }
-  return X;
-}
-
-
-// log of the normalization constant as function cpvMF
-// It needs the hyperparameter dimension p and the intensity parameters k
-// [[Rcpp::export]]
-double logCpvMFcpp(const int& p, const double& k){
-  if(k==0){ /*If k=0 return 1*/  return 0;}
-  return (p/2.0 - 1.0)*log(k/2.0) - lgammal(p/2.0) - log(R::bessel_i((double) k, p/2.0 - 1, 2)) - k;
-}
-
-// Even if this is not used in this program, we want also the package provides
-// a way to compute the von Mises-Fisher density.
-// The function needs a matrix of points z for at which the density will be
-// computed and theta = intensity paramter x mean directional
-
-// [[Rcpp::export]]
-NumericVector dvMFcpp(const arma::mat& z, const arma::vec& theta, const bool& logp = false){
-  int size              = z.n_rows;
-  NumericVector logdens = wrap(logCpvMFcpp(z.n_cols, norm(theta)) + z*theta);
-  if (logp) {
-    return logdens;
-  }
-  return exp(logdens);
-}
-
 
 //****** Some useful functions
 // Compute matrix Cp with Cpik=Cp(norm(zeta*zi+etak*vk))
@@ -253,35 +105,23 @@ void zupdate(const double& n, const double& K, const double& p,const arma::mat& 
              arma::mat& z,  const arma::mat& v, const arma::vec& logd, const arma::rowvec& logb, 
              const arma::rowvec& eta, const double& zeta, const arma::vec& jumpz, arma::vec& zaccept,
              const arma::rowvec& logCpeta, double& logCpzeta, arma::mat& logCp, arma::mat& loglik){
-  
-  // Variable of the candidate value
-  arma::mat zstart(n,p), logCpstart(n,K), loglikstart(n,K);
-  
-  // Declaration of some variable 
-  arma::vec logalpha2z;
-  //Loop over i
+  //Draw from the proposal
+  arma::mat zstart(n,p);
   for(int i(0);i<n;++i){
-    //Draw from the proposal
     zstart.row(i)=rvMFone(p,jumpz(i)*(z.row(i)).t()) ; 
   }
-  //Compute logalpha2 in two steps
   //Step 1: Compute Cpistart and Listart
-  logCpstart  = computelogCp(n, K, p, zstart, v, eta, zeta);
-  loglikstart = loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCpstart, Y);
-  //Compute logalpha2
-  logalpha2z  = sum(loglikstart - loglik, 1);
-  double logalphaz;
-  for(int i(0); i<n; ++i){
-    //Compute logalpha
-    logalphaz   = min(NumericVector::create(0, logalpha2z(i)));
-    //Update if accepted
-    if(unif_rand()<exp(logalphaz)){
-      z.row(i)      = zstart.row(i);  //Update The row i of z by sistart
-      logCp.row(i)  = logCpstart.row(i);//Update the row i of Cp by Cpistart
-      loglik.row(i) = loglikstart.row(i);
-      zaccept(i)+=1;     //Increase acceptance number to 1 
-    }
-  }
+  arma::mat logCpstart  = computelogCp(n, K, p, zstart, v, eta, zeta);
+  arma::mat loglikstart = loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCpstart, Y);
+  //Compute logalpha
+  arma::vec logalpha    = min(arma::join_rows(arma::zeros(n), sum(loglikstart - loglik, 1)), 1);
+  arma::vec r_unif(n, arma::fill::randu);
+  arma::uvec selupd     = arma::find(r_unif < exp(logalpha));
+  // update
+  z.rows(selupd)        = zstart.rows(selupd);  
+  logCp.rows(selupd)    = logCpstart.rows(selupd);    
+  loglik.rows(selupd)   = loglikstart.rows(selupd);
+  zaccept.elem(selupd) += arma::ones(selupd.n_elem); //Increase acceptance number to 1 
 }
 
 
@@ -313,7 +153,7 @@ void vupdate(const double& K, const double& p, List& indexg, const arma::mat& z,
   eig_sym(Aeval,Aevec,A);
   arma::mat A2=Aevec*diagmat(sqrt(Aeval))*(Aevec).t();
   //Ratation back
-  v.rows(fixv-1)=vs*inv(A2)*vs.t()*vf;
+  v.rows(fixv-1)=vf;//vs*inv(A2)*vs.t()*vf;
 }
 
 
@@ -331,21 +171,16 @@ void dupdate(const int& n, const int& K, const arma::mat& Y, const arma::mat& z,
     tmp.col(k) += tmprv(k);
   }
   // Draw from the proposal
-  arma::vec logdstart = logd + jumpd%arma::randn<arma::vec>(n); 
-  //Compute logalpha2
-  arma::vec logalpha2d   = 0.5*(pow((logd - mud)/sigmad, 2) - pow((logdstart - mud)/sigmad, 2))  +
+  arma::vec logdstart  = logd + jumpd%arma::randn<arma::vec>(n); 
+  //Compute logalpha
+  arma::vec logalpha   = 0.5*(pow((logd - mud)/sigmad, 2) - pow((logdstart - mud)/sigmad, 2))  +
     (exp(logd)-exp(logdstart))%sum(exp(tmp),1) + 
     SumYrow%(logdstart - logd);
-  //Compute logalpha
-  double logalphad;    
-  for(int i(0);i<n;++i){
-    logalphad = min(NumericVector::create(0, logalpha2d(i)));
-    //Update if accepted
-    if(unif_rand() < exp(logalphad)){
-      logd(i) = logdstart(i);    //Update the di by distart
-      daccept(i)+=1.0; //Increase acceptance number to 1
-    }
-  }
+  arma::vec r_unif(n, arma::fill::randu);
+  arma::uvec selupd    = arma::find(r_unif < exp(logalpha));
+  // update
+  logd.elem(selupd)     = logdstart.elem(selupd);  
+  daccept.elem(selupd) += arma::ones(selupd.n_elem); //Increase acceptance number to 1 
 }
 
 
@@ -365,21 +200,15 @@ void bupdate(const int& n, const double& K,const arma::mat& Y, const arma::mat& 
   
   // Draw from the proposal
   arma::rowvec logbstart = logb + jumpb%arma::randn<arma::rowvec>(K); 
-  //Compute logalpha2
-  arma::rowvec logalpha2b = (0.5/(sigmab*sigmab))*(logb - logbstart)%(logb - logbstart - 2*mub) +
+  //Compute logalpha
+  arma::rowvec logalpha  = (0.5/(sigmab*sigmab))*(logb - logbstart)%(logb - logbstart - 2*mub) +
     (exp(logb) - exp(logbstart))%exp(logCpeta)%sum(exp(tmp),0) + 
     SumYcol%(logbstart - logb);
-  
-  //Compute logalpha
-  double logalphab;
-  //Update if accepted
-  for(int k(0);k<K;++k){
-    logalphab = min(NumericVector::create(0, logalpha2b(k)));
-    if(unif_rand()<exp(logalphab)){
-      logb(k) = logbstart(k);  //Update bk by bkstart
-      baccept(k)+=1; //Increase acceptance number to 1
-    }
-  }
+  arma::vec r_unif(K, arma::fill::randu);
+  arma::uvec selupd    = arma::find(r_unif < exp(logalpha.t()));
+  // update
+  logb.elem(selupd)     = logbstart.elem(selupd);  
+  baccept.elem(selupd) += arma::ones<arma::rowvec>(selupd.n_elem); //Increase acceptance number to 1 
 }
 
 //Update eta
@@ -397,38 +226,32 @@ void etaupdate(const double& n, const double& K, const double& p, const arma::ma
   
   //Loop over k
   for(int k(0);k<K;++k){
-    draweta: etastart(k) = (R::rnorm(eta(k),jumpeta(k))); 
+    draweta: etastart(k)  = (R::rnorm(eta(k),jumpeta(k))); 
     if(etastart(k)<0){goto draweta;}
-    logCpetastart(k)    = logCpvMFcpp(p,etastart(k));
+    logCpetastart(k)      = logCpvMFcpp(p,etastart(k));
   }
-  arma::mat logCpstart  = computelogCp(n, K, p, z, v, etastart, zeta);
-  arma::mat loglikstart = loglikelihood(n, K, logd, logb, logCpetastart, logCpzeta, logCpstart, Y);
+  arma::mat logCpstart    = computelogCp(n, K, p, z, v, etastart, zeta);
+  arma::mat loglikstart   = loglikelihood(n, K, logd, logb, logCpetastart, logCpzeta, logCpstart, Y);
   
-  
-  NumericVector temp1 = wrap((etastart - eta)/jumpeta);
-  NumericVector temp2 = wrap((eta - etastart)/jumpeta);
-  NumericVector lphi1 = Rcpp::pnorm(temp1, 0, 1, false, true);
-  NumericVector lphi2 = Rcpp::pnorm(temp2, 0, 1, false, true);
-  //Compute logalpha2
-  arma::rowvec logalpha2eta = (alphaeta-1.)*log(etastart/eta) + betaeta*(eta-etastart) + 
+  NumericVector temp1     = wrap((etastart - eta)/jumpeta);
+  NumericVector temp2     = wrap((eta - etastart)/jumpeta);
+  NumericVector lphi1     = Rcpp::pnorm(temp1, 0, 1, false, true);
+  NumericVector lphi2     = Rcpp::pnorm(temp2, 0, 1, false, true);
+  //Compute logalpha
+  arma::rowvec logalpha   = (alphaeta-1.)*log(etastart/eta) + betaeta*(eta-etastart) + 
     (as<arma::rowvec>(lphi1) - as<arma::rowvec>(lphi2)) +  sum(loglikstart,0) - sum(loglik,0);
-  //Update if accepted
-  double logalphaeta;
-  for(int k(0);k<K;++k){
-    logalphaeta = min(NumericVector::create(0, logalpha2eta(k)));
-    if(unif_rand() < exp(logalphaeta)){
-      eta(k)        = etastart(k);    //Update the di by distart
-      logCp.col(k)  = logCpstart.col(k);
-      loglik.col(k) = loglikstart.col(k);
-      logCpeta(k)   = logCpetastart(k);     //Update the entry k of Cpeta by Cpetakstart
-      etaaccept(k) += 1.0; //Increase acceptance number to 1
-    }
-  }
+  arma::vec r_unif(K, arma::fill::randu);
+  arma::uvec selupd       = arma::find(r_unif < exp(logalpha.t()));
+  // update
+  eta.elem(selupd)        = etastart.elem(selupd);
+  logCp.cols(selupd)      = logCpstart.cols(selupd);
+  loglik.cols(selupd)     = loglikstart.cols(selupd);
+  logCpeta.elem(selupd)   = logCpetastart.elem(selupd);
+  etaaccept.elem(selupd) += arma::ones<arma::rowvec>(selupd.n_elem); //Increase acceptance number to 1
 }
 
 
 //Update zeta
-
 void zetaupdate(const double& n, const double& K, const double& p, const arma::mat& Y,
                 const arma::mat& z, const arma::mat& v, const arma::vec& logd, const arma::rowvec& logb, const arma::rowvec& eta, double& zeta,
                 const double& alphazeta, const double& betazeta, 
@@ -445,9 +268,8 @@ void zetaupdate(const double& n, const double& K, const double& p, const arma::m
   //Compute Cpzetastart and phizetastart (see section 3.3)
   
   arma::mat logCpstart        = computelogCp(n, K, p, z, v, eta, zetastart);
-  double logCpzetastart = logCpvMFcpp(p,zetastart);
+  double logCpzetastart       = logCpvMFcpp(p,zetastart);
   arma::mat loglikstart       = loglikelihood(n, K, logd, logb, logCpeta, logCpzetastart, logCpstart, Y);
-  
   
   double temp1          = (zetastart - zeta)/jumpzeta;
   double temp2          = (zeta - zetastart)/jumpzeta;
@@ -467,15 +289,11 @@ void zetaupdate(const double& n, const double& K, const double& p, const arma::m
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // The following function needs the initialization values and some 
 // parameters of the model. It calls the previsous function to update   
 // z, v, d, b, eta and zeta. it also updates the hypermarameters. Its arguments
 // are described in section 3.4 of the technical details.
-
-
 // [[Rcpp::export]]
 List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, const arma::mat& v0,
               const arma::vec& d0, const arma::rowvec& b0, const arma::rowvec& eta0, 
@@ -504,35 +322,29 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   double alphaeta=hyperparms(4), betaeta=hyperparms(5);
   double alphazeta=hyperparms(6), betazeta=hyperparms(7);
   
-  
   //Jumping scales
   arma::vec jumpz = arma::ones(n), jumpd = arma::ones(n);
   arma::rowvec jumpb = arma::ones<arma::rowvec>(K), jumpeta = arma::ones<arma::rowvec>(K);
   double jumpzeta = 1;
   
-  
   //Variables to count the number of accepance values
-  arma::vec zaccept=arma::zeros(n), daccept=arma::zeros(n);
-  arma::rowvec baccept=arma::zeros<arma::rowvec>(K), etaaccept=arma::zeros<arma::rowvec>(K);
-  double zetaaccept=0;
-  
-  
+  arma::vec zaccept(n, arma::fill::zeros), daccept(n, arma::fill::zeros); 
+  arma::rowvec baccept(K, arma::fill::zeros), etaaccept(K, arma::fill::zeros);
+  double zetaaccept = 0;
   
   //Create output for parameters z, v, d, b, eta and zeta
   //We set the first entry equal to the initialization values
-  
   List zoutput(nsimul+1); zoutput(0)=z;
   List voutput(nsimul+1); voutput(0)=v;
   arma::mat doutput(nsimul+1,n); doutput.row(0) = d.t();
   arma::mat boutput(nsimul+1,K); boutput.row(0) = b;
   arma::mat etaoutput(nsimul+1,K); etaoutput.row(0) = eta;
-  arma::vec zetaoutput(nsimul+1); zetaoutput(0) = zeta;
+  NumericVector zetaoutput(nsimul+1); zetaoutput(0) = zeta;
   
   //Save hyperparameters updates
   //Note that alphaeta, betaeta, alphazeta and betazeta will not be updated
   NumericMatrix hyperupdate(nsimul+1,4);
   hyperupdate(0,_)=hyperparms;
-  
   
   //Some useful variables
   //indexg is a list of size K. 
@@ -554,7 +366,6 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   //Initialisation of L
   arma::mat loglik = loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCp, Y);
   
-  
   //save fixed values of v as vf (see section 3.3 update v). 
   const arma::mat vf=v.rows(fixv-1);
   //Compute PG0 (see section 3.3 update v)
@@ -571,7 +382,6 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   Progress prgcpp(nsimul, display_progress);
   
   for(int t(1);t<nsimul+1;++t){
-    
     //print step
     //if(t%100==1.0){std::cout<<"*";}
     //if(t%5000==0){std::cout<<" "<<floor(t/nsimul*100)<<"%"<<std::endl;}
@@ -579,10 +389,12 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
     
     //Step 2a update z
     zupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, jumpz, zaccept, logCpeta, logCpzeta, logCp, loglik);
+    
     //Step 2b update v
     vupdate(K, p, indexg, z, v, eta, fixv, vf);
+    
     //Update Cp
-    logCp=computelogCp(n, K, p, z, v, eta, zeta);
+    logCp = computelogCp(n, K, p, z, v, eta, zeta);
     
     //Step 2d update b
     bupdate(n, K, Y, z, v, logd, logb, eta, zeta, mub, sigmab, jumpb, baccept, logCpeta, logCpzeta, logCp, SumYcol);
@@ -598,50 +410,43 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
       logb    = logb - C0;}
     
     //Update L
-    loglik=loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCp, Y);
+    loglik    = loglikelihood(n, K, logd, logb, logCpeta, logCpzeta, logCp, Y);
+    
     //Step 2f update eta
     etaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphaeta, betaeta, jumpeta, etaaccept, logCpeta, logCpzeta, logCp, loglik);
     
     //Step 2g update zeta
-    if(fzeta==false){
-      zetaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphazeta, betazeta, jumpzeta, zetaaccept, logCpeta, logCpzeta, logCp, loglik);}
-    
+    if(fzeta == false){
+      zetaupdate(n, K, p, Y, z, v, logd, logb, eta, zeta, alphazeta, betazeta, jumpzeta, zetaaccept, logCpeta, logCpzeta, logCp, loglik);
+    }
     
     //Step 2h update mub
-    mubhat=mean(logb);
-    mub=(rnorm(1,mubhat,sigmab/sqrt(K)))(0);
+    mubhat = mean(logb);
+    mub    = (rnorm(1,mubhat,sigmab/sqrt(K)))(0);
     
     //step 2i update sigmab
-    sigmab2hat=sum(pow(logb-mubhat,2));  
-    sigmab=pow(sigmab2hat/(rchisq(1,K-1)(0)),0.5);
+    sigmab2hat = sum(pow(logb-mubhat,2));  
+    sigmab     = pow(sigmab2hat/(rchisq(1,K-1)(0)),0.5);
     
     //Step 2j update mud
-    mudhat=mean(logd);
-    mud=(rnorm(1,mudhat,sigmad/sqrt(n)))(0);
+    mudhat = mean(logd);
+    mud    = (rnorm(1,mudhat,sigmad/sqrt(n)))(0);
     
     //step 2k update sigmad
-    sigmad2hat=sum(pow(logd-mudhat,2));  
-    sigmad=pow(sigmad2hat/(rchisq(1,n-1)(0)),0.5);
+    sigmad2hat = sum(pow(logd-mudhat,2));  
+    sigmad     = pow(sigmad2hat/(rchisq(1,n-1)(0)),0.5);
     
     //update jumping scale
-    for(int i(0); i<n; ++i){
-      double jumpzst = jumpz(i) - (zaccept(i)/t - target(0))/pow(t,c);
-      if((jumpzst > jumpmin(0)) & (jumpzst < jumpmax(0))){jumpz(i) = jumpzst;}
-      double jumpdst = jumpd(i) + (daccept(i)/t - target(1))/pow(t,c);
-      if((jumpdst > jumpmin(1)) & (jumpdst < jumpmax(1))){jumpd(i) = jumpdst;}
-    }
-    
-    for(int k(0); k<K; ++k){
-      double jumpbst = jumpb(k) + (baccept(k)/t - target(2))/pow(t,c);
-      if((jumpbst > jumpmin(2)) & (jumpbst < jumpmax(2))){jumpb(k) = jumpbst;}
-      
-      double jumpetast = jumpeta(k) + (etaaccept(k)/t - target(3))/pow(t,c);
-      if((jumpetast > jumpmin(3)) & (jumpetast < jumpmax(3))){jumpeta(k) = jumpetast;}
-    }
-    
-    double jumpzetast = jumpzeta + (zetaaccept/t - target(4))/pow(t,c);
-    
-    if((jumpzetast > jumpmin(4)) & (jumpzetast < jumpmax(4))){jumpzeta = jumpzetast;}
+    jumpz     -= (zaccept/t - target(0))/pow(t,c);
+    fsetjump_v(jumpz, jumpmin(0), jumpmax(0));
+    jumpd     += (daccept/t - target(1))/pow(t,c);
+    fsetjump_v(jumpd, jumpmin(1), jumpmax(1));
+    jumpb     += (baccept/t - target(2))/pow(t,c);
+    fsetjump_r(jumpb, jumpmin(2), jumpmax(2));
+    jumpeta   += (etaaccept/t - target(3))/pow(t,c);
+    fsetjump_r(jumpeta, jumpmin(3), jumpmax(3));
+    jumpzeta  += (zetaaccept/t - target(4))/pow(t,c);
+    fsetjump_d(jumpzeta, jumpmin(4), jumpmax(4));
     
     //Save the updates
     zoutput(t)=z;
@@ -657,9 +462,9 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   }
   
   //Create list for acceptance rate
-  List acceptance=List::create(Named("z")=zaccept/nsimul, Named("d")=daccept/nsimul,
-                               Named("b")=baccept/nsimul, Named("eta")=etaaccept/nsimul,
-                               Named("zeta")=zetaaccept/nsimul);
+  List acceptance=List::create(Named("z") = zaccept/nsimul, Named("d")   = daccept/nsimul,
+                               Named("b") = baccept/nsimul, Named("eta") = etaaccept/nsimul,
+                               Named("zeta") = zetaaccept/nsimul);
   // non updated hyper
   List hypernonupdate = List::create(Named("alphaeta")    = alphaeta,
                                       Named("betaeta")    = betaeta,
@@ -683,64 +488,19 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
                       Named("accept.rate")       = acceptance);
 }
 
-
-////// Estimate graph Breza et al. 
-
-// Compute distance matrix between people
-// Distance between individual described by catagorial variables. We use
-// J. Pagès [2004] "Analyse Factorielle des Données mixtes", Revue de 
-// Statistique Appliquée, tome 52, N°4, P. 93-111
-
-// after we can build the index and the weights matrix to compute nu and  
-// z for people without ARD. The matrix dimension is N2*m
-// The entry [i,m] is m-th neighbor for i in index matrix
-// and its weight in weight matrix defined by 1/(1+d[j,i]) 
-
-void cneighbor(const double& N1, const double& N2, const double& N,
-               const arma::mat& trait, const arma::mat& traitnonARD, 
-               const int& m, arma::mat &neighbor, arma::mat& weight){
-  
-  //Normalize disjuntif tables following Pagès [2004]
-  arma::mat traitnorm=arma::normalise(arma::join_cols(trait,traitnonARD),2,0)*sqrt(N);
-  
-  //variable for saving distance of ARD j to ARD i
-  arma::vec disti(N1);
-  //other variables
-  arma::uvec temp(N1);                                 // temporary variable
-  arma::uvec index(m);                                 // temporary variable
-  arma::uvec seqm=arma::linspace<arma::uvec>(0,m-1,m); // vector[0,1,...,m-1]
-  
-  //Compute distance
-  for(int i(0);i<N2;++i){
-    for(int j(0);j<N1;++j){
-      // j is ARD and i nonARD
-      disti(j)= arma::norm(traitnorm.row(j)-traitnorm.row(N1+i));
-    }
-    temp=arma::sort_index(disti);        //Returns index for distance from smallest 
-    index=temp.elem(seqm);               //the m-th nearest index 
-    neighbor.row(i)=arma::conv_to<arma::rowvec>::from(index);
-    weight.row(i)=(1./(1.+ disti.elem(index) )).t();
-    weight.row(i)=weight.row(i)/sum(weight.row(i));
-  }
-}
-
-//////// Compute the graphs when traitnonard = NULL
+//////// Compute the graphs when Xnonard = NULL
 // [[Rcpp::export]]
-arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& d,
-                    const arma::vec& zeta, const arma::mat& traitard,  const unsigned int Metrostart,
+List dnetwork1(const double& T, const double& P, List& z, const arma::mat& d,
+                    const arma::vec& zeta, const unsigned int& N,  const unsigned int& Metrostart,
                     const bool& display_progress){
   // Number of people with ARD
-  const double n=traitard.n_rows;
-  const double N=n;
-  
-  IntegerVector seqrow=seq_len(P)-1;    // [0,1,...,P-1]
-  
   const double ngraph=T-Metrostart+1;       // number of graphs
-  double zetat, Cpzetat;
-  arma::rowvec nuARDt(n);
+  double zetat, logCpzetat;
+  arma::rowvec nuARDt(N);
+  arma::rowvec nus(N, arma::fill::zeros), ds(N, arma::fill::zeros);
   
   
-  arma::mat probt(N,N), prob(N,N,arma::fill::zeros);
+  arma::mat probt(N,N), prob(N,N,arma::fill::zeros), numat;
   
   //loop 
   Progress prgcpp(ngraph, display_progress);
@@ -751,61 +511,64 @@ arma::mat dnetwork1(const double& T, const double& P, List& z, const arma::mat& 
     //if((t+1)%5000==0){std::cout<<" "<<round((t+1)/ngraph*100)<<"%"<<std::endl;}
     prgcpp.increment();
     
-    zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-    arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
-    arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
-    Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
+    zetat           = zeta(t+Metrostart);          // extract zeta for itaration t+Metrostart
+    arma::mat zt    = z(t+Metrostart);             // extract z for iteration t+Metrostart
+    arma::rowvec dt = d.row(t+Metrostart);         // extract d for iteration t+Metrostart
+    ds             += dt;
+    logCpzetat      = logCpvMFcpp(P,zetat);        // Cp(P,zetat)
     //compute nu for ARD
-    nuARDt=log(dt) + 0.5*log(Cpzetat) - 0.5*log(sum(dt)) ;
+    nuARDt          = log(dt) + 0.5*logCpzetat - 0.5*log(sum(dt)) ;
+    nus            += nuARDt;
     
     // compute Probabilities
-    probt = zetat*zt*zt.t();
-    
-    probt += arma::repmat(nuARDt.t(),1,N) + arma::repmat(nuARDt,N,1);
-    probt = arma::exp(probt);
+    numat = arma::repmat(nuARDt,N,1);
+    probt = arma::exp(zetat*zt*zt.t() + numat + numat.t());
     probt.diag()=arma::zeros(N);   //zero on the diagonal
     probt*=(arma::sum(dt)/arma::accu(probt));
-    
     
     prob += probt;
   }
   prob /= ngraph;
+  ds   /= ngraph;
+  nus  /= ngraph;
   
-  arma::umat tempbin = (prob<1);
-  arma::mat tempone = arma::mat(N,N,arma::fill::ones);
-  prob = tempbin%prob + (1-tempbin)%tempone;
-  return  prob;
+  arma::uvec tmp  = arma::find(prob > 1);
+  prob.elem(tmp)  = arma::ones(tmp.n_elem);
+  return  List::create(Named("dnetwork") = prob,
+                       Named("degree")   = ds,
+                       Named("nu")       = nus);
 }
 
 
 
 // [[Rcpp::export]]
-arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
-                    const arma::vec& zeta, const arma::mat& traitard, const arma::mat& traitnonard, const unsigned int& M, 
+List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
+                    const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, 
+                    const arma::uvec& iARD, const arma::uvec& inonARD, const unsigned int& M, 
                     const unsigned int& Metrostart, const bool& display_progress){
   // Number of people with ARD
-  const double n=traitard.n_rows;
+  const double n = Xard.n_rows;
   
-  IntegerVector seqrow=seq_len(P)-1;        // [0,1,...,P-1]
   
-  const double ngraph=T-Metrostart+1;       // number of graphs
-  double zetat, Cpzetat;
+  const double ngraph = T-Metrostart+1;       // number of graphs
+  double zetat, logCpzetat;
   arma::rowvec nuARDt(n);
   
   // Number of people without ARD
-  const double n2=traitnonard.n_rows;
+  const double n2 = Xnonard.n_rows;
   //Number of peaple
-  const double N=n+n2;
+  const double N  = n+n2;
   
   //compute neighbor and weight
   arma::mat neighbor(n2,M);            
   arma::mat weight(n2,M);
-  cneighbor(n, n2, N, traitard, traitnonard, M, neighbor, weight);
+  cneighbor(n, n2, N, Xard, Xnonard, M, neighbor, weight);
   
   //Necessary variables
-  arma::mat znonARDt(n2,P), ztall(N,P), probt(N,N), prob(N,N,arma::fill::zeros);;
-  arma::rowvec weightj(M), nunonARDt(n2), dnonARDt(n2);
+  arma::mat znonARDt(n2,P), ztall(N,P), probt(N,N), prob(N,N,arma::fill::zeros), numat;
   arma::uvec neighborj(M);
+  arma::rowvec weightj(M), nunonARDt(n2), dnonARDt(n2), nut(N), nus(N, arma::fill::zeros),
+  ds(N, arma::fill::zeros), dst(N);
   
   //loop 
   Progress prgcpp(ngraph, display_progress);
@@ -816,12 +579,12 @@ arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& 
     //if((t+1)%5000==0){std::cout<<" "<<round((t+1)/ngraph*100)<<"%"<<std::endl;}
     prgcpp.increment();
     
-    zetat=zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-    arma::mat zt=z(t+Metrostart);        // extract z for iteration t+Metrostart
-    arma::rowvec dt=d.row(t+Metrostart); // extract d for iteration t+Metrostart
-    Cpzetat=exp(logCpvMFcpp(P,zetat));       // Cp(P,zetat)
+    zetat           = zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
+    arma::mat zt    = z(t+Metrostart);        // extract z for iteration t+Metrostart
+    arma::rowvec dt = d.row(t+Metrostart); // extract d for iteration t+Metrostart
+    logCpzetat      = logCpvMFcpp(P,zetat);       // logCp(P,zetat)
     //compute nu for ARD
-    nuARDt=log(dt) + 0.5*log(Cpzetat*n/N) - 0.5*log(sum(dt)) ;
+    nuARDt = log(dt) + 0.5*logCpzetat + 0.5*log(n/N) - 0.5*log(sum(dt)) ;
     
     //compute nu for non ARD
     for(int j(0);j<n2;++j){
@@ -833,23 +596,34 @@ arma::mat dnetwork2(const double& T, const double& P, List& z, const arma::mat& 
     znonARDt=normalise(znonARDt,2,1);
     
     // compute Probabilities
-    ztall=arma::join_cols(zt,znonARDt);
-    probt = zetat*ztall*ztall.t();;
-    
-    probt += arma::repmat(arma::join_cols(nuARDt.t(),nunonARDt.t()),1,N) + arma::repmat(arma::join_rows(nuARDt,nunonARDt),N,1);
-    probt = arma::exp(probt);
+    ztall.rows(iARD)    = zt;
+    ztall.rows(inonARD) = znonARDt;
+    nut.elem(iARD)      = nuARDt;
+    nut.elem(inonARD)   = nunonARDt;
+    dst.elem(iARD)      = dt;
+
+    numat = arma::repmat(nut,N,1);
+    probt = arma::exp(zetat*ztall*ztall.t() + numat + numat.t());
+
     probt.diag()=arma::zeros(N); //zero on the diagonal
     
     // compute d for nonARD
-    dnonARDt=(N/n)*arma::exp(nunonARDt)*sum(arma::exp(nuARDt))/Cpzetat;
-    probt *= ((arma::sum(dt)+arma::sum(dnonARDt))/arma::accu(probt));
+    dnonARDt = (N/n)*arma::exp(nunonARDt)*sum(arma::exp(nuARDt))/exp(logCpzetat);
+    probt   *= ((arma::sum(dt)+arma::sum(dnonARDt))/arma::accu(probt));
     
-    prob += probt;
+    dst.elem(inonARD) = dnonARDt;
+    ds               += dst;
+    nus              += nut;
+    prob             += probt;
   }
   
   prob /= ngraph;
-  arma::umat tempbin = (prob<1);
-  arma::mat tempone = arma::mat(N,N,arma::fill::ones);
-  prob = tempbin%prob + (1-tempbin)%tempone;
-  return  prob;
+  ds   /= ngraph;
+  nus  /= ngraph;
+  
+  arma::uvec tmp  = arma::find(prob > 1);
+  prob.elem(tmp)  = arma::ones(tmp.n_elem);
+  return  List::create(Named("dnetwork") = prob,
+                       Named("degree")   = ds,
+                       Named("nu")       = nus);
 }

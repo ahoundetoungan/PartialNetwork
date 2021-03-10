@@ -27,7 +27,7 @@ formula.to.data <- function(formula, contextual, data) {
   }
   
   ## call model.frame()
-  mf               <- model.frame(formula)
+  mf               <- model.frame(formula, data = data)
   ## extract response, terms, model matrices
   y                <- model.response(mf, "numeric")
   mtXone           <- terms(formula, data = data, rhs = 1)

@@ -2,18 +2,25 @@
 #' @description \code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the 
 #' ARD network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
 #' The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a m-nearest neighbors method.
-#' @param object is an `estim.ARD` object returned by \code{\link{mcmcARD}}.
-#' @param traitARD is the matrix of traits for individuals with ARD. The entry (i, k) is 1 if i has the trait k and 0 otherwise.
-#' @param traitnonARD is the matrix of traits for individuals without ARD. The entry (j, k) is 1 if j has the trait k and 0 otherwise.
-#' @param m is the number of neighbors used to compute the gregariousness and the degree for individuals without ARD.
-#' @param burnin is the number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
+#' @param object `estim.ARD` object returned by \code{\link{mcmcARD}}.
+#' @param X matrix of variables (describing individuals with ARD and those without ARD) used to compute distances between individuals. Necessary when ARD are available for a sample of individuals.
+#' This could be the matrix of traits (see details).
+#' @param obsARD logical vector of length `nrow(X)` (number of individuals with and without ARD), where the i-th entry equal to `TRUE` if the i-th individual in `X` has ARD and `FALSE` otherwise.
+#' If missing, `obsARD = rep(c(TRUE, FALSE), n1, n2)`, where `n1` is the number of individuals with ARD (see details).
+#' @param m number of neighbors used to compute the gregariousness and the degree for individuals without ARD.
+#' @param burnin number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
 #' used the simulation from the iteration \code{burnin + 1}.
-#' @param print is logical; if TRUE, the progression will be printed in the console.
-#' @return a matrix of linking probabilities.
+#' @param print logical; if TRUE, the progression will be printed in the console.
+#' @return A list consisting of:
+#'         \item{dnetwork}{posterior mean of the network distribution.} 
+#'         \item{degree}{posterior mean of the degree.} 
+#'         \item{nu}{posterior mean of the gregariousness, nu.} 
+#' @details Care should be taken about the order of individuals provided through the arguments `traitARD`, `ARD` when calling the function \code{\link{mcmcARD}}, and the order of individuals in
+#' `X` and `obsARD`. Especially, the i-th row of `X[obsARD,]` should correspond to the i-th row in `traitARD` or `ARD`. That is, the order of the
+#' individuals with ARD in `obsARD` should match with their order when calling the function \code{\link{mcmcARD}}.
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' set.seed(123)
-#' 
 #' # GENERATE DATA
 #' # Sample size
 #' N  <- 500 
@@ -58,16 +65,17 @@
 #'   densityatz[,k] <- dvMF(genz,genv[k,]*geneta[k])
 #' }
 #' 
-#' trait       <- matrix(0,N,K)
+#' trait       <- matrix(0, N, K)
 #' for(k in 1:K){
-#'   trait[,k] <- densityatz[,k]>sort(densityatz[,k],decreasing = T)[runif(1,0.05*N,0.25*N)]
+#'   tmp       <- exp(geneta[k] + logCpvMF(3, geneta[k]))
+#'   trait[,k] <- runif(N, 0.5*tmp, tmp) < densityatz[,k]
 #' }
 #' 
 #' # print a percentage of peaople having a trait
 #' colSums(trait)*100/N
 #' 
 #' # Build ARD
-#' ARD         <- G \%*\% trait
+#' ARD         <- G %*% trait
 #' 
 #' # generate b
 #' genb        <- numeric(K)
@@ -82,7 +90,7 @@
 #' zeta0  <- 1; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 #' 
 #' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-#' vfixcolumn      <- 1:5
+#' vfixcolumn      <- 1:6
 #' bfixcolumn      <- c(3, 5)
 #' b0[bfixcolumn]  <- genb[bfixcolumn]
 #' v0[vfixcolumn,] <- genv[vfixcolumn,]
@@ -93,22 +101,24 @@
 #'                   consb = bfixcolumn, iteration = 5000)
 #'                   
 #' # fit network distribution
-#' dist   <- fit.dnetwork(out, traitARD = trait)
+#' dist   <- fit.dnetwork(out)
 #' 
-#' plot(rowSums(dist), gend)
+#' plot(rowSums(dist$dnetwork), gend)
+#' abline(0, 1, col = "red")
 #' 
 #' # EXAMPLE 2: ARD observed for a sample of the population
 #' # observed sample
-#' traitard    <- trait[1:n, ]
-#' traitnonard <- trait[(n + 1):N, ]
-#' ARD         <- ARD[1:n,]
+#' selectARD   <- sort(sample(1:N, n, FALSE))
+#' traitard    <- trait[selectARD,]
+#' ARD         <- ARD[selectARD,]
+#' logicalARD  <- (1:N) %in% selectARD
 #' 
 #' # initianalization 
 #' d0     <- exp(rnorm(n)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 #' zeta0  <- 1; z0 <- matrix(rvMF(n,rep(0,P)),n); v0 <- matrix(rvMF(K,rep(0,P)),K)
 #' 
 #' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-#' vfixcolumn      <- 1:5
+#' vfixcolumn      <- 1:6
 #' bfixcolumn      <- c(3, 5)
 #' b0[bfixcolumn]  <- genb[bfixcolumn]
 #' v0[vfixcolumn,] <- genv[vfixcolumn,]
@@ -119,14 +129,19 @@
 #'                   consb = bfixcolumn, iteration = 5000)
 #'                   
 #' # fit network distribution
-#' dist   <- fit.dnetwork(out, traitARD = traitard, traitnonARD = traitnonard, m = 5)
+#' dist   <- fit.dnetwork(out, X = trait, obsARD = logicalARD, m = 1)
 #' 
-#' plot(rowSums(dist)[1:n], gend[1:n], col = "blue")   # observed ard
-#' points(rowSums(dist)[(n + 1):N], gend[(n + 1):N], col = "red")
+#' library(ggplot2)
+#' ggplot(data.frame("etimated.degree" = dist$degree,
+#'                   "true.degree"     = gend,
+#'                   "observed"            = ifelse(logicalARD, TRUE, FALSE)),
+#'        aes(x = etimated.degree, y = true.degree, colour = observed)) +
+#'   geom_point()
 #' }
 #' @export
 
-fit.dnetwork   <- function(object, traitARD, traitnonARD = NULL, m, burnin = NULL, print = TRUE){
+fit.dnetwork   <- function(object, X = NULL, obsARD = NULL,
+                           m = NULL, burnin = NULL, print = TRUE){
   t1           <- Sys.time()
   if (class(object) != "estim.ARD") {
     stop("object class is not estim.ARD")
@@ -134,6 +149,7 @@ fit.dnetwork   <- function(object, traitARD, traitnonARD = NULL, m, burnin = NUL
   T          <- object$iteration
   P          <- object$p
   simu       <- object$simulations
+  N1         <- object$n
   z          <- simu$z
   d          <- simu$d
   zeta       <- simu$zeta
@@ -147,22 +163,44 @@ fit.dnetwork   <- function(object, traitARD, traitnonARD = NULL, m, burnin = NUL
     stop("Burnin is too high")
   }
   
-  if (is.null(traitnonARD)) {
-    if (!missing(m)) {
-      warning("m is defined but not used")
-    }
+  if (is.null(X)) {
     if (print) {
       cat("ARD observed on the entire population \n")
     }
-    out      <- dnetwork1(T, P, z, d, zeta, traitARD, Mst, print)
+    out      <- dnetwork1(T, P, z, d, zeta, N1, Mst, print)
   } else {
     if (print) {
       cat("ARD non observed on the entire population \n")
     }
-    out      <- dnetwork2(T, P, z, d, zeta, traitARD, traitnonARD, m, Mst, print)
+    stopifnot(is.matrix(X))
+    N        <- nrow(X)
+    N2       <- N - N1
+    if(N <= object$n) {
+      stop("X provided when nrow(X) is not greater than the ARD sample size")
+    }
+    if(!is.null(obsARD)) {
+      stopifnot(is.vector(obsARD))
+      stopifnot(is.logical(obsARD))
+      stopifnot(length(obsARD) == nrow(X))
+    } else {
+      obsARD <- rep(c(TRUE, FALSE), c(N1, N2))
+    }
+    iARD     <- which(obsARD)
+    inonARD  <- which(!obsARD)
+    XARD     <- X[iARD,]
+    XnonARD  <- X[inonARD,]
+    iARD     <- iARD - 1
+    inonARD  <- inonARD - 1
+    if(is.null(m)) {
+      stop("m is null")
+    }
+      
+    out      <- dnetwork2(T, P, z, d, zeta, XARD, XnonARD, iARD, inonARD, m, Mst, print)
   }
+  out$degree <- c(out$degree)
+  out$nu     <- c(out$nu)
   
-  class(out) <- "dnetwork"
+  #class(out) <- "dnetwork"
   
   t2          <- Sys.time()
   timer       <- as.numeric(difftime(t2, t1, units = "secs"))
@@ -170,9 +208,9 @@ fit.dnetwork   <- function(object, traitARD, traitnonARD = NULL, m, burnin = NUL
   
   # Print the processing time
   if (print) {
-    cat("\n\n")
+    cat("\n")
     cat("Average link probabilities estimated \n")
-    cat("Iteration             :", T - Mst + 1, "\n  \n")
+    cat("Iteration      :", T - Mst + 1, "\n")
     
     nhours     <- floor(timer/3600)
     nminutes   <- floor((timer-3600*nhours)/60)%%60

@@ -29,30 +29,3 @@
 sim.dnetwork  <- function(nu, d, zeta, z) {
   Prob(nu, d, zeta, z)
 }
-
-#' @title Simulation of the network
-#' @description Generate networks from the distribution of the network.
-#' @param dnetwork is the matrix of link probabilities.
-#' @examples 
-#' N       <- 500 
-#' zeta    <- 1
-#' 
-#' # Generate the spherical coordinates
-#' z       <- rvMF(N, c(0, 0, 0))
-#' 
-#' # Genetate the gregariousness
-#' nu      <- rnorm(N, -1.35, 0.37)
-#' 
-#' # Generale degrees
-#' d       <- runif(N, 0, 45)
-#' 
-#' # Network distribution
-#' dist    <- sim.dnetwork(nu, d, zeta, z)
-#' 
-#' # Generate network
-#' G       <- sim.network(dist)
-#' @seealso \code{\link{sim.dnetwork}}
-#' @export
-sim.network <- function(dnetwork) {
-  Graph(dnetwork)
-}

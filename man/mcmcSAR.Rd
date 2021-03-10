@@ -8,60 +8,72 @@ mcmcSAR(
   formula,
   contextual,
   start,
-  hyperparms,
+  G0.obs,
   G0 = NULL,
-  iteration = 2000L,
+  mlinks = list(),
+  hyperparms = list(),
   ctrl.mcmc = list(),
+  iteration = 2000L,
   data
 )
 }
 \arguments{
-\item{formula}{an object of class \link[stats]{formula}: a symbolic description of the model. The `formula` should be as for example \code{y ~ x1 + x2 | x1 + x2}
-where `y` is the endogenous vector, the listed variables before the pipe, `x1`, `x2` are the individual exogenous variables and
-the listed variables after the pipe, `x1`, `x2` are the contextual observable variables. Other formulas may be
+\item{formula}{object of class \link[stats]{formula}: a symbolic description of the model. The \code{formula} should be as for example \code{y ~ x1 + x2 | x1 + x2}
+where \code{y} is the endogenous vector, the listed variables before the pipe, \code{x1}, \code{x2} are the individual exogenous variables and
+the listed variables after the pipe, \code{x1}, \code{x2} are the contextual observable variables. Other formulas may be
 \code{y ~ x1 + x2} for the model without contextual effects, \code{y ~ -1 + x1 + x2 | x1 + x2} for the model
 without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual variables.}
 
 \item{contextual}{(optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
-the `formula` as `y ~ x1 + x2` and `contextual` as `TRUE` is equivalent to set the formula as `y ~ x1 + x2 | x1 + x2`.}
+the \code{formula} as \code{y ~ x1 + x2} and \code{contextual} as \code{TRUE} is equivalent to set the formula as \code{y ~ x1 + x2 | x1 + x2}.}
 
-\item{start}{(optional) is the vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se2)'},
+\item{start}{(optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se2)'},
 where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
-and \eqn{\sigma^2}{se2} the variance of the error term. If the `start` is missing, a Maximum Likelihood estimator will be used, where
-the network matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).}
+and \eqn{\sigma^2}{se2} the variance of the error term. If the \code{start} is missing, a Maximum Likelihood estimator will be used, where
+the network matrix is that given through the argument \code{G0} (if provided) or generated from it distribution \code{dnetwork} (see argument \code{hyperparms}).}
 
-\item{hyperparms}{is a list of hyperparameter parameter. It should contain at least `dnetwork`, the linking probabilities. As there are `M` groups and
-individual from different groups are not linked, `dnetwork` is a list of `M` matrices where each matrix give the link probabilities in one group.}
+\item{G0.obs}{list of matrices (or simply matrix if the list contains only one matrix) indicating the part of the network data which is observed. If the (i,j)-th element
+of the m-th matrix is one, then the element at the same position in the network data will be considered as observed and will not be inferred in the MCMC. In contrast,
+if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing true value which will be inferred.
+\code{G0.obs} can also take \code{none} when no part of the network data is observed (equivalent to the case where all the entries are zeros) and \code{all} when the network data is fully
+observed (equivalent to the case where all the entries are ones).}
 
-\item{G0}{(optional) is the starting value of the (row normalized) network as a list of `M` sub-network.}
+\item{G0}{list of sub-network matrices (or simply network matrix if there is only one sub-network). \code{G0} is made up of starting values for the entries with missing network data and observed values for the entries with
+observed network data. \code{G0} is optional when \code{G0.obs = "none"}.}
 
-\item{iteration}{is the number of MCMC steps to be performed.}
+\item{mlinks}{list specifying the network formation model (see details).}
 
-\item{ctrl.mcmc}{is a list of MCMC controls (See details).}
+\item{hyperparms}{(optional) is a list of hyperparameters (see details).}
 
-\item{data}{an optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
-in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcARD` is called.}
+\item{ctrl.mcmc}{list of MCMC controls (see details).}
+
+\item{iteration}{number of MCMC steps to be performed.}
+
+\item{data}{optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
+in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{mcmcARD} is called.}
 }
 \value{
 A list consisting of:
-    \item{n.group}{number of groups.}
-    \item{N}{vector of each group size.}
-    \item{time}{elapsed time to run the MCMC in second.}
-    \item{iteration}{number of MCMC steps performed.}
-    \item{posterior}{matrix containing the simulations.}
-    \item{hyperparms}{return value of `hyperparms`.}
-    \item{accept.rate}{acceptance rate of zeta.}
-    \item{G}{last draw of G (row normalized).}
-    \item{start}{starting values.}
-    \item{formula}{input value of `formula`.}
-    \item{contextual}{input value of `contextual`.}
-    \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
+\item{n.group}{number of groups.}
+\item{N}{vector of each group size.}
+\item{time}{elapsed time to run the MCMC in second.}
+\item{iteration}{number of MCMC steps performed.}
+\item{posterior}{matrix containing the simulations.}
+\item{hyperparms}{return value of \code{hyperparms}.}
+\item{mlinks}{return value of \code{mlinks}.}
+\item{accept.rate}{acceptance rate of zeta.}
+\item{G}{last draw of G (row normalized).}
+\item{start}{starting values.}
+\item{formula}{input value of \code{formula}.}
+\item{contextual}{input value of \code{contextual}.}
+\item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
 }
 \description{
-\code{mcmcSAR} implements the Bayesian estimator of the linear-in-mean SAR model when only the linking probabilities are available.
-The linking probabilities are used as hyperparameter of the prior distribution of the network.
+\code{mcmcSAR} implements the Bayesian estimator of the linear-in-mean SAR model when only the linking probabilities are available or can be estimated.
 }
 \details{
+\subsection{Outcome model}{
+
 The model is given by
 \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon.}
 The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma^2}{se2}.
@@ -71,121 +83,215 @@ Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in whi
 \deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
 \deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) \sim \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta}^2)}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
 \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
-where \eqn{\mathbf{P}}{P} is the linking probability.\cr
+where \eqn{\mathbf{P}}{P} is the linking probability.
+}
 
-All the hyperparameters can be defined through the argument `hyperparms` (a list) and should be named as follow.
+\subsection{Network formation model}{
+
+Forthcoming
+}
+
+\subsection{Hyperparameters}{
+
+All the hyperparameters can be defined through the argument \code{hyperparms} (a list) and should be named as follow.
 \itemize{
-\item `dnetwork`, the linking probabilities (list of M matrix). This hyperparameter is required.
-\item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
+\item \code{mutheta}, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
 the prior mean is zero.
-\item `invstheta` as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
-\item `muzeta`, the prior mean of \eqn{\zeta}. The default value is zero.
-\item `invszeta`, the inverse of the prior variance of \eqn{\zeta} with default value equal to 2.
-\item `a` and `b` which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
+\item \code{invstheta} as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
+\item \code{muzeta}, the prior mean of \eqn{\zeta}. The default value is zero.
+\item \code{invszeta}, the inverse of the prior variance of \eqn{\zeta} with default value equal to 2.
+\item \code{a} and \code{b} which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
 }
-Inverses are used for the priori variance through the argument `hyperparms`  in order to allow non informative prior. Set the inverse of the prior
-variance to 0 is equivalent to assume a non informative prior.\cr
-During the MCMC, the jumping scale of \eqn{\alpha} is updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate to the `target` value. This
-requires to set a minimal and a maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
+Inverses are used for the prior variance through the argument \code{hyperparms}  in order to allow non informative prior. Set the inverse of the prior
+variance to 0 is equivalent to assume a non informative prior.
+}
+
+\subsection{Adaptive MCMC}{
+
+During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate to the \code{target} value. This
+requires to set a minimal and a maximal jumping scales through the parameter \code{ctrl.mcmc}. The parameter \code{ctrl.mcmc} is a list which can contain the following named components.
 \itemize{
-\item{`target`}: the default value is 0.44. 
-\item{`jumpmin`}: the default value is \code{1e-12}. 
-\item{`jumpmax`}: the default value is \code{10}. 
-\item{`print.level`}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
- If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
- the simulations from the posterior distribution are printed.
-\item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It might be 
-more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2020). 
+\item{\code{target}}: the default value is \code{c("alpha" = 0.44, "rho" = 0.27)}.
+\item{\code{jumpmin}}: the default value is \code{c("alpha" = 1e-12, "rho" = 1e-12)}.
+\item{\code{jumpmax}}: the default value is \code{c("alpha" = 10, "rho" = 10)}.
+\item{\code{print.level}}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
+If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
+the simulations from the posterior distribution are printed.
+\item{\code{block.max}}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It might be
+more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2020).
 }
-If `block.max` > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
-chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
+If \code{block.max} > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly
+chosen between 1 and \code{block.max}. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
 then the entries (i, 1), (i, 3), (i, 8), and so on.
 }
+}
 \examples{
-\dontrun{
+\donttest{
+#################### EXAMPLE I: WITHOUT NETWORK FORMATION MODEL ####################
 # Number of groups
-M             <- 10
+M             <- 50
 # size of each group
-N             <- rep(50,M)
-# precision parameter for the network formation process
-lambda        <- 1 
-
-G             <- list()
-
+N             <- rep(30,M)
 # individual effects
 beta          <- c(2,1,1.5) 
 # contextual effects
 gamma         <- c(5,-3) 
-# endogenous effect
+# endogenous effects
 alpha         <- 0.4
 # std-dev errors
 se            <- 1 
-
-prior         <-list()
-
-## generate network probabilities
-for (m in 1:M) {
-    Nm          <- N[m]
-    c           <- rnorm(Nm*Nm,0,1)
-    # linking probabilities
-    Prob        <- matrix(exp(c/lambda)/(1+exp(c/lambda)),Nm) 
-    # no self-link
-    diag(Prob)  <- 0 
-    prior[[m]]  <- Prob
-}
-
-## generate data
+# prior distribution
+prior         <- runif(sum(N*(N-1)))
+prior         <- vec.to.mat(prior, N, normalise = FALSE)
 # covariates
 X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
-# dependent variable
-y             <- c()
+# true network
+G0            <- sim.network(prior)
+# normalise 
+G0norm        <- norm.network(G0)
+# simulate dependent variable use an external package
+y             <- CDatanet::simSARnet(~ X, contextual = TRUE, Glist = G0norm, 
+                                     theta = c(alpha, beta, gamma, se))
+y             <- y$y
+# dataset
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+############### Example I-1: When the network is fully observed ###############
+out.none1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
+                         G0 = G0, data = dataset, iteration = 1e4)
+summary(out.none1)
+plot(out.none1)
+plot(out.none1, plot.type = "dens")
 
-for (m in 1:M) {
-  Nm          <- N[m]
-  # true network
-  Gm          <- matrix(runif(Nm^2),Nm,Nm) < prior[[m]] 
-  # no self-link
-  diag(Gm)    <- rep(0,Nm) 
-  G[[m]]      <- Gm
-  rsm         <- rowSums(Gm)
-  rsm[rsm==0] <- 1
-  # normalize
-  Gm          <- Gm/rsm 
-  # rows index of group m
-  r2          <- sum(N[1:m])
-  r1          <- r2 - Nm + 1
-  # contextual effect
-  Xm          <- X[r1:r2,]
-  GXm         <- Gm \\%*\\% Xm
-  tmp         <- cbind(rep(1,Nm),Xm)\\%*\\%beta + GXm\\%*\\%gamma + rnorm(Nm,0,se)
-  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm)\\%*\\%tmp 
+############### Example I-2: When a part of the network is observed ###############
+# 60\% of the network data is observed
+G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
+# replace the non-observed part of the network by 0 (missing links)
+G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
+# Use network with missing data as the true network
+out.none2.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
+                        G0 = G0.start,   data = dataset, iteration = 1e4)
+summary(out.none2.1) # the peer effets seem overestimated
+plot(out.none2.1)
+plot(out.none2.1, plot.type = "dens")
+# Infer the missing links in the network data
+# In this example, the distribution of the network is set fixed
+out.none2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
+                        G0 = G0.start,   data = dataset, mlinks = list(dnetwork = prior),
+                        iteration = 2e4)
+summary(out.none2.2)
+plot(out.none2.2)
+plot(out.none2.2, plot.type = "dens")
+
+############### Example I-3: When only the network distribution is available ###############
+# Simulate a fictitious network and use as true network
+G0.tmp       <- sim.network(prior)
+out.none3.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
+                        G0 = G0.tmp, data = dataset, iteration = 1e4)
+summary(out.none3.1)  # the peer effets seem overestimated
+plot(out.none3.1)
+plot(out.none3.1, plot.type = "dens")
+# Infer the network data
+out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
+                        G0 = G0.tmp, data = dataset, mlinks = list(dnetwork = prior),
+                        iteration = 2e4)
+summary(out.none3.2)  
+plot(out.none3.2)
+plot(out.none3.2, plot.type = "dens")
+
+
+#################### EXAMPLE II: NETWORK FORMATION MODEL: LOGIT ####################
+# Number of groups
+M             <- 50
+# size of each group
+N             <- rep(30,M)
+# individual effects
+beta          <- c(2,1,1.5) 
+# contextual effects
+gamma         <- c(5,-3) 
+# endogenous effects
+alpha         <- 0.4
+# std-dev errors
+se            <- 2 
+# parameters of the network formation model
+rho           <- c(-2, -.5, .2)
+# covariates
+X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
+# compute distance between individuals 
+tmp           <- c(0, cumsum(N))
+X1l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],1])
+X2l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],2])
+dist.net      <- function(x, y) abs(x - y) # distance function
+X1.mat        <- lapply(1:M, function(m) {
+                 matrix(kronecker(X1l[[m]], X1l[[m]], FUN = dist.net), N[m])}
+                 )
+X2.mat        <- lapply(1:M, function(m) {
+                 matrix(kronecker(X2l[[m]], X2l[[m]], FUN = dist.net), N[m])}
+                 )
+# true network
+covar         <- as.matrix(cbind("Const" = 1, 
+                                 "dX1"   = mat.to.vec(X1.mat), 
+                                 "dX2"   = mat.to.vec(X2.mat)))
+ynet          <- covar \%*\% rho
+ynet          <- 1*((ynet + rlogis(length(ynet))) > 0)
+G0            <- vec.to.mat(ynet, N, normalise = FALSE)
+G0norm        <- norm.network(G0)
+# simulate dependent variable use an external package
+y             <- CDatanet::simSARnet(~ X, contextual = TRUE, Glist = G0norm, 
+                                     theta = c(alpha, beta, gamma, se))
+y             <- y$y
+# dataset
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+############### Example II-1: When the network is fully observed ###############
+out.prob1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
+                         G0 = G0norm, data = dataset, iteration = 1e4)
+summary(out.prob1)
+plot(out.prob1)
+plot(out.prob1, plot.type = "dens")
+
+############### Example II-2: When a part of the network is observed ###############
+# 60\% of the network data is observed
+G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
+# replace the non-observed part of the network by 0
+G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
+# Use network with missing data as the true network
+out.prob2.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
+                        G0 = G0.start,   data = dataset, iteration = 1e4)
+summary(out.prob2.1) # the peer effets seem overestimated
+plot(out.prob2.1)
+plot(out.prob2.1, plot.type = "dens")
+# Infer the missing links in the network data
+out.prob2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
+                        G0 = G0.start,   data = dataset, 
+                        mlinks = list(model = "logit", covariates = covar), iteration = 2e4)
+summary(out.prob2.2)
+plot(out.prob2.2)
+plot(out.prob2.2, plot.type = "dens")
+plot(out.prob2.2, which.parms = "rho")
+
+############### Example II-3: When only the network distribution is available ###############
+# Simulate a fictitious network and use as true network
+G0.tmp       <- sim.network(vec.to.mat(plnorm(covar \%*\% rho), N))
+out.prob3.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
+                        G0 = G0.tmp, data = dataset, iteration = 1e4)
+summary(out.prob3.1)  # the peer effets seem overestimated
+plot(out.prob3.1)
+plot(out.prob3.1, plot.type = "dens")
+# Infer the network data
+# We provide information only about rho
+Gvec         <- mat.to.vec(G0, ceiled = TRUE)
+logestim     <- glm(Gvec ~ -1 + covar, family = binomial(link = "logit"))
+slogestim    <- summary(logestim)
+estimates    <- list("rho"     = logestim$coefficients, 
+                     "var.rho" = slogestim$cov.unscaled,
+                     "N"       = N)
+out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset, 
+                        mlinks = list(model = "logit", covariates = covar, estimates = estimates),
+                        iteration = 2e4)
+summary(out.prob3.2)  
+plot(out.prob3.2)
+plot(out.prob3.2, plot.type = "dens")
+plot(out.prob3.2, which.parms = "rho")
 }
-  
-# number of parameters
-Kv            <- 2*ncol(X) + 1 
-
-# set the hyperparameter
-# the hyperparameter is a list
-hyperparms    <- list("dnetwork" = prior) 
-
-# launch the MCMC
-# update entry of A, one by one
-out1          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms)
-summary(out1)
-plot(out1)
-plot(out1, plot.type = "dens")
-# update up to 4 entries simultaneously
-ctrl <- list(block.max = 4, print.level = 2)
-out2          <- mcmcSAR(y ~ X | X, hyperparms = hyperparms, ctrl.mcmc = ctrl)
-summary(out2)
-plot(out2)
-plot(out2, plot.type = "dens")
-}
-}
-\references{
-Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
-
-Boucher, V., & Houndetoungan, A. (2020). Estimating peer effects using partial network data.
 }
 \seealso{
 \code{\link{sim.IV}}

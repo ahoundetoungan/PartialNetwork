@@ -9,7 +9,7 @@ dvMF(z, theta, log.p = FALSE)
 \arguments{
 \item{z}{is a matrix where each row is a spherical coordinate at which the density will be evaluated.}
 
-\item{theta}{is a vector of dimension `p` such that \code{eta*mu}.}
+\item{theta}{is a vector of dimension \code{p} such that \code{eta*mu}.}
 
 \item{log.p}{is logical; if TRUE, probabilities p are given as log(p).}
 }

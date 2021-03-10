@@ -1,4 +1,14 @@
+^doc$
+^Meta$
+^test$
+^\.travis\.yml$
+^\.gitignore$
+^\.Rbuildignore$
+^\.Rhistory$
+^PartialNetwork\.Rproj, README\.md$
+^vignettes/\.gitignore$
+^scr/*\.so$
+^scr/*\.o$
+^datavignettes$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-test*
-datavignettes*

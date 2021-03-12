@@ -22,7 +22,7 @@ This could be the matrix of traits (see details).}
 \item{obsARD}{logical vector of length \code{nrow(X)} (number of individuals with and without ARD), where the i-th entry equal to \code{TRUE} if the i-th individual in \code{X} has ARD and \code{FALSE} otherwise.
 If missing, \code{obsARD = rep(c(TRUE, FALSE), n1, n2)}, where \code{n1} is the number of individuals with ARD (see details).}
 
-\item{m}{number of neighbors used to compute the gregariousness and the degree for individuals without ARD.}
+\item{m}{number of neighbors used to compute the gregariousness and the degree for individuals without ARD (default value is \code{1}).}
 
 \item{burnin}{number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
 used the simulation from the iteration \code{burnin + 1}.}
@@ -41,9 +41,8 @@ ARD network formation model. The linking probabilities are also computed for ind
 The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a m-nearest neighbors method.
 }
 \details{
-Care should be taken about the order of individuals provided through the arguments \code{traitARD}, \code{ARD} when calling the function \code{\link{mcmcARD}}, and the order of individuals in
-\code{X} and \code{obsARD}. Especially, the i-th row of \code{X[obsARD,]} should correspond to the i-th row in \code{traitARD} or \code{ARD}. That is, the order of the
-individuals with ARD in \code{obsARD} should match with their order when calling the function \code{\link{mcmcARD}}.
+The order of individuals provided through the arguments \code{traitARD}, \code{ARD} (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
+\code{X} and \code{obsARD}. Especially, the i-th row of \code{X[obsARD,]} should correspond to the i-th row in \code{traitARD} or \code{ARD}.
 }
 \examples{
 \donttest{

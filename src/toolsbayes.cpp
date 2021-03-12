@@ -389,38 +389,69 @@ void fsetjump_d(double& jump, const double& jumpmin,
 
 // after we can build the index and the weights matrix to compute nu and  
 // z for people without ARD. The matrix dimension is N2*m
-// The entry [i,m] is m-th neighbor for i in index matrix
-// and its weight in weight matrix defined by 1/(1+d[j,i]) 
+// The entry [m,i] is m-th neighbor for i in index matrix (col(i) are the m neighbors of i)
+// and its weight in weight matrix defined by 1/(1+d[j,i]), where row(i) are the weight of i
 
 void cneighbor(const double& N1, const double& N2, const double& N,
-               const arma::mat& trait, const arma::mat& Xnonard, 
-               const int& m, arma::mat &neighbor, arma::mat& weight){
+               const arma::mat& Xard, const arma::mat& Xnonard, 
+               const int& m, arma::umat &neighbor, arma::mat& weight){
   
   //Normalize disjuntif tables following Pagès [2004]
-  arma::mat traitnorm=arma::normalise(arma::join_cols(trait,Xnonard),2,0)*sqrt(N);
+  arma::mat traitnorm = arma::normalise(arma::join_cols(Xard,Xnonard),2,0)*sqrt(N);
   
   //variable for saving distance of ARD j to ARD i
   arma::vec disti(N1);
+  arma::mat dist(m, N2);
   //other variables
-  arma::uvec temp(N1);                                 // temporary variable
-  arma::uvec index(m);                                 // temporary variable
-  arma::uvec seqm=arma::linspace<arma::uvec>(0,m-1,m); // vector[0,1,...,m-1]
+  arma::uvec temp, index;         
   
   //Compute distance
   for(int i(0);i<N2;++i){
     for(int j(0);j<N1;++j){
       // j is ARD and i nonARD
-      disti(j)= arma::norm(traitnorm.row(j)-traitnorm.row(N1+i));
+      disti(j) = arma::norm(traitnorm.row(j)-traitnorm.row(N1+i));
     }
-    temp=arma::sort_index(disti);        //Returns index for distance from smallest 
-    index=temp.elem(seqm);               //the m-th nearest index 
-    neighbor.row(i)=arma::conv_to<arma::rowvec>::from(index);
-    weight.row(i)=(1./(1.+ disti.elem(index) )).t();
-    weight.row(i)=weight.row(i)/sum(weight.row(i));
+    temp            = arma::sort_index(disti);        //Returns index for distance from smallest 
+    index           = temp.head(m);                   //the m-th nearest index 
+    neighbor.col(i) = index;
+    dist.col(i)     = disti.elem(index);
   }
+  
+  dist              = 1.0/(1.0 + dist.t());
+  weight            = arma::normalise(dist, 1, 1);
 }
 
-// This function returns zeta, z, nu, d.
+// This function add non ARD objects to ARD objects
+void frhononARD(arma::mat& zm, arma::vec& num, arma::vec& dm, const double& logCpzeta,  const int& N1m, const int& N2m,
+                const int& Nm,  const int& P, const arma::umat& neighbor, const arma::mat& weight, 
+                const arma::uvec& iARD, const arma::uvec& inonARD) {
+  arma::mat zall(Nm, P), znonARD(N2m, P);
+  zall.rows(iARD)     = zm;
+  arma::vec nuall(Nm), dall(Nm), nunonARD(N2m);
+  nuall.elem(iARD)    = num;
+  dall.elem(iARD)     = dm;
+  
+  arma::uvec neighborj;
+  arma::rowvec weightj;
+  //compute nu and z for non ARD
+  for(int j(0); j < N2m; ++j){
+    neighborj         = neighbor.col(j);
+    weightj           = weight.row(j);
+    nunonARD.row(j)   = weightj*(num.elem(neighborj));
+    znonARD.row(j)    = weightj*(zm.rows(neighborj));
+  }
+  znonARD             = arma::normalise(znonARD, 2, 1);
+  zall.rows(inonARD)  = znonARD;
+  nuall.rows(inonARD) = nunonARD;
+  
+  // compute Probabilities
+  dall.elem(inonARD)  = (Nm*1.0/N1m)*arma::exp(nunonARD)*sum(exp(num))/exp(logCpzeta);
+  zm                  = zall;
+  num                 = nuall;
+  dm                  = dall;
+}
+
+// This function returns zeta, z, nu, d, ie  (initial values for sarARD)
 // [[Rcpp::export]]
 List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d,
                       const arma::vec& zeta, const unsigned int& N1,  const unsigned int& Metrostart){
@@ -456,69 +487,70 @@ List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d,
 List flspacerho2(const double& T, const double& P, List& z, const arma::mat& d,
                       const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, 
                       const unsigned int& N1, const unsigned int& N2, const unsigned int& M, 
-                      const unsigned int& Metrostart, const arma::uvec& iARD, const arma::uvec& inonARD){
+                      const unsigned int& Metrostart){
   // Number of people with ARD
   double N = N1 + N2, zetat, logCpzetat,  ngraph = T - Metrostart + 1;
-  arma::rowvec nuARDt(N1), ds(N, arma::fill::zeros);
+  arma::vec nut, dt, ds(N1, arma::fill::zeros);
   
   //export
-  arma::mat znut(N, P + 1);
-  arma::mat znu(ngraph, N*(P + 1) + 1);
+  arma::mat znu(ngraph, N1*(P + 1) + 1);
   znu.col(0)        = zeta.tail(ngraph);
   
   //compute neighbor and weight
-  arma::mat neighbor(N2,M);            
-  arma::mat weight(N2,M);
+  arma::umat neighbor(M, N2);            
+  arma::mat weight; // will the transposed in the function cneighbor and output will be (N2, M) 
   cneighbor(N1, N2, N, Xard, Xnonard, M, neighbor, weight);
   
   //Necessary variables
-  arma::mat znonARDt(N2,P), ztall(N,P), probt(N,N), prob(N,N,arma::fill::zeros);
-  arma::rowvec weightj(M), nunonARDt(N2), dnonARDt(N2);
-  arma::uvec neighborj(M);
+  arma::uvec neighborj;
+  arma::rowvec weightj;
   
   //loop 
-  
   for(int t(0);t<ngraph;++t){  // thus convergence for t from Metrostart to T+1
-    zetat              = zeta(t+Metrostart);              // extract zeta for itaration t+Metrostart
-    arma::mat zt       = z(t+Metrostart);                 // extract z for iteration t+Metrostart
-    arma::rowvec dt    = d.row(t+Metrostart);             // extract d for iteration t+Metrostart
-    ds.elem(iARD)     += dt;
-    logCpzetat         = logCpvMFcpp(P,zetat);       
+    zetat           = zeta(t+Metrostart);     
+    arma::mat zt    = z(t+Metrostart);       
+    dt              = arma::trans(d.row(t+Metrostart)); 
+    ds             += dt;
+    logCpzetat      = logCpvMFcpp(P,zetat);     
     //compute nu for ARD
-    nuARDt             = log(dt) + 0.5*logCpzetat + 0.5*log(N1/N) - 0.5*log(sum(dt));
+    nut             = log(dt) + 0.5*logCpzetat + 0.5*log(N1*1.0/N) - 0.5*log(sum(dt)) ;
     
-    //compute nu for non ARD
-    for(int j(0);j<N2;++j){
-      neighborj        = arma::conv_to<arma::uvec>::from((neighbor.row(j)).t());
-      weightj          = weight.row(j);
-      nunonARDt.col(j) = weightj*(nuARDt.elem(neighborj));
-      znonARDt.row(j)  = weightj*(zt.rows(neighborj));
-    }
-    znonARDt           = normalise(znonARDt,2,1);
-    
-    //d non ARD
-    dnonARDt           = (N/N1)*exp(nunonARDt - logCpzetat)*arma::accu(arma::exp(nuARDt));
-    ds.elem(iARD)     += dnonARDt;
     //save
-    znut.rows(iARD)                = arma::join_rows(zt, nuARDt.t());
-    znut.rows(inonARD)             = arma::join_rows(znonARDt, nunonARDt.t());
-    znut.reshape(1, N*(P + 1));
-    znu.submat(t, 1, t, N*(P + 1)) = znut;
+    arma::mat znut  = arma::join_rows(zt, nut);
+    znut.reshape(1, N1*(P + 1));
+    znu.submat(t, 1, t, N1*(P + 1)) = znut;
   }
   ds   /= ngraph;
-  return List::create(Named("rho")    = znu,
-                      Named("degree") = d);
+  return List::create(Named("rho")      = znu,
+                      Named("degree")   = ds,
+                      Named("neighbor") = neighbor,
+                      Named("weight")   = weight);
 }
 
 // Given ZNU this function compute the probability of Gij = 1 using the latent space model
 // [[Rcpp::export]]
-arma::mat fdnetARD(const double& zeta, const arma::vec& z, const arma::vec& nu,
-                  const arma::vec& dm, const int& Nm, const int& P) {
-  arma::mat zmat  = z;
-  zmat.reshape(Nm, P);
-  arma::mat numat = arma::repmat(nu, 1, Nm);
-  arma::mat prob  = arma::exp(zmat*zmat.t() + numat + numat.t());
-  prob           *= ((arma::accu(dm))/arma::accu(prob));
+arma::mat fdnetARD(arma::mat& zm, 
+                   arma::vec& num, 
+                   arma::vec& dm, 
+                   const int& N1m, 
+                   const int& N2m, 
+                   const int& Nm, 
+                   const int& Pm, 
+                   const double& zetam, 
+                   const double& logCpzetam, 
+                   const arma::umat& neighborm, 
+                   const arma::mat& weightm, 
+                   const arma::uvec& iARDm, 
+                   const arma::uvec& inonARDm) {
+  
+  if(N2m > 0) {
+    frhononARD(zm, num, dm, logCpzetam, N1m, N2m, Nm,  Pm, neighborm, weightm, iARDm, inonARDm);
+  }
+  zm              = arma::normalise(zm, 2, 1);
+  arma::mat numat = arma::repmat(num, 1, Nm);
+  arma::mat prob  = arma::exp(zetam*zm*zm.t() + numat + numat.t());
+  
+  prob           *= ((sum(dm))/arma::accu(prob));
   arma::uvec tmp  = arma::find(prob > 1);
   prob.elem(tmp)  = arma::ones(tmp.n_elem);
   prob.diag()     = arma::zeros(Nm);

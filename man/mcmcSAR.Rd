@@ -27,14 +27,14 @@ without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual varia
 \item{contextual}{(optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
 the \code{formula} as \code{y ~ x1 + x2} and \code{contextual} as \code{TRUE} is equivalent to set the formula as \code{y ~ x1 + x2 | x1 + x2}.}
 
-\item{start}{(optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se2)'},
+\item{start}{(optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se^2)'},
 where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
-and \eqn{\sigma^2}{se2} the variance of the error term. If the \code{start} is missing, a Maximum Likelihood estimator will be used, where
+and \eqn{\sigma^2}{se^2} the variance of the error term. If the \code{start} is missing, a Maximum Likelihood estimator will be used, where
 the network matrix is that given through the argument \code{G0} (if provided) or generated from it distribution \code{dnetwork} (see argument \code{hyperparms}).}
 
 \item{G0.obs}{list of matrices (or simply matrix if the list contains only one matrix) indicating the part of the network data which is observed. If the (i,j)-th element
 of the m-th matrix is one, then the element at the same position in the network data will be considered as observed and will not be inferred in the MCMC. In contrast,
-if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing true value which will be inferred.
+if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing link which will be inferred.
 \code{G0.obs} can also take \code{none} when no part of the network data is observed (equivalent to the case where all the entries are zeros) and \code{all} when the network data is fully
 observed (equivalent to the case where all the entries are ones).}
 
@@ -58,11 +58,12 @@ A list consisting of:
 \item{N}{vector of each group size.}
 \item{time}{elapsed time to run the MCMC in second.}
 \item{iteration}{number of MCMC steps performed.}
-\item{posterior}{matrix containing the simulations.}
+\item{posterior}{matrix (or list of matrices) containing the simulations.}
 \item{hyperparms}{return value of \code{hyperparms}.}
 \item{mlinks}{return value of \code{mlinks}.}
-\item{accept.rate}{acceptance rate of zeta.}
-\item{G}{last draw of G (row normalized).}
+\item{accept.rate}{acceptance rates.}
+\item{propG0.obs}{proportion of observed network data.}
+\item{method.net}{network formation model specification.}
 \item{start}{starting values.}
 \item{formula}{input value of \code{formula}.}
 \item{contextual}{input value of \code{contextual}.}
@@ -75,32 +76,82 @@ A list consisting of:
 \subsection{Outcome model}{
 
 The model is given by
-\deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon.}
-The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma^2}{se2}.
+\deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon,}
+where \deqn{\epsilon ~ N(0, \sigma^2).}{\epsilon ~ N(0, se^2).}
+The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma}{se}.
 Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
-\eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se2}.
+\eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se^2}.
 \deqn{\mathbf{A}_{ij} \sim Bernoulli(\mathbf{P}_{ij})}{A[i,j] ~ Bernoulli(P[i,j])}
-\deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
+\deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' \gamma')'|se^2 ~ N(mutheta, se^2*stheta)}
 \deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) \sim \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta}^2)}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
-\deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
-where \eqn{\mathbf{P}}{P} is the linking probability.
+\deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se^2 ~ IG(a/2, b/2)}
+where \eqn{\mathbf{P}}{P} is the linking probability. The linking probability is an hyperparameters that can be set fixed or updated using a network formation model.
 }
 
 \subsection{Network formation model}{
 
-Forthcoming
+The linking probability can be set fixed or updated using a network formation model. Information about how \code{P} should be handled in in the MCMC can be set through the
+argument \code{mlinks} which should be a list with named elements. Divers specifications of network formation model are possible. The list assigned to \code{mlist} should include
+an element named \code{model}. The expected values of \code{model} are \code{"none"} (default value), \code{"logit"}, \code{"probit"}, and \code{"latent space"}.
+\itemize{
+\item \code{"none"} means that the network distribution \eqn{P} is set fixed throughout the MCMC,
+\item \code{"probit"} and \code{"logit"} imply that the network distribution \eqn{P} will be updated using a Probit or Logit model,
+\item \code{"latent spate"} means that \eqn{P} will be updated using Breza et al. (2020).}
+\subsection{Fixed network distribution}{
+
+To set \eqn{P} fixed, \code{mlinks} could contain,
+\itemize{
+\item \code{dnetwork}, a list, where the m-th element is the matrix of
+link probability in the m-th sub-network.
+\item \code{model = "none"} (optional as \code{"none"} is the default value).
+}
+}
+
+\subsection{Probit and Logit models}{
+
+For the Probit and Logit specification as network formation model, the following element could be declared in \code{mlinks}.
+\itemize{
+\item \code{model = "probit"} or \code{model = "logit"}.
+\item \code{coraviates} as a matrix of dyadic observable characteristics (distance) which explain link formation. Even in the case many sub-networks,
+\code{covariates} is still a matrix as polled version (row combination) of sub-matrix in each sub-network. \code{covariates} should verify \code{nrow(covariates) == sum(N^2 - N)},
+where \code{N} is a vector of the number of individual in each sub-network. Indeed, the rows of \code{covariates} are the explanatory variables of
+the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the link probability of the first sub-network and
+so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to format compatible with
+\code{covariates} (see examples below).
+\item \code{estimates} (optional when a part of the network is observed) is a list containing \code{rho}, a vector of the estimates of the Probit or Logit
+parameters, and \code{var.rho} the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
+In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \code{N}, a vector of the number of individual in each sub-network.
+}
+}
+
+\subsection{Latent space models}{
+
+The following element could be declared in \code{mlinks}.
+\itemize{
+\item \code{model = "latent space"}.
+\item \code{estimates} a list of objects of class \code{mcmcARD} as returned by the function \verb{\link{mcmcARD}}, where the m-th element is Breza et al. (2020) estimator in
+in the m-th sub-network.
+\item \code{covariates} (required only when ARD are partially observed) is a list of matrices, where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
+The distances are used to compute gregariousness and coordinates for individuals without ARD by k-nearest approach.
+\item \code{obsARD} (required only when ARD are partially observed) is a list of logical vectors, where the i-th entry of the m-th vector indicates by \code{TRUE} or \code{FALSE} if  the i-th individual in the m-th
+sub-network has ARD or not.
+\item \code{mARD} (optional, default value is \verb{rep(1, M})) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach.
+\item \code{burninARD} (optional) set the burn-in to summarize the posterior distribution in \code{estimates}. The default valued use the last 50\% of simulations.
+}
+}
+
 }
 
 \subsection{Hyperparameters}{
 
 All the hyperparameters can be defined through the argument \code{hyperparms} (a list) and should be named as follow.
 \itemize{
-\item \code{mutheta}, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
+\item \code{mutheta}, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se^2}. The default value assumes that
 the prior mean is zero.
 \item \code{invstheta} as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
 \item \code{muzeta}, the prior mean of \eqn{\zeta}. The default value is zero.
 \item \code{invszeta}, the inverse of the prior variance of \eqn{\zeta} with default value equal to 2.
-\item \code{a} and \code{b} which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
+\item \code{a} and \code{b} which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se^2} is 1.
 }
 Inverses are used for the prior variance through the argument \code{hyperparms}  in order to allow non informative prior. Set the inverse of the prior
 variance to 0 is equivalent to assume a non informative prior.

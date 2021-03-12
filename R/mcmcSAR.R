@@ -7,13 +7,13 @@
 #' without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual variables.
 #' @param  contextual (optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
 #' the `formula` as `y ~ x1 + x2` and `contextual` as `TRUE` is equivalent to set the formula as `y ~ x1 + x2 | x1 + x2`.
-#' @param  start (optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se2)'},
+#' @param  start (optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se^2)'},
 #' where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
-#' and \eqn{\sigma^2}{se2} the variance of the error term. If the `start` is missing, a Maximum Likelihood estimator will be used, where
+#' and \eqn{\sigma^2}{se^2} the variance of the error term. If the `start` is missing, a Maximum Likelihood estimator will be used, where
 #' the network matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).
 #' @param G0.obs list of matrices (or simply matrix if the list contains only one matrix) indicating the part of the network data which is observed. If the (i,j)-th element
 #' of the m-th matrix is one, then the element at the same position in the network data will be considered as observed and will not be inferred in the MCMC. In contrast, 
-#' if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing true value which will be inferred. 
+#' if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing link which will be inferred. 
 #' `G0.obs` can also take `none` when no part of the network data is observed (equivalent to the case where all the entries are zeros) and `all` when the network data is fully 
 #' observed (equivalent to the case where all the entries are ones).
 #' @param G0 list of sub-network matrices (or simply network matrix if there is only one sub-network). `G0` is made up of starting values for the entries with missing network data and observed values for the entries with
@@ -27,26 +27,67 @@
 #' @details 
 #' ## Outcome model
 #' The model is given by
-#' \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon.}
-#' The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma^2}{se2}.
+#' \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon,}
+#' where \deqn{\epsilon ~ N(0, \sigma^2).}{\epsilon ~ N(0, se^2).}
+#' The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma}{se}.
 #' Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
-#' \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se2}.
+#' \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se^2}.
 #' \deqn{\mathbf{A}_{ij} \sim Bernoulli(\mathbf{P}_{ij})}{A[i,j] ~ Bernoulli(P[i,j])}
-#' \deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' ~ \gamma')'|se2 ~ N(mutheta, se2*stheta)}
+#' \deqn{(\beta' ~ \gamma')'|\sigma^2 \sim \mathcal{N}(\mu_{\theta}, \sigma^2\Sigma_{\theta})}{(\beta' \gamma')'|se^2 ~ N(mutheta, se^2*stheta)}
 #' \deqn{\zeta = \log\left(\frac{\alpha}{1 - \alpha}\right) \sim \mathcal{N}(\mu_{\zeta}, \sigma_{\zeta}^2)}{\zeta = log(\alpha/(1 - \alpha)) ~ N(muzeta, szeta)}
-#' \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se2 ~ IG(a/2, b/2)}
-#' where \eqn{\mathbf{P}}{P} is the linking probability.
+#' \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se^2 ~ IG(a/2, b/2)}
+#' where \eqn{\mathbf{P}}{P} is the linking probability. The linking probability is an hyperparameters that can be set fixed or updated using a network formation model.
 #' ## Network formation model
-#' Forthcoming
+#' The linking probability can be set fixed or updated using a network formation model. Information about how `P` should be handled in in the MCMC can be set through the
+#' argument `mlinks` which should be a list with named elements. Divers specifications of network formation model are possible. The list assigned to `mlist` should include
+#' an element named `model`. The expected values of `model` are `"none"` (default value), `"logit"`, `"probit"`, and `"latent space"`.
+#' \itemize{
+#' \item `"none"` means that the network distribution \eqn{P} is set fixed throughout the MCMC,
+#' \item `"probit"` and `"logit"` imply that the network distribution \eqn{P} will be updated using a Probit or Logit model,
+#' \item `"latent spate"` means that \eqn{P} will be updated using Breza et al. (2020).}
+#' ### Fixed network distribution
+#' To set \eqn{P} fixed, `mlinks` could contain,
+#' \itemize{
+#' \item `dnetwork`, a list, where the m-th element is the matrix of
+#' link probability in the m-th sub-network. 
+#' \item `model = "none"` (optional as `"none"` is the default value).
+#' }
+#' ### Probit and Logit models
+#' For the Probit and Logit specification as network formation model, the following element could be declared in `mlinks`.
+#' \itemize{
+#' \item `model = "probit"` or `model = "logit"`.
+#' \item `coraviates` as a matrix of dyadic observable characteristics (distance) which explain link formation. Even in the case many sub-networks,
+#' `covariates` is still a matrix as polled version (row combination) of sub-matrix in each sub-network. `covariates` should verify `nrow(covariates) == sum(N^2 - N)`,
+#' where `N` is a vector of the number of individual in each sub-network. Indeed, the rows of `covariates` are the explanatory variables of
+#' the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the link probability of the first sub-network and 
+#' so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to format compatible with
+#' `covariates` (see examples below).
+#' \item `estimates` (optional when a part of the network is observed) is a list containing `rho`, a vector of the estimates of the Probit or Logit
+#' parameters, and `var.rho` the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
+#' In addition, if `G0.obs = "none"`, `estimates` should also include `N`, a vector of the number of individual in each sub-network.
+#' }
+#' ### Latent space models
+#' The following element could be declared in `mlinks`.
+#' \itemize{
+#' \item `model = "latent space"`.
+#' \item `estimates` a list of objects of class `mcmcARD` as returned by the function `\link{mcmcARD}`, where the m-th element is Breza et al. (2020) estimator in 
+#' in the m-th sub-network.
+#' \item `covariates` (required only when ARD are partially observed) is a list of matrices, where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
+#' The distances are used to compute gregariousness and coordinates for individuals without ARD by k-nearest approach.
+#' \item `obsARD` (required only when ARD are partially observed) is a list of logical vectors, where the i-th entry of the m-th vector indicates by `TRUE` or `FALSE` if  the i-th individual in the m-th
+#' sub-network has ARD or not.
+#' \item `mARD` (optional, default value is `rep(1, M`)) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach.
+#' \item `burninARD` (optional) set the burn-in to summarize the posterior distribution in `estimates`. The default valued use the last 50% of simulations.
+#' }
 #' ## Hyperparameters
 #' All the hyperparameters can be defined through the argument `hyperparms` (a list) and should be named as follow.
 #' \itemize{
-#' \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se2}. The default value assumes that
+#' \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se^2}. The default value assumes that
 #' the prior mean is zero.
 #' \item `invstheta` as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
 #' \item `muzeta`, the prior mean of \eqn{\zeta}. The default value is zero.
 #' \item `invszeta`, the inverse of the prior variance of \eqn{\zeta} with default value equal to 2.
-#' \item `a` and `b` which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se2} is 1.
+#' \item `a` and `b` which default values equal to 4.2 and 2.2 respectively. This means for example that the prior mean of \eqn{\sigma^2}{se^2} is 1.
 #' }
 #' Inverses are used for the prior variance through the argument `hyperparms`  in order to allow non informative prior. Set the inverse of the prior
 #' variance to 0 is equivalent to assume a non informative prior.
@@ -71,11 +112,12 @@
 #'     \item{N}{vector of each group size.}
 #'     \item{time}{elapsed time to run the MCMC in second.}
 #'     \item{iteration}{number of MCMC steps performed.}
-#'     \item{posterior}{matrix containing the simulations.}
+#'     \item{posterior}{matrix (or list of matrices) containing the simulations.}
 #'     \item{hyperparms}{return value of `hyperparms`.}
 #'     \item{mlinks}{return value of `mlinks`.}
-#'     \item{accept.rate}{acceptance rate of zeta.}
-#'     \item{G}{last draw of G (row normalized).}
+#'     \item{accept.rate}{acceptance rates.}
+#'     \item{propG0.obs}{proportion of observed network data.}
+#'     \item{method.net}{network formation model specification.}
 #'     \item{start}{starting values.}
 #'     \item{formula}{input value of `formula`.}
 #'     \item{contextual}{input value of `contextual`.}
@@ -316,12 +358,16 @@ mcmcSAR <- function(formula,
   cn.rho       <- NULL
   dest         <- NULL
   zetaest      <- NULL
-  if (!is.null(dZ)) {
-    dZ         <- as.matrix(dZ)
-  }
+  neighbor     <- NULL
+  weight       <- NULL
+  iARD         <- NULL
+  inonARD      <- NULL
+  
   tmodel       <- f.tmodel(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD)
   M            <- tmodel$M
   N            <- tmodel$N
+  N1           <- tmodel$N1
+  N2           <- N - N1
   obsARD       <- tmodel$obsARD
   sumG0.obs    <- tmodel$sumG0.obs
   lmodel       <- tmodel$lmodel  #NONE PROBIT LOGIT or LATENT SPACE
@@ -416,6 +462,9 @@ mcmcSAR <- function(formula,
   # model Probit and logit
   if(lmodel %in% c("PROBIT", "LOGIT")) {
     typeprob   <- ifelse(lmodel == "PROBIT", 1, 2)
+    if (!is.null(dZ)) {
+      dZ       <- as.matrix(dZ)
+    }
     Krho       <- ncol(dZ)
     cn.rho     <- colnames(dZ)
     cn.rho     <- unlist(lapply(1:Krho, function(x) ifelse(length(cn.rho[x]) == 0, paste0("covariates.", x), cn.rho[x])))
@@ -433,7 +482,7 @@ mcmcSAR <- function(formula,
       murho    <- smyp$coefficients[,1]
       Vrho     <- smyp$cov.unscaled
     } 
-
+    
     pfit       <- ifelse(typeprob == 1, pnorm, plogis)(c(dZ%*%murho))
     
     lFdZrho1   <- log(pfit)
@@ -451,21 +500,26 @@ mcmcSAR <- function(formula,
   
   # latent space model
   if(lmodel == "LATENT SPACE") {
-    if (print.level) {
-      cat("Estimation of the initial parameters for the latent space model\n")
-    }
-    murho              <- list()  # mean z nu
-    Vrho               <- list()  # covariance z nu
-    dnetwork           <- list()
-    dest               <- list()
-    lzetaest           <- c()
-    Krho               <- c()
-    P                  <- unique(unlist(lapply(estimates, function(x) x$p)))
-    if (length(P) != 1) {
-      stop("Latent space models with different hypersphere dimensions")
+    murho            <- list()  # mean z nu
+    Vrho             <- list()  # covariance z nu
+    dnetwork         <- list()
+    dest             <- list()  
+    neighbor         <- lapply(1:M, function(x) matrix(0, 0, 0))
+    weight           <- lapply(1:M, function(x) matrix(0, 0, 0))
+    iARD             <- lapply(1:M, function(x) matrix(0, 0, 0))
+    inonARD          <- lapply(1:M, function(x) matrix(0, 0, 0))
+    zetaest          <- c()
+    Krho             <- c()
+    P                <- c()
+    
+    if(is.null(mARD)) {
+      mARD           <- rep(1, M)
+    } else {
+      mtp            <- mARD
+      mARD[1:M]      <- mtp
     }
     
-    typeprob            <- unlist(lapply(estimates, function(x){
+    typeprob         <- unlist(lapply(estimates, function(x){
       if(is.numeric(x$accept.rate$d) & is.numeric(x$accept.rate$zeta)) return(0)
       if(is.character(x$accept.rate$d) & is.numeric(x$accept.rate$zeta)) return(1)
       if(is.numeric(x$accept.rate$d) & is.character(x$accept.rate$zeta)) return(2)
@@ -473,10 +527,12 @@ mcmcSAR <- function(formula,
     }))
     
     for (m in 1:M) {
-      T              <- estimates[[m]]$iteration
-      z              <- estimates[[m]]$simulations$z
-      d              <- estimates[[m]]$simulations$d
-      zeta           <- estimates[[m]]$simulations$zeta
+      estimatesm     <- estimates[[m]]
+      T              <- estimatesm$iteration
+      z              <- estimatesm$simulations$z
+      d              <- estimatesm$simulations$d
+      zeta           <- estimatesm$simulations$zeta
+      P[m]           <- estimatesm$p
       out            <- NULL
       Mst            <- round(T/2) + 1
       if (!is.null(burninARD)){
@@ -492,55 +548,58 @@ mcmcSAR <- function(formula,
       }
       
       lspaceZNU      <- NULL
-      if (is.null(dZ)) {
+      if (is.null(dZ[[m]])) {
         # estimate Z and NU
-        lspaceZNU      <- flspacerho1(T, P, z, d, zeta, N[m],  Mst)
+        lspaceZNU    <- flspacerho1(T, P[m], z, d, zeta, N[m],  Mst)
       } else {
-        obsARDm        <- obsARD[[m]]
-        iARDm          <- which(obsARDm)
-        inonARDm       <- which(!obsARDm)
-        XARDm          <- dZ[iARDm,]
-        XnonARDm       <- dZ[inonARDm,]
-        iARDm          <- iARDm - 1
-        inonARDm       <- inonARDm - 1
+        obsARDm      <- obsARD[[m]]
+        iARDm        <- which(obsARDm)
+        inonARDm     <- which(!obsARDm)
+        XARDm        <- dZ[[m]][iARDm,,drop = FALSE]
+        XnonARDm     <- dZ[[m]][inonARDm,,drop = FALSE]
+        iARD[[m]]    <- iARDm - 1
+        inonARD[[m]] <- inonARDm - 1
 
-        N1             <- nrow(XARDm)
-        N2             <- nrow(XnonARDm)
-
+        
         # estimate rho
-        lspaceZNU      <- flspacerho2(T, P, z, d, zeta, XARDm, XnonARDm, N1, N2, mARD, Mst, iARDm, inonARDm) 
+        lspaceZNU      <- flspacerho2(T, P[m], z, d, zeta, XARDm, XnonARDm, N1[m], N2[m], mARD[m], Mst) 
+        neighbor[[m]]  <- lspaceZNU$neighbor
+        weight[[m]]    <- lspaceZNU$weight
       }
-
+      
       # estimates murho and Vrho
       lzeta_z_nu       <- lspaceZNU$rho
       lzeta_z_nu[,1]   <- log(lzeta_z_nu[,1])
-      dest[[m]]        <- c(lspaceZNU$degree)
       murhom           <- colMeans(lzeta_z_nu)
-      lzetaest[m]      <- murhom[1]
-      zm               <- murhom[2:(N[m]*P + 1)]
-      num              <- tail(murhom, N[m])
       
-      dnetwork[[m]]    <- fdnetARD(exp(lzetaest[m]), zm, num, dest[[m]], N[m], P)
+      dest[[m]]        <- c(lspaceZNU$degree)
+      zetaest[m]       <- exp(murhom[1])
+      
+      zm               <- matrix(murhom[2:(N1[m]*P[m] + 1)], ncol = P[m])
+      num              <- tail(murhom, N1[m])
+      
+      dnetwork[[m]]    <-  fdnetARD(zm, num,  dest[[m]], N1[m], N2[m], N[m], P[m], zetaest[m], logCpvMF(P[m], zetaest[m]),
+                                    neighbor[[m]], weight[[m]], iARD[[m]], inonARD[[m]])
       
       if (typeprob[m] == 0){
         murho[[m]]     <- murhom
         Vrho[[m]]      <- cov(lzeta_z_nu)
-        Krho[m]        <- N[m]*(P + 1) + 1
+        Krho[m]        <- N1[m]*(P[m] + 1) + 1
       }
       if (typeprob[m] == 1){
-        murho[[m]]     <- murhom[1:(N[m]*P + 1)]
-        Vrho[[m]]      <- cov(lzeta_z_nu[,1:(N[m]*P + 1)])
-        Krho[m]        <- N[m]*P + 1
+        murho[[m]]     <- murhom[1:(N1[m]*P[m] + 1)]
+        Vrho[[m]]      <- cov(lzeta_z_nu[,1:(N1[m]*P[m] + 1)])
+        Krho[m]        <- N1[m]*P[m] + 1
       }
       if (typeprob[m] == 2){
         murho[[m]]     <- murhom[-1]
         Vrho[[m]]      <- cov(lzeta_z_nu[,-1])
-        Krho[m]        <- N[m]*(P + 1)
+        Krho[m]        <- N1[m]*(P[m] + 1)
       }
       if (typeprob[m] == 3){
-        murho[[m]]     <- murhom[2:(N[m]*P + 1)]
-        Vrho[[m]]      <- cov(lzeta_z_nu[,2:(N[m]*P + 1)])
-        Krho[m]        <- N[m]*P
+        murho[[m]]     <- murhom[2:(N1[m]*P[m] + 1)]
+        Vrho[[m]]      <- cov(lzeta_z_nu[,2:(N1[m]*P[m] + 1)])
+        Krho[m]        <- N1[m]*P[m]
       }
     }
     
@@ -554,11 +613,11 @@ mcmcSAR <- function(formula,
   
   # add value to hyperparms
   if (lmodel != "NONE"){
-  hyperparms   <- c(hyperparms, 
-                    list(
-                     rho     = murho,
-                     var.rho = Vrho
-                    ))
+    hyperparms   <- c(hyperparms, 
+                      list(
+                        rho     = murho,
+                        var.rho = Vrho
+                      ))
   }
   
   # Network and starting values
@@ -614,24 +673,25 @@ mcmcSAR <- function(formula,
     colnames(out$posterior$rho)   <- cn.rho
   }
   if(lmodel == "LATENT SPACE") {
-    out        <- SARMCMCard(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
-                             muzeta, invszeta, a, b, dest, exp(lzetaest), murho, Vrho, Krho, P, iteration,
+    out        <- SARMCMCard(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+                             muzeta, invszeta, a, b, dest, zetaest, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, iteration,
                              target, jumpmin, jumpmax, cpar, typeprob, print.level, block.max)
-
+    
     colnames(out$posterior$theta) <- col.post
     out$acceptance$rho            <- c(out$acceptance$rho)
-
-    for (mm in 1:M) {
-      outr.nam                          <-  paste0("z", paste0(rep(1:P, each = N[m]), "_", 1:N[m]))
-      if (typeprob[mm] %in% c(0, 1)) {
+    
+    for (m in 1:M) {
+      tmpm                              <- (1:N[m])[obsARD[[m]]]
+      outr.nam                          <-  paste0("z", paste0(rep(1:P[m], each = N1[m]), "_", tmpm))
+      if (typeprob[m] %in% c(0, 1)) {
         outr.nam                        <- c("logzeta", outr.nam)
       }
-      if (typeprob[mm] %in% c(0, 2)) {
-        outr.nam                        <- c(outr.nam,  paste0("nu", 1:N[m]))
+      if (typeprob[m] %in% c(0, 2)) {
+        outr.nam                        <- c(outr.nam,  paste0("nu", tmpm))
       }
-      colnames(out$posterior$rho[[mm]]) <- outr.nam
+      colnames(out$posterior$rho[[m]]) <- outr.nam
     }
-
+    
     if(any(out$acceptance$rho == 0)) {
       warning("Network distribution set fixed for at least one sub-network because initial estimate of the distribution is zero for couples who are friends (or one for couples who are not friends)")
     }
@@ -936,9 +996,9 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, d
 }
 
 # MCMC for the latent space model
-SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
-                          muzeta, invszeta, a, b,  dest, zetaest, murho, Vrho, Krho, P, iteration,
-                          target, jumpmin, jumpmax, cpar,  typeprob, print.level, block.max) {
+SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+                          muzeta, invszeta, a, b,  dest, zetaest, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P,
+                          iteration, target, jumpmin, jumpmax, cpar,  typeprob, print.level, block.max) {
   out          <- NULL
   if (is.null(X)) {
     if (block.max == 1) {
@@ -950,6 +1010,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                   ListIndex     = ListIndex, 
                                   M             = M, 
                                   N             = N,
+                                  N1            = N1,
                                   kbeta         = kbeta, 
                                   theta0        = mutheta, 
                                   invsigmatheta = invstheta, 
@@ -962,6 +1023,10 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                   murho         = murho,
                                   Vrho          = Vrho,
                                   Krho          = Krho,
+                                  neighbor      = neighbor,
+                                  weight        = weight,
+                                  iARD          = iARD,
+                                  inonARD       = inonARD,
                                   P             = P,
                                   parms0        = start, 
                                   iteration     = iteration,
@@ -980,6 +1045,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                        ListIndex     = ListIndex, 
                                        M             = M, 
                                        N             = N,
+                                       N1            = N1,
                                        kbeta         = kbeta, 
                                        theta0        = mutheta, 
                                        invsigmatheta = invstheta, 
@@ -992,6 +1058,10 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                        murho         = murho,
                                        Vrho          = Vrho,
                                        Krho          = Krho,
+                                       neighbor      = neighbor,
+                                       weight        = weight,
+                                       iARD          = iARD,
+                                       inonARD       = inonARD,
                                        P             = P,
                                        parms0        = start, 
                                        iteration     = iteration,
@@ -1014,6 +1084,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                ListIndex     = ListIndex, 
                                M             = M, 
                                N             = N,
+                               N1            = N1,
                                kbeta         = kbeta,
                                kgamma        = kgamma,
                                theta0        = mutheta, 
@@ -1027,6 +1098,10 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                murho         = murho,
                                Vrho          = Vrho,
                                Krho          = Krho,
+                               neighbor      = neighbor,
+                               weight        = weight,
+                               iARD          = iARD,
+                               inonARD       = inonARD,
                                P             = P,
                                parms0        = start, 
                                iteration     = iteration,
@@ -1046,6 +1121,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                     ListIndex     = ListIndex, 
                                     M             = M, 
                                     N             = N,
+                                    N1            = N1,
                                     kbeta         = kbeta,
                                     kgamma        = kgamma,
                                     theta0        = mutheta, 
@@ -1059,6 +1135,10 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dn
                                     murho         = murho,
                                     Vrho          = Vrho,
                                     Krho          = Krho,
+                                    neighbor      = neighbor,
+                                    weight        = weight,
+                                    iARD          = iARD,
+                                    inonARD       = inonARD,
                                     P             = P,
                                     parms0        = start, 
                                     iteration     = iteration,
@@ -1112,6 +1192,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD
   
   ## Know the type
   N              <- NULL
+  N1             <- NULL
   M              <- NULL
   tmodel         <- NULL
   sumG0.obs      <- NULL
@@ -1172,29 +1253,29 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD
       
       M        <- length(estimates)
       N        <- unlist(lapply(estimates, function(x)x$n))
+      N1       <- N
+      
       if(!is.null(dZ)){
+        #obsARD
+        if(!is.list(obsARD)){
+          stop(paste0("obsARD is missing in mlinks or is not a list"))
+        }
+        if(!all(unlist(lapply(obsARD, function(x) is.vector(x) & is.logical(x))))){
+          stop("at least one element in obsARD is not a logical vector")
+        }
+        
+        # covariates
         if(!is.list(dZ)){
           stop(paste0("for the ",
                       tolower(lmodel),
                       " model, covariates in mlinks should be a list of M covariate matrices (for individuals with and without ARD) to be used to compute distances between individuals."))
         }
-        Ntmp     <- unlist(lapply(dZ, nrow))
-        if(all(Ntmp <= N)) {
-          stop("covariates provided when nrow(covariates[[m]]) is not greater than the ARD sample size")
+        
+        Ntmp  <- unlist(lapply(obsARD, length))
+        if(any(Ntmp < N)){
+          stop("nrow(covariates[[m]]) != length(obsARD[[m]]) for at least one m")
         }
-        if(!is.null(obsARD)) {
-          if(!all(unlist(lapply(obsARD, function(x) is.vector(x) & is.logical(x))))){
-            stop("one element in obsARD is not a logical vector")
-          }
-          Ntmp2  <- unlist(lapply(obsARD, length))
-          if(any(Ntmp2!=Ntmp)){
-            stop("nrow(covariates[[m]]) != length(obsARD[[m]]) for at least one m")
-          }
-          N      <- Ntmp
-        } else {
-          N2     <- Ntmp - N
-          obsARD <- lapply(1:M, function(x) rep(c(TRUE, FALSE), c(N[x], N2[x])))
-        }
+        N     <- Ntmp
       }
     }
     
@@ -1226,7 +1307,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD
   }
   
   
-  return(list("M" = M, "N" = N, "tmodel" = tmodel, "lmodel" = lmodel, "sumG0.obs" = sumG0.obs, "obsARD" = obsARD))
+  return(list("M" = M, "N" = N, "N1" = N1, "tmodel" = tmodel, "lmodel" = lmodel, "sumG0.obs" = sumG0.obs, "obsARD" = obsARD))
 }
 
 # this function set target and jumping

@@ -552,7 +552,7 @@ List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
   
   const double ngraph = T-Metrostart+1;       // number of graphs
   double zetat, logCpzetat;
-  arma::rowvec nuARDt(n);
+  arma::vec nut, dt;
   
   // Number of people without ARD
   const double n2 = Xnonard.n_rows;
@@ -560,15 +560,15 @@ List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
   const double N  = n+n2;
   
   //compute neighbor and weight
-  arma::mat neighbor(n2,M);            
-  arma::mat weight(n2,M);
+  arma::umat neighbor(M, n2);            
+  arma::mat weight; // will the transposed in the function cneighbor and output will be (N2, M) 
   cneighbor(n, n2, N, Xard, Xnonard, M, neighbor, weight);
   
   //Necessary variables
-  arma::mat znonARDt(n2,P), ztall(N,P), probt(N,N), prob(N,N,arma::fill::zeros), numat;
-  arma::uvec neighborj(M);
-  arma::rowvec weightj(M), nunonARDt(n2), dnonARDt(n2), nut(N), nus(N, arma::fill::zeros),
-  ds(N, arma::fill::zeros), dst(N);
+  arma::mat probt, prob(N, N, arma::fill::zeros), numat;
+  arma::uvec neighborj;
+  arma::rowvec weightj;
+  arma::vec nus(N, arma::fill::zeros), ds(N, arma::fill::zeros);
   
   //loop 
   Progress prgcpp(ngraph, display_progress);
@@ -579,40 +579,24 @@ List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
     //if((t+1)%5000==0){std::cout<<" "<<round((t+1)/ngraph*100)<<"%"<<std::endl;}
     prgcpp.increment();
     
-    zetat           = zeta(t+Metrostart);      // extract zeta for itaration t+Metrostart
-    arma::mat zt    = z(t+Metrostart);        // extract z for iteration t+Metrostart
-    arma::rowvec dt = d.row(t+Metrostart); // extract d for iteration t+Metrostart
-    logCpzetat      = logCpvMFcpp(P,zetat);       // logCp(P,zetat)
+    zetat           = zeta(t+Metrostart);     
+    arma::mat zt    = z(t+Metrostart);       
+    dt              = arma::trans(d.row(t+Metrostart)); 
+    logCpzetat      = logCpvMFcpp(P,zetat);     
     //compute nu for ARD
-    nuARDt = log(dt) + 0.5*logCpzetat + 0.5*log(n/N) - 0.5*log(sum(dt)) ;
+    nut             = log(dt) + 0.5*logCpzetat + 0.5*log(n*1.0/N) - 0.5*log(sum(dt)) ;
     
-    //compute nu for non ARD
-    for(int j(0);j<n2;++j){
-      neighborj=arma::conv_to<arma::uvec>::from((neighbor.row(j)).t());
-      weightj=weight.row(j);
-      nunonARDt.col(j)=weightj*(nuARDt.elem(neighborj));
-      znonARDt.row(j)=weightj*(zt.rows(neighborj));
-    }
-    znonARDt=normalise(znonARDt,2,1);
+    //compute nu and z for non ARD
+    frhononARD(zt, nut, dt, logCpzetat, n, n2, N, P, neighbor, weight, iARD, inonARD);
     
-    // compute Probabilities
-    ztall.rows(iARD)    = zt;
-    ztall.rows(inonARD) = znonARDt;
-    nut.elem(iARD)      = nuARDt;
-    nut.elem(inonARD)   = nunonARDt;
-    dst.elem(iARD)      = dt;
-
-    numat = arma::repmat(nut,N,1);
-    probt = arma::exp(zetat*ztall*ztall.t() + numat + numat.t());
-
-    probt.diag()=arma::zeros(N); //zero on the diagonal
+    // prob
+    numat        = arma::repmat(nut, 1, N);
+    probt        = arma::exp(zetat*zt*zt.t() + numat + numat.t());
+    probt.diag() = arma::zeros(N); //zero on the diagonal
+    // normalization
+    probt   *= ((sum(dt))/arma::accu(probt));
     
-    // compute d for nonARD
-    dnonARDt = (N/n)*arma::exp(nunonARDt)*sum(arma::exp(nuARDt))/exp(logCpzetat);
-    probt   *= ((arma::sum(dt)+arma::sum(dnonARDt))/arma::accu(probt));
-    
-    dst.elem(inonARD) = dnonARDt;
-    ds               += dst;
+    ds               += dt;
     nus              += nut;
     prob             += probt;
   }

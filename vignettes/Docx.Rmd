@@ -223,8 +223,7 @@ plot(out.none3.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
 ```{r BayesNone32a, eval=FALSE}
 out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
-                        G0 = G0.tmp, data = dataset, mlinks = list(dnetwork = prior),
-                        iteration = 1e4)
+                        data = dataset, mlinks = list(dnetwork = prior), iteration = 1e4)
 ```
 ```{r BayesNone32aa, echo=FALSE}
 cat("0%   10   20   30   40   50   60   70   80   90   100%
@@ -324,7 +323,7 @@ Peer effects acceptance rate: 0.438
 rho acceptance rate         : 0.27185")
 ```
 ```{r BayesLog22b}
-summary(out.logi2.2) # the peer effets seem overestimated
+summary(out.logi2.2) 
 ```
 ```{r BayesLog22c, fig.height = 3, fig.align = "center"}
 plot(out.logi2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
@@ -348,7 +347,7 @@ estimates    <- list("rho"     = logestim$coefficients,
                      "N"       = N)
 mlinks       <- list(model = "logit", covariates = covar, estimates = estimates)
 out.logi3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
-                        data = dataset, mlinks = mlinks,citeration = 2e4)
+                        data = dataset, mlinks = mlinks, iteration = 2e4)
 ```
 
 ```{r BayesLog32aa, echo=FALSE}
@@ -538,9 +537,7 @@ Elapsed time          : 0  HH  0  mm  20  ss ")
 ```
 ```{r arde, eval=FALSE}
 # estimated degre
-estd          <- rep(NA, N)
-estd[hasARD]  <- colMeans(tail(estim.ard2$simulations$d, 2500))
-estd[!hasARD] <- estim.nard2$degree
+estd          <- estim.nard2$degree
 data.plot2    <- data.frame(True_degree  = gend, 
                             Estim_degree = estd, 
                             Has_ARD      = ifelse(hasARD, "YES", "NO"))
@@ -650,7 +647,7 @@ y             <- y$y
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
 ```
 ```{r bayesard2, eval=FALSE}
-mlinks       <- mlinks = list(model = "latent space", estimates = estimates)
+mlinks       <- list(model = "latent space", estimates = estimates)
 out.lspa1    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
                         data = dataset, mlinks = mlinks, iteration = 2e4)
 ```

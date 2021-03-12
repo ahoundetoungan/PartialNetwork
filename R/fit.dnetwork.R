@@ -7,7 +7,7 @@
 #' This could be the matrix of traits (see details).
 #' @param obsARD logical vector of length `nrow(X)` (number of individuals with and without ARD), where the i-th entry equal to `TRUE` if the i-th individual in `X` has ARD and `FALSE` otherwise.
 #' If missing, `obsARD = rep(c(TRUE, FALSE), n1, n2)`, where `n1` is the number of individuals with ARD (see details).
-#' @param m number of neighbors used to compute the gregariousness and the degree for individuals without ARD.
+#' @param m number of neighbors used to compute the gregariousness and the degree for individuals without ARD (default value is `1`).
 #' @param burnin number of simulations from the posterior distribution used as burn-in. The network distribution will be computed
 #' used the simulation from the iteration \code{burnin + 1}.
 #' @param print logical; if TRUE, the progression will be printed in the console.
@@ -15,9 +15,8 @@
 #'         \item{dnetwork}{posterior mean of the network distribution.} 
 #'         \item{degree}{posterior mean of the degree.} 
 #'         \item{nu}{posterior mean of the gregariousness, nu.} 
-#' @details Care should be taken about the order of individuals provided through the arguments `traitARD`, `ARD` when calling the function \code{\link{mcmcARD}}, and the order of individuals in
-#' `X` and `obsARD`. Especially, the i-th row of `X[obsARD,]` should correspond to the i-th row in `traitARD` or `ARD`. That is, the order of the
-#' individuals with ARD in `obsARD` should match with their order when calling the function \code{\link{mcmcARD}}.
+#' @details The order of individuals provided through the arguments `traitARD`, `ARD` (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
+#' `X` and `obsARD`. Especially, the i-th row of `X[obsARD,]` should correspond to the i-th row in `traitARD` or `ARD`.
 #' @examples 
 #' \donttest{
 #' set.seed(123)
@@ -192,7 +191,7 @@ fit.dnetwork   <- function(object, X = NULL, obsARD = NULL,
     iARD     <- iARD - 1
     inonARD  <- inonARD - 1
     if(is.null(m)) {
-      stop("m is null")
+      m      <- 1
     }
       
     out      <- dnetwork2(T, P, z, d, zeta, XARD, XnonARD, iARD, inonARD, m, Mst, print)

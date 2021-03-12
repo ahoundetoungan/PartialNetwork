@@ -11,7 +11,7 @@ using namespace Rcpp;
 using namespace std;
 //using namespace Eigen;
 //using namespace Numer;
-//In this file there are the functions which update the nework and the prior distribution of the network
+//In this file there are the functions which update the network and the prior distribution of the network
 
 // compute the block of the line
 arma::vec cBlock(
@@ -527,71 +527,108 @@ void updrhopl(List& Gnorm,
 
 
 // Update rho using the latent space model
-void updrhoARD (List& Gnorm,
-                List& prior,
-                List& G0obs,
-                List& ListIndex,
-                List& rho,
-                const List& d,
-                const arma::vec& zeta,
-                const List& murho,
-                const List& iVrho,
-                const List& jumprho,
-                const arma::vec& Krho,
-                const Rcpp::IntegerVector& N,
-                const int& M,
-                const int& P,
-                arma::vec& rhoaccept,
-                const arma::vec& type) {
+// ARD are observed in the whole population
+void updrhoARD(List& Gnorm,
+               List& prior,
+               List& G0obs,
+               List& ListIndex,
+               List& rho,
+               const List& d,
+               const arma::vec& zeta,
+               const List& murho,
+               const List& iVrho,
+               const List& jumprho,
+               const arma::vec& Krho,
+               List& neighbor,
+               List& weight,
+               List& iARD,
+               List& inonARD,
+               const Rcpp::IntegerVector& N,
+               const Rcpp::IntegerVector& N1,
+               const int& M,
+               const Rcpp::IntegerVector& P,
+               arma::vec& rhoaccept,
+               const arma::vec& type) {
   
   for(int m(0); m < M; ++m) {
-    int Nm             = N(m);
-    arma::vec rhom     = rho[m];
-    arma::mat jumprhom = jumprho[m];
-    arma::vec rhomst   = Fmvnorm(Krho(m), rhom, jumprhom);
+    int N1m              = N1(m);
+    int Nm               = N(m);
+    int N2m              = Nm - N1m;
+    arma::vec rhom       = rho[m];
+    arma::mat jumprhom   = jumprho[m];
+    arma::vec rhomst     = Fmvnorm(Krho(m), rhom, jumprhom);
     
-    arma::mat priorm   = prior[m];
-    arma::mat Gm       = Gnorm[m];
-    Gm                 = arma::ceil(Gm);
-    arma::vec murhom   = murho[m];
-    arma::mat iVrhom   = iVrho[m];
+    arma::mat priorm     = prior[m];
+    arma::mat Gm         = Gnorm[m];
+    Gm                   = arma::ceil(Gm);
+    arma::vec murhom     = murho[m];
+    arma::mat iVrhom     = iVrho[m];
+    
+    arma::umat neighborm = neighbor[m]; 
+    arma::mat weightm    = weight[m];
+    arma::uvec iARDm     = iARD[m];
+    arma::uvec inonARDm  = inonARD[m];
     
     arma::mat priorstm;
     if(type(m) == 0) { //d and zeta vary
-      arma::vec num    = rhomst.tail(Nm);
-      double zetam     = exp(rhomst(0));
-      arma::vec dm     = exp(num - logCpvMFcpp(P, zetam))*sum(exp(num));
-      priorstm         = fdnetARD(zetam, rhomst.subvec(1, Nm*P), num, dm, Nm, P);
+      double zetam      = exp(rhomst(0));
+      double logCpzetam = logCpvMFcpp(P(m), zetam);
+      
+      arma::vec num     = rhomst.tail(N1m);
+      arma::vec dm      = (Nm*1.0/N1m)*exp(num - logCpzetam)*sum(exp(num));
+      
+      arma::mat zm      = rhomst.subvec(1, N1m*P(m));
+      zm.reshape(N1m, P(m));
+
+      priorstm          =  fdnetARD(zm, num, dm, N1m, N2m, Nm, P(m), zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm);
     }
     if(type(m) == 1) { //d fixed and zeta varies
-      double zetam     = exp(rhomst(0));
-      arma::vec dm     = d[m];
-      arma::vec num    = log(dm) + 0.5*logCpvMFcpp(P, zetam) - 0.5*log(sum(dm)) ;
-      priorstm         = fdnetARD(zetam, rhomst.subvec(1, Nm*P), num, dm, Nm, P);
+      double zetam      = exp(rhomst(0));
+      double logCpzetam = logCpvMFcpp(P(m), zetam);
+      
+      arma::vec dm      = d[m];
+      arma::vec num     = log(dm) + 0.5*logCpzetam + 0.5*log(N1m*1.0/Nm) - 0.5*log(sum(dm));
+      
+      arma::mat zm      = rhomst.subvec(1, N1m*P(m));
+      zm.reshape(N1m, P(m));
+      
+      priorstm          =  fdnetARD(zm, num, dm, N1m, N2m, Nm, P(m), zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm);
     }
     if(type(m) == 2) { //d varies and zeta fixed
-      double zetam     = zeta(m);
-      arma::vec num    = rhomst.tail(Nm);
-      arma::vec dm     = exp(num - logCpvMFcpp(P, zetam))*sum(exp(num));
-      priorstm         = fdnetARD(zetam, rhomst.subvec(1, Nm*P), num, dm, Nm, P);
+      double zetam      = zeta(m);
+      double logCpzetam = logCpvMFcpp(P(m), zetam);
+      
+      arma::vec num     = rhomst.tail(N1m);
+      arma::vec dm      = (Nm*1.0/N1m)*exp(num - logCpzetam)*sum(exp(num));
+      
+      arma::mat zm      = rhomst.subvec(0, N1m*P(m) - 1);
+      zm.reshape(N1m, P(m));
+      
+      priorstm          =  fdnetARD(zm, num, dm, N1m, N2m, Nm, P(m), zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm);
     }
     if(type(m) == 3) { //d and zeta fixed
-      double zetam     = zeta(m);
-      arma::vec dm     = d[m];
-      arma::vec num    = log(dm) + 0.5*logCpvMFcpp(P, zetam) - 0.5*log(sum(dm)) ;
-      priorstm         = fdnetARD(zetam, rhomst, num, dm, Nm, P);
+      double zetam      = zeta(m);
+      double logCpzetam = logCpvMFcpp(P(m), zetam);
+      
+      arma::vec dm      = d[m];
+      arma::vec num     = log(dm) + 0.5*logCpzetam + 0.5*log(N1m*1.0/Nm) - 0.5*log(sum(dm));
+      
+      arma::mat zm      = rhomst;
+      zm.reshape(N1m, P(m));
+      
+      priorstm          =  fdnetARD(zm, num, dm, N1m, N2m, Nm, P(m), zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm);
     }
     
-    double lalpharho1  = arma::accu(log(priorstm%(2*Gm - 1) + 1 - Gm) - log(priorm%(2*Gm - 1) + 1 - Gm));
-    double lalpharho2  = 0.5*(arma::dot(rhom - murhom, iVrhom*(rhom - murhom)) - arma::dot(rhomst - murhom, iVrhom*(rhomst - murhom)));
+    double lalpharho1   = arma::accu(log(priorstm%(2*Gm - 1) + 1 - Gm) - log(priorm%(2*Gm - 1) + 1 - Gm));
+    double lalpharho2   = 0.5*(arma::dot(rhom - murhom, iVrhom*(rhom - murhom)) - arma::dot(rhomst - murhom, iVrhom*(rhomst - murhom)));
     
-    double logalpharho = lalpharho1 + lalpharho2;
+    double logalpharho  = lalpharho1 + lalpharho2;
     
     if(unif_rand()<exp(logalpharho)){
-      prior[m]         = priorstm;
-      rho[m]           = rhomst;
-      rhoaccept(m)    += 1;     //Increase acceptance number to 1 
+      prior[m]          = priorstm;
+      rho[m]            = rhomst;
+      rhoaccept(m)     += 1;     //Increase acceptance number to 1
     }
   }
-  ListIndex            = fListIndex(prior, G0obs, M,  N);
+  ListIndex             = fListIndex(prior, G0obs, M,  N);
 }

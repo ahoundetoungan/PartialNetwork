@@ -70,10 +70,24 @@ void fsetjump_d(double& jump, const double& jumpmin,
                 const double& jumpmax);
 void cneighbor(const double& N1, const double& N2, const double& N,
                const arma::mat& trait, const arma::mat& Xnonard, 
-               const int& m, arma::mat &neighbor, arma::mat& weight);
+               const int& m, arma::umat &neighbor, arma::mat& weight);
 
-arma::mat fdnetARD(const double& zeta, const arma::vec& z, const arma::vec& nu,
-                   const arma::vec& dm, const int& Nm, const int& P);
+void frhononARD(arma::mat& zm, arma::vec& num, arma::vec& dm, const double& logCpzeta,  const int& N1m, const int& N2m,
+                const int& Nm,  const int& P, const arma::umat& neighbor, const arma::mat& weight, 
+                const arma::uvec& iARD, const arma::uvec& inonARD);
+arma::mat fdnetARD(arma::mat& zm, 
+                   arma::vec& num, 
+                   arma::vec& dm, 
+                   const int& N1m, 
+                   const int& N2m, 
+                   const int& Nm, 
+                   const int& Pm, 
+                   const double& zetam, 
+                   const double& logCpzetam, 
+                   const arma::umat& neighborm, 
+                   const arma::mat& weightm, 
+                   const arma::uvec& iARDm, 
+                   const arma::uvec& inonARDm);
 
 Rcpp::List createlistmat(const int& M, const arma::vec& Krho);
 void addtolistmat(const int& M, Rcpp::List& listmat, Rcpp::List& Rho);

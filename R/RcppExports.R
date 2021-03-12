@@ -69,20 +69,20 @@ peerMCMCblock_none <- function(y, X, Xone, Gnorm, prior, ListIndex, M, N, kbeta,
     .Call(`_PartialNetwork_peerMCMCblock_none`, y, X, Xone, Gnorm, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax)
 }
 
-peerMCMCnoc_ard <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress) {
-    .Call(`_PartialNetwork_peerMCMCnoc_ard`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress)
+peerMCMCnoc_ard <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress) {
+    .Call(`_PartialNetwork_peerMCMCnoc_ard`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress)
 }
 
-peerMCMCblocknoc_ard <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax) {
-    .Call(`_PartialNetwork_peerMCMCblocknoc_ard`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax)
+peerMCMCblocknoc_ard <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax) {
+    .Call(`_PartialNetwork_peerMCMCblocknoc_ard`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax)
 }
 
-peerMCMC_ard <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress) {
-    .Call(`_PartialNetwork_peerMCMC_ard`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress)
+peerMCMC_ard <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress) {
+    .Call(`_PartialNetwork_peerMCMC_ard`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress)
 }
 
-peerMCMCblock_ard <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax) {
-    .Call(`_PartialNetwork_peerMCMCblock_ard`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax)
+peerMCMCblock_ard <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax) {
+    .Call(`_PartialNetwork_peerMCMCblock_ard`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax)
 }
 
 peerMCMCnoc_pl <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type) {
@@ -137,12 +137,12 @@ flspacerho1 <- function(T, P, z, d, zeta, N1, Metrostart) {
     .Call(`_PartialNetwork_flspacerho1`, T, P, z, d, zeta, N1, Metrostart)
 }
 
-flspacerho2 <- function(T, P, z, d, zeta, Xard, Xnonard, N1, N2, M, Metrostart, iARD, inonARD) {
-    .Call(`_PartialNetwork_flspacerho2`, T, P, z, d, zeta, Xard, Xnonard, N1, N2, M, Metrostart, iARD, inonARD)
+flspacerho2 <- function(T, P, z, d, zeta, Xard, Xnonard, N1, N2, M, Metrostart) {
+    .Call(`_PartialNetwork_flspacerho2`, T, P, z, d, zeta, Xard, Xnonard, N1, N2, M, Metrostart)
 }
 
-fdnetARD <- function(zeta, z, nu, dm, Nm, P) {
-    .Call(`_PartialNetwork_fdnetARD`, zeta, z, nu, dm, Nm, P)
+fdnetARD <- function(zm, num, dm, N1m, N2m, Nm, Pm, zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm) {
+    .Call(`_PartialNetwork_fdnetARD`, zm, num, dm, N1m, N2m, Nm, Pm, zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm)
 }
 
 rvMFcpp <- function(size, theta) {

@@ -1,5 +1,5 @@
 #' @title Creating objects for network models
-#' @description  `vec.to.mat` creates a list of square matrixes from a given vector.
+#' @description  `vec.to.mat` creates a list of square matrices from a given vector.
 #' The elements of the generated matrices are taken from the vector and placed column-wise (ie. the first column is filled up before filling the second column) and from the first matrix of the list to the last matrix of the list. 
 #' The diagonal of the generated matrices are zeros.
 #' `mat.to.vec` creates a vector from a given list of square matrices .
@@ -26,7 +26,6 @@
 #' # recover u
 #' v <- mat.to.vec(G, ceiled = TRUE)
 #' all.equal(u, v)
-#' 
 #' @seealso 
 #' \code{\link{sim.network}}, \code{\link{sim.dnetwork}}
 #' @export

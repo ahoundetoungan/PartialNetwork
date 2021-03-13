@@ -17,6 +17,7 @@ of dimension \code{p} with location parameter \code{mu} and intensity parameter 
 (see Wood, 1994; Mardia, 2014).
 }
 \examples{
+\donttest{
 # Draw 1000 vectors from vMF with parameters eta = 1 and mu = c(1,0)
 rvMF(1000,c(1,0))
 
@@ -25,5 +26,5 @@ rvMF(10,c(2,1,3))
 
 # Draw from the vMF distribution with mean direction proportional to c(1, -1)
 # and concentration parameter 3
-rvMF(10, 3 * c(1, -1) / sqrt(2))
+rvMF(10, 3 * c(1, -1) / sqrt(2))}
 }

@@ -22,6 +22,7 @@ a matrix of linking probabilities.
 Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2020).
 }
 \examples{
+\donttest{
 N       <- 500 
 zeta    <- 1
 
@@ -34,7 +35,7 @@ nu      <- rnorm(N, -1.35, 0.37)
 # Generate degrees
 d       <- runif(N, 0, 45)
 
-dist    <- sim.dnetwork(nu, d, zeta, z)
+dist    <- sim.dnetwork(nu, d, zeta, z)}
 }
 \references{
 Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly

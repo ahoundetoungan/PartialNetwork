@@ -4,13 +4,13 @@
 #' where `y` is the endogenous vector, the listed variables before the pipe, `x1`, `x2` are the individual exogenous variables and
 #' the listed variables after the pipe, `x1`, `x2` are the contextual observable variables. Other formulas may be
 #' \code{y ~ x1 + x2} for the model without contextual effects, \code{y ~ -1 + x1 + x2 | x1 + x2} for the model
-#' without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual variables.
-#' @param  contextual (optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
-#' the `formula` as `y ~ x1 + x2` and `contextual` as `TRUE` is equivalent to set the formula as `y ~ x1 + x2 | x1 + x2`.
+#' without intercept, or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variables to be different from the individual variables.
+#' @param  contextual (optional) logical; if true, this means that all individual variables will be set as contextual variables. Set 
+#' `formula` as `y ~ x1 + x2` and `contextual` as `TRUE` is equivalent to set formula as `y ~ x1 + x2 | x1 + x2`.
 #' @param  start (optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se^2)'},
 #' where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
 #' and \eqn{\sigma^2}{se^2} the variance of the error term. If the `start` is missing, a Maximum Likelihood estimator will be used, where
-#' the network matrix is that given through the argument `G0` (if provided) or generated from it distribution `dnetwork` (see argument `hyperparms`).
+#' the network matrix is that given through the argument `G0` (if provided) or generated from it distribution.
 #' @param G0.obs list of matrices (or simply matrix if the list contains only one matrix) indicating the part of the network data which is observed. If the (i,j)-th element
 #' of the m-th matrix is one, then the element at the same position in the network data will be considered as observed and will not be inferred in the MCMC. In contrast, 
 #' if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing link which will be inferred. 
@@ -18,9 +18,9 @@
 #' observed (equivalent to the case where all the entries are ones).
 #' @param G0 list of sub-network matrices (or simply network matrix if there is only one sub-network). `G0` is made up of starting values for the entries with missing network data and observed values for the entries with
 #' observed network data. `G0` is optional when `G0.obs = "none"`. 
-#' @param mlinks list specifying the network formation model (see details).
-#' @param hyperparms (optional) is a list of hyperparameters (see details). 
-#' @param ctrl.mcmc list of MCMC controls (see details).
+#' @param mlinks list specifying the network formation model (see Section Network formation model in Details).
+#' @param hyperparms (optional) is a list of hyperparameters (see Section Hyperparameters in Details). 
+#' @param ctrl.mcmc list of MCMC controls (see Section MCMC control in Details).
 #' @param iteration number of MCMC steps to be performed.
 #' @param data optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
 #' in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcARD` is called.
@@ -28,7 +28,7 @@
 #' ## Outcome model
 #' The model is given by
 #' \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon,}
-#' where \deqn{\epsilon ~ N(0, \sigma^2).}{\epsilon ~ N(0, se^2).}
+#' where \deqn{\epsilon \sim N(0, \sigma^2).}{\epsilon ~ N(0, se^2).}
 #' The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma}{se}.
 #' Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
 #' \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se^2}.
@@ -38,15 +38,15 @@
 #' \deqn{\sigma^2 \sim IG(\frac{a}{2}, \frac{b}{2})}{se^2 ~ IG(a/2, b/2)}
 #' where \eqn{\mathbf{P}}{P} is the linking probability. The linking probability is an hyperparameters that can be set fixed or updated using a network formation model.
 #' ## Network formation model
-#' The linking probability can be set fixed or updated using a network formation model. Information about how `P` should be handled in in the MCMC can be set through the
+#' The linking probability can be set fixed or updated using a network formation model. Information about how \eqn{\mathbf{P}}{P} should be handled in in the MCMC can be set through the
 #' argument `mlinks` which should be a list with named elements. Divers specifications of network formation model are possible. The list assigned to `mlist` should include
 #' an element named `model`. The expected values of `model` are `"none"` (default value), `"logit"`, `"probit"`, and `"latent space"`.
 #' \itemize{
-#' \item `"none"` means that the network distribution \eqn{P} is set fixed throughout the MCMC,
-#' \item `"probit"` and `"logit"` imply that the network distribution \eqn{P} will be updated using a Probit or Logit model,
-#' \item `"latent spate"` means that \eqn{P} will be updated using Breza et al. (2020).}
+#' \item `"none"` means that the network distribution \eqn{\mathbf{P}}{P} is set fixed throughout the MCMC,
+#' \item `"probit"` and `"logit"` imply that the network distribution \eqn{\mathbf{P}}{P} will be updated using a Probit or Logit model,
+#' \item `"latent spate"` means that \eqn{\mathbf{P}}{P} will be updated using Breza et al. (2020).}
 #' ### Fixed network distribution
-#' To set \eqn{P} fixed, `mlinks` could contain,
+#' To set \eqn{\mathbf{P}}{P} fixed, `mlinks` could contain,
 #' \itemize{
 #' \item `dnetwork`, a list, where the m-th element is the matrix of
 #' link probability in the m-th sub-network. 
@@ -91,7 +91,7 @@
 #' }
 #' Inverses are used for the prior variance through the argument `hyperparms`  in order to allow non informative prior. Set the inverse of the prior
 #' variance to 0 is equivalent to assume a non informative prior.
-#' ## Adaptive MCMC
+#' ## MCMC control
 #' During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate to the `target` value. This
 #' requires to set a minimal and a maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 #' \itemize{

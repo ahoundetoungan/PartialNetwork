@@ -10,7 +10,6 @@
 #' dnetwork  <- lapply(N, function(x) matrix(runif(x^2), x))
 #' ## network
 #' G         <- sim.network(dnetwork)
-#' 
 #' @seealso \code{\link{sim.dnetwork}}
 #' @export
 sim.network <- function(dnetwork, normalise = FALSE) {

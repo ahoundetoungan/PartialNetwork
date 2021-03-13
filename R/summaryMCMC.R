@@ -52,7 +52,7 @@
   if (burnin + 2 >= iteration) {
     stop("burnin is too close to the number of MCMC steps performed.")
   }
-
+  
   K              <- ncol(pos.theta)
   pos.theta[,K]  <- sqrt(pos.theta[,K])
   cnames         <- c("Mean", "Std.Error", "Inf CI", "Sup CI", "Sign")
@@ -153,7 +153,7 @@
     cat("Peer effects acceptance rate: ", x$accept.rate$alpha, "\n", sep = "")
     cat("rho acceptance rate         : ", mean(x$accept.rate$rho), "\n", sep = "")
   }
-
+  
   invisible(x)
 }
 
@@ -190,6 +190,7 @@
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 #'     \item{...}{arguments passed to methods.}
 #' @importFrom graphics par
+#' @importFrom stats density
 #' @export
 "plot.mcmcSAR" <- function(x, plot.type = "sim", burnin = NULL, which.parms = "theta", ...) {
   stopifnot(class(x) == "mcmcSAR")
@@ -214,9 +215,6 @@
     posterior <- posterior[[which.parms]]
   } 
   k              <- ncol(posterior)
-  if (!is.matrix(posterior)){
-    posterior    <- posterior$theta
-  } 
   
   x              <- list(n.group     = x$n.group,
                          N           = x$N,
@@ -269,7 +267,7 @@
 "print.plot.mcmcSAR" <- function(x, ...) {
   posterior       <- x$posterior
   k               <- ncol(posterior)
-  posterior[,k]   <- sqrt(posterior[,k])
+  
   burnin          <- x$burnin
   iteration       <- x$iteration
   
@@ -277,8 +275,9 @@
   sim             <- x$plot.type == "sim"
   
   coln            <- colnames(posterior)
-  if (x$which.parms != "rho") {
+  if (x$which.parms == "theta") {
     coln[k - 1]   <- "Peer effects"
+    posterior[,k] <- sqrt(posterior[,k])
   } else{
     k             <- k + 1
   }
@@ -305,24 +304,20 @@
   } else {
     posterior     <- posterior[(burnin+1):iteration,,drop = FALSE]
     for (i in 1:(k - 1)) {
-      tmp1        <- c(list(x = posterior[, i], ... = ...),  x[-(1:14)])
-      
-      tmp2        <- c(list(x = do.call("density", tmp1),
+      tmp         <- c(list(x    = density(posterior[, i]),
                             main = coln[i],
                             xlab = "",
                             ylab = "",
                             ...  = ...), x[-(1:14)])
-      do.call("plot", tmp2)
+      do.call("plot", tmp)
     }
     if (x$which.parms == "theta") {
-      tmp1        <- c(list(x = posterior[, k], ... = ...),  x[-(1:14)])
-      
-      tmp2        <- c(list(x = do.call("density", tmp1),
-                              main = expression(sigma),
-                              xlab = "",
-                              ylab = "",
-                              ...  = ...), x[-(1:13)])
-      do.call("plot", tmp2)}
+      tmp         <- c(list(x    = density(posterior[, k]),
+                            main = expression(sigma),
+                            xlab = "",
+                            ylab = "",
+                            ...  = ...), x[-(1:13)])
+      do.call("plot", tmp)}
   }
   
   

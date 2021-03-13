@@ -24,7 +24,7 @@ rvMF  <- function(size, theta) {
 
 #' @title Normalization constant of von Mises-Fisher Distribution
 #' @description log of the Normalization Constant for the von Mises-Fisher Distribution
-#' of dimension \code{p} with location parameter \code{mu} and intensity parameter \code{eta}.
+#' of dimension \code{p} with intensity parameter \code{eta}.
 #' @param p is the dimension of the hypersphere.
 #' @param eta is the intensity parameter.
 #' @examples 
@@ -38,7 +38,8 @@ logCpvMF <- function(p, eta) {
 #' @description Density function for the von Mises-Fisher Distribution
 #' of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter \code{eta}.
 #' @param z is a matrix where each row is a spherical coordinate at which the density will be evaluated.
-#' @param theta is a vector of dimension `p` such that \code{eta*mu}.
+#' @param theta is a vector of dimension `p` equal to \eqn{\eta\mu}, where \eqn{\eta} is the concentration parameter, and
+#' \eqn{\mu} the location parameter.
 #' @param log.p is logical; if TRUE, probabilities p are given as log(p).
 #' @examples
 #' # Draw 1000 vectors from vMF with parameter eta = 1 and mu = c(1,0)
@@ -48,7 +49,7 @@ logCpvMF <- function(p, eta) {
 #' dvMF(z, c(1,0))
 #' 
 #' # Density of c(0, 1, 0, 0) with the parameter eta = 3 and mu = c(0, 1, 0, 0)
-#' dvMF(matrix(c(0, 1, 0, 0), nrow = 1), c(0, 3, 0, 0)) 
+#' dvMF(matrix(c(0, 1, 0, 0), nrow = 1), c(0, 3, 0, 0))
 #' @export
 dvMF <- function(z, theta, log.p = FALSE) {
   if (is.vector(z)) z <- matrix(z, ncol = length(theta), byrow = TRUE)

@@ -1,9 +1,10 @@
 #' @title Fitting Network Distribution using ARD.
 #' @description \code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the 
-#' ARD network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
-#' The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a m-nearest neighbors method.
+#' ARD network formation model. The linking probabilities are also computed for individuals without ARD.
+#' The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a k-nearest neighbors method.
 #' @param object `estim.ARD` object returned by \code{\link{mcmcARD}}.
-#' @param X matrix of variables (describing individuals with ARD and those without ARD) used to compute distances between individuals. Necessary when ARD are available for a sample of individuals.
+#' @param X (required when ARD are available for a sample of individuals) is a matrix of variables describing individuals with ARD and those without ARD. This matrix will be used to compute distance between individuals
+#' in the k-nearest neighbors approach.
 #' This could be the matrix of traits (see details).
 #' @param obsARD logical vector of length `nrow(X)` (number of individuals with and without ARD), where the i-th entry equal to `TRUE` if the i-th individual in `X` has ARD and `FALSE` otherwise.
 #' If missing, `obsARD = rep(c(TRUE, FALSE), n1, n2)`, where `n1` is the number of individuals with ARD (see details).
@@ -15,7 +16,7 @@
 #'         \item{dnetwork}{posterior mean of the network distribution.} 
 #'         \item{degree}{posterior mean of the degree.} 
 #'         \item{nu}{posterior mean of the gregariousness, nu.} 
-#' @details The order of individuals provided through the arguments `traitARD`, `ARD` (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
+#' @details The order of individuals provided through the arguments `traitARD` and `ARD` (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
 #' `X` and `obsARD`. Especially, the i-th row of `X[obsARD,]` should correspond to the i-th row in `traitARD` or `ARD`.
 #' @examples 
 #' \donttest{

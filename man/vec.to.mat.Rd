@@ -24,7 +24,7 @@ norm.network(W)
 \item{ceiled}{boolean takes \code{TRUE} if the given matrices should be ceiled before conversion and \code{FALSE} otherwise..}
 }
 \description{
-\code{vec.to.mat} creates a list of square matrixes from a given vector.
+\code{vec.to.mat} creates a list of square matrices from a given vector.
 The elements of the generated matrices are taken from the vector and placed column-wise (ie. the first column is filled up before filling the second column) and from the first matrix of the list to the last matrix of the list.
 The diagonal of the generated matrices are zeros.
 \code{mat.to.vec} creates a vector from a given list of square matrices .
@@ -32,6 +32,7 @@ The elements of the generated vector are taken from column-wise and from the fir
 \code{norm.network} row-normalizes matrices in a given list.
 }
 \examples{
+\donttest{
 # Generate a list of adjacency matrices
 ## sub-network size
 N <- c(250, 370, 120)  
@@ -47,7 +48,7 @@ G <- norm.network(W)
 # recover u
 v <- mat.to.vec(G, ceiled = TRUE)
 all.equal(u, v)
-
+}
 }
 \seealso{
 \code{\link{sim.network}}, \code{\link{sim.dnetwork}}

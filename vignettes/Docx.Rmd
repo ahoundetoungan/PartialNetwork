@@ -533,10 +533,10 @@ cat("ARD non observed on the entire population
 
 Average link probabilities estimated 
 Iteration             : 2500 
-Elapsed time          : 0  HH  0  mm  20  ss ")
+Elapsed time          : 0  HH  0  mm  14  ss ")
 ```
 ```{r arde, eval=FALSE}
-# estimated degre
+# estimated degree
 estd          <- estim.nard2$degree
 data.plot2    <- data.frame(True_degree  = gend, 
                             Estim_degree = estd, 
@@ -545,7 +545,6 @@ ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_AR
   geom_abline(col = "red") + geom_point() 
 ```
 ```{r ardee, message=FALSE, echo=FALSE, fig.height = 3, fig.align = "center"}
-library(ggplot2)
 ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_ARD)) + 
   geom_abline(col = "red") + geom_point() 
 ```

@@ -293,19 +293,20 @@ hyperp     <- list("mutheta"       = rep(0,Kv),
                    "invszeta"      = 2,
                    "a"             = 4.2,
                    "b"             = (4.2 - 2)*0.5)
-# ########  Observed network as given
-# obs.est    <- mcmcSAR(formula    = Model,
-#                       contextual = TRUE,
-#                       G0.obs     = "all",
-#                       G0         = G,
-#                       hyperparms = hyperp,
-#                       data       = dataset,
-#                       iteration  = 2e4)
-# # save(obs.est, file = "/home/haache/Dropbox/ARD/AddHealth/obs.est.rda")
-# 
-# ## Table
-# summary(obs.est)
-# plot(obs.est, mar = c(2, 2, 1, 1))
+########  Observed network as given
+obs.est    <- mcmcSAR(formula    = Model,
+                      contextual = TRUE,
+                      G0.obs     = "all",
+                      G0         = G,
+                      hyperparms = hyperp,
+                      data       = dataset,
+                      iteration  = 2e4)
+# save(obs.est, file = "/home/haache/Dropbox/ARD/AddHealth/obs.est.rda")
+
+## Table
+summary(obs.est)
+plot(obs.est, mar = c(2, 2, 1, 1))
+plot(obs.est, plot.type = "dens", mar = c(2, 2, 1, 1))
 
 ########  Reconstructed network
 #### Missing links only
@@ -334,11 +335,14 @@ top.est    <- mcmcSAR(formula    = Model,
                       data       = dataset,
                       iteration  = 2e4)
 
-
+# save(top.est)
 summary(top.est)
 plot(top.est, mar = c(2, 2, 1, 1))
+plot(top.est, mar = c(2, 2, 1, 1), which.parms = "rho")
+plot(top.est, plot.type = "dens", mar = c(2, 2, 1, 1))
+plot(top.est, plot.type = "dens", mar = c(2, 2, 1, 1), which.parms = "rho")
 
-#### Top coding and missing only
+#### Top coding and missing
 tmiss.est  <- mcmcSAR(formula    = Model,
                       contextual = TRUE,
                       G0.obs     = Go3,

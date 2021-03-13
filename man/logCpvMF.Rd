@@ -13,9 +13,8 @@ logCpvMF(p, eta)
 }
 \description{
 log of the Normalization Constant for the von Mises-Fisher Distribution
-of dimension \code{p} with location parameter \code{mu} and intensity parameter \code{eta}.
+of dimension \code{p} with intensity parameter \code{eta}.
 }
 \examples{
-\donttest{
-logCpvMF(2, 3.1)}
+logCpvMF(2, 3.1)
 }

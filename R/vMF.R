@@ -15,6 +15,10 @@
 #' # Draw from the vMF distribution with mean direction proportional to c(1, -1)
 #' # and concentration parameter 3
 #' rvMF(10, 3 * c(1, -1) / sqrt(2))
+#' @references 
+#' Mardia, K. V., 2014, Statistics of directional data, \emph{Academic press}.
+#' @references  
+#' Wood, A. T., 1994, Simulation of the von Mises Fisher distribution. \emph{Communications in statistics-simulation and computation}, 23(1), 157-164. \doi{10.1080/03610919408813161}.
 #' @export
 rvMF  <- function(size, theta) {
   rvMFcpp(size, theta)

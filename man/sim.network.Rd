@@ -18,7 +18,6 @@ list of (row-normalized) adjacency matrices.
 Simulating network data
 }
 \examples{
-\donttest{
 # Generate a list of adjacency matrices
 ## sub-network size
 N         <- c(250, 370, 120)  
@@ -26,7 +25,6 @@ N         <- c(250, 370, 120)
 dnetwork  <- lapply(N, function(x) matrix(runif(x^2), x))
 ## network
 G         <- sim.network(dnetwork)
-}
 }
 \seealso{
 \code{\link{sim.dnetwork}}

@@ -16,7 +16,8 @@ fit.dnetwork(
 \arguments{
 \item{object}{\code{estim.ARD} object returned by \code{\link{mcmcARD}}.}
 
-\item{X}{matrix of variables (describing individuals with ARD and those without ARD) used to compute distances between individuals. Necessary when ARD are available for a sample of individuals.
+\item{X}{(required when ARD are available for a sample of individuals) is a matrix of variables describing individuals with ARD and those without ARD. This matrix will be used to compute distance between individuals
+in the k-nearest neighbors approach.
 This could be the matrix of traits (see details).}
 
 \item{obsARD}{logical vector of length \code{nrow(X)} (number of individuals with and without ARD), where the i-th entry equal to \code{TRUE} if the i-th individual in \code{X} has ARD and \code{FALSE} otherwise.
@@ -37,11 +38,11 @@ A list consisting of:
 }
 \description{
 \code{fit.dnetwork} computes the network distribution using the simulations from the posterior distribution of the
-ARD network formation model. The linking probabilities are also computed for individuals without ARD if their traits are observed.
-The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a m-nearest neighbors method.
+ARD network formation model. The linking probabilities are also computed for individuals without ARD.
+The degrees and the gregariousness of the individuals without ARD are computed from the sample with ARD using a k-nearest neighbors method.
 }
 \details{
-The order of individuals provided through the arguments \code{traitARD}, \code{ARD} (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
+The order of individuals provided through the arguments \code{traitARD} and \code{ARD} (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
 \code{X} and \code{obsARD}. Especially, the i-th row of \code{X[obsARD,]} should correspond to the i-th row in \code{traitARD} or \code{ARD}.
 }
 \examples{

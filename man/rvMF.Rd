@@ -17,7 +17,6 @@ of dimension \code{p} with location parameter \code{mu} and intensity parameter 
 (see Wood, 1994; Mardia, 2014).
 }
 \examples{
-\donttest{
 # Draw 1000 vectors from vMF with parameters eta = 1 and mu = c(1,0)
 rvMF(1000,c(1,0))
 
@@ -26,5 +25,10 @@ rvMF(10,c(2,1,3))
 
 # Draw from the vMF distribution with mean direction proportional to c(1, -1)
 # and concentration parameter 3
-rvMF(10, 3 * c(1, -1) / sqrt(2))}
+rvMF(10, 3 * c(1, -1) / sqrt(2))
+}
+\references{
+Mardia, K. V., 2014, Statistics of directional data, \emph{Academic press}.
+
+Wood, A. T., 1994, Simulation of the von Mises Fisher distribution. \emph{Communications in statistics-simulation and computation}, 23(1), 157-164. \doi{10.1080/03610919408813161}.
 }

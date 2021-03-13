@@ -27,23 +27,23 @@ mcmcARD(
 
 \item{fixv}{is a vector setting which location parameters are fixed for identifiability.
 These fixed positions are used to rotate the latent surface back to a common orientation at each iteration using
-a Procrustes transformation (see McCormick and Zheng, 2015; Breza et al., 2017 and details).}
+a Procrustes transformation (see Section Identification in Details).}
 
-\item{consb}{is a vector of the subset of \eqn{\beta_k}{bk} constrained to the total size (see McCormick and Zheng, 2015; Breza et al., 2017 and details).}
+\item{consb}{is a vector of the subset of \eqn{\beta_k}{bk} constrained to the total size (see Section Identification in Details).}
 
 \item{iteration}{is the number of MCMC steps to be performed.}
 
-\item{sim.d}{is logical indicating weather the degree \code{d} will be updated in the MCMC. If \code{sim.d = FALSE},
-the starting value of \code{d} in the argument \code{start} is set fixed along the process.}
+\item{sim.d}{is logical indicating whether the degree \code{d} will be updated in the MCMC. If \code{sim.d = FALSE},
+the starting value of \code{d} in the argument \code{start} is set fixed along the MCMC.}
 
-\item{sim.zeta}{is logical indicating weather the degree \code{zeta} will be updated in the MCMC. If \code{sim.zeta = FALSE},
-the starting value of \code{zeta} in the argument \code{start} is set fixed along the process.}
+\item{sim.zeta}{is logical indicating whether the degree \code{zeta} will be updated in the MCMC. If \code{sim.zeta = FALSE},
+the starting value of \code{zeta} in the argument \code{start} is set fixed along the MCMC.}
 
-\item{hyperparms}{is an 8-dimensional vector of hyperparameters such that, \eqn{\mu_d}{mud},  \eqn{\sigma_d}{sigmad},
+\item{hyperparms}{is an 8-dimensional vector of hyperparameters (in this order) \eqn{\mu_d}{mud},  \eqn{\sigma_d}{sigmad},
 \eqn{\mu_b}{mub}, \eqn{\sigma_b}{sigmab}, \eqn{\alpha_{\eta}}{alphaeta}, \eqn{\beta_{\eta}}{betaeta},
-\eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_{\zeta}}{betazeta} (see details).}
+\eqn{\alpha_{\zeta}}{alphazeta} and \eqn{\beta_{\zeta}}{betazeta} (see Section Model in Details).}
 
-\item{ctrl.mcmc}{is a list of MCMC controls (See details).}
+\item{ctrl.mcmc}{is a list of MCMC controls (see Section MCMC control in Details).}
 }
 \value{
 A list consisting of:
@@ -59,25 +59,34 @@ A list consisting of:
 \item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
 }
 \description{
-\code{mcmcARD} estimates the network model proposed by McCormick and Zheng (2015).
+\code{mcmcARD} estimates the network model proposed by Breza et al. (2020).
 }
 \details{
 The linking probability is given by
-\deqn{P_{ij} \propto \nu_i + \nu_j + \zeta\mathbf{z}_i\mathbf{z}_j.}{Pij is proportional to (nui + nuj + zeta * zi * zj).}
+\subsection{Model}{
+
+\deqn{P_{ij} \propto \exp(\nu_i + \nu_j + \zeta\mathbf{z}_i\mathbf{z}_j).}{Pij is proportional to exp(nui + nuj + zeta * zi * zj).}
 McCormick and Zheng (2015) write the likelihood of the model with respect to the spherical coordinate \eqn{\mathbf{z}_i}{zi},
 the trait locations \eqn{\mathbf{v}_k}{vk}, the degree \eqn{d_i}{di}, the fraction of ties in the network that are
-made with members of group k \eqn{b_k}{bk}, the trait intensity parameter \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta}. The following
+made with members of group k \eqn{b_k}{bk}, the trait intensity parameter \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta}.
+The following
 prior distributions are defined.
 \deqn{\mathbf{z}_i \sim Uniform ~ von ~ Mises-Fisher}{zi ~ Uniform von Mises Fisher}
 \deqn{\mathbf{v}_k \sim Uniform ~ von ~ Mises-Fisher}{vk ~ Uniform von Mises Fisher}
 \deqn{d_i \sim log-\mathcal{N}(\mu_d, \sigma_d)}{di ~ log-Normal(mud, sigmad)}
 \deqn{b_k \sim log-\mathcal{N}(\mu_b, \sigma_b)}{bk ~ log-Normal(mub, sigmab)}
 \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
-\deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \cr
+\deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \
+}
+
+\subsection{Idendification}{
 
 For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to be exogenously fixed around their given starting value
 (see McCormick and Zheng, 2015 for more details). The parameter \code{fixv} can be used
 to set the desired value for \eqn{\mathbf{v}_k}{vk} while \code{fixb} can be used to set the desired values for \eqn{b_k}{bk}.\cr
+}
+
+\subsection{MCMC control}{
 
 During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the \code{target} values. This
 requires to set minimal and maximal jumping scales through the parameter \code{ctrl.mcmc}. The parameter \code{ctrl.mcmc} is a list which can contain the following named components.
@@ -85,9 +94,10 @@ requires to set minimal and maximal jumping scales through the parameter \code{c
 \item{\code{target}}: The default value is \code{rep(0.44, 5)}.
 The target of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is  0.44.
 \item{\code{jumpmin}}: The default value is \code{c(0,1,1e-7,1e-7,1e-7)*1e-5}.
-The minimal jumping of every \eqn{\mathbf{z}_i}{zi}, \eqn{d_i}{di}, \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is \eqn{10^{-12}}{1e-12}.
-\item{\code{jumpmax}}: The default value is \code{c(100,1,1,1,1)*20}. The maximal jumping scale is 10 except for \eqn{\mathbf{z}_i}{zi} which is set to 200.
+The minimal jumping of every \eqn{\mathbf{z}_i}{zi} is 0, every \eqn{d_i}{di} is \eqn{10^{-5}}{1e-5}, and every \eqn{b_k}{bk}, \eqn{\eta_k}{etak} and \eqn{\zeta}{zeta} is \eqn{10^{-12}}{1e-12}.
+\item{\code{jumpmax}}: The default value is \code{c(100,1,1,1,1)*20}. The maximal jumping scale is 20 except for \eqn{\mathbf{z}_i}{zi} which is set to 2000.
 \item{\code{print}}: A logical value which indicates if the MCMC progression should be printed in the console. The default value is \code{TRUE}.
+}
 }
 }
 \examples{
@@ -198,11 +208,10 @@ k <- 8
 }} 
 }
 \references{
-Atchadé, Y. F., & Rosenthal, J. S. (2005). On adaptive markov chain monte carlo algorithms. \emph{Bernoulli}, 11(5), 815-828. \url{https://projecteuclid.org/euclid.bj/1130077595}.
+Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
 
-Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
-identify network structure without network data. \emph{American Economic Review, forthcoming}. \url{https://arxiv.org/abs/1703.04157}
+Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
 
-McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data.
-\emph{Journal of the American Statistical Association}, 110(512), 1684-1695. \url{https://amstat.tandfonline.com/doi/full/10.1080/01621459.2014.991395}.
+McCormick, T. H., & Zheng, T., 2015, Latent surface models for networks using Aggregated Relational Data,
+\emph{Journal of the American Statistical Association}, 110(512), 1684-1695, \doi{10.1080/01621459.2014.991395}.
 }

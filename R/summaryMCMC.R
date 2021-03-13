@@ -15,9 +15,11 @@
 #'     \item{N}{vector of each group size.}
 #'     \item{iteration}{number of MCMC steps performed.}
 #'     \item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
-#'     \item{posterior}{matrix containing the simulations.}
+#'     \item{posterior}{matrix (or list of matrices) containing the simulations.}
 #'     \item{hyperparms}{return value of `hyperparms`.}
 #'     \item{accept.rate}{acceptance rate of zeta.}
+#'     \item{propG0.obs}{proportion of observed network data.}
+#'     \item{method.net}{network formation model specification.}
 #'     \item{formula}{input value of `formula`.}
 #'     \item{alpha}{significance level of parameter.}
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
@@ -182,12 +184,15 @@
 #'     \item{N}{vector of each group size.}
 #'     \item{iteration}{number of MCMC steps performed.}
 #'     \item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
-#'     \item{posterior}{summary of the posterior distribution.}
+#'     \item{posterior}{summary of the posterior distribution to be plotted.}
 #'     \item{hyperparms}{return value of `hyperparms`.}
 #'     \item{accept.rate}{acceptance rate of zeta.}
+#'     \item{propG0.obs}{proportion of observed network data.}
+#'     \item{method.net}{network formation model specification.}
 #'     \item{formula}{input value of `formula`.}
-#'     \item{plot.type}{type of the plot.}
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
+#'     \item{which.parms}{return value of `which.parms`.}
+#'     \item{plot.type}{type of the plot.}
 #'     \item{...}{arguments passed to methods.}
 #' @importFrom graphics par
 #' @importFrom stats density

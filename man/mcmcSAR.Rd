@@ -22,15 +22,15 @@ mcmcSAR(
 where \code{y} is the endogenous vector, the listed variables before the pipe, \code{x1}, \code{x2} are the individual exogenous variables and
 the listed variables after the pipe, \code{x1}, \code{x2} are the contextual observable variables. Other formulas may be
 \code{y ~ x1 + x2} for the model without contextual effects, \code{y ~ -1 + x1 + x2 | x1 + x2} for the model
-without intercept or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variable to be different from the individual variables.}
+without intercept, or \code{ y ~ x1 + x2 | x2 + x3} to allow the contextual variables to be different from the individual variables.}
 
-\item{contextual}{(optional) logical; if true, this means that all individual variables will be set as contextual variables. Set the
-the \code{formula} as \code{y ~ x1 + x2} and \code{contextual} as \code{TRUE} is equivalent to set the formula as \code{y ~ x1 + x2 | x1 + x2}.}
+\item{contextual}{(optional) logical; if true, this means that all individual variables will be set as contextual variables. Set
+\code{formula} as \code{y ~ x1 + x2} and \code{contextual} as \code{TRUE} is equivalent to set formula as \code{y ~ x1 + x2 | x1 + x2}.}
 
 \item{start}{(optional) vector of starting value of the model parameter as \eqn{(\beta' ~ \gamma' ~ \alpha ~ \sigma^2)'}{(\beta'  \gamma'  \alpha  se^2)'},
 where \eqn{\beta} is the individual variables parameter, \eqn{\gamma} is the contextual variables parameter, \eqn{\alpha} is the peer effect parameter
 and \eqn{\sigma^2}{se^2} the variance of the error term. If the \code{start} is missing, a Maximum Likelihood estimator will be used, where
-the network matrix is that given through the argument \code{G0} (if provided) or generated from it distribution \code{dnetwork} (see argument \code{hyperparms}).}
+the network matrix is that given through the argument \code{G0} (if provided) or generated from it distribution.}
 
 \item{G0.obs}{list of matrices (or simply matrix if the list contains only one matrix) indicating the part of the network data which is observed. If the (i,j)-th element
 of the m-th matrix is one, then the element at the same position in the network data will be considered as observed and will not be inferred in the MCMC. In contrast,
@@ -41,11 +41,11 @@ observed (equivalent to the case where all the entries are ones).}
 \item{G0}{list of sub-network matrices (or simply network matrix if there is only one sub-network). \code{G0} is made up of starting values for the entries with missing network data and observed values for the entries with
 observed network data. \code{G0} is optional when \code{G0.obs = "none"}.}
 
-\item{mlinks}{list specifying the network formation model (see details).}
+\item{mlinks}{list specifying the network formation model (see Section Network formation model in Details).}
 
-\item{hyperparms}{(optional) is a list of hyperparameters (see details).}
+\item{hyperparms}{(optional) is a list of hyperparameters (see Section Hyperparameters in Details).}
 
-\item{ctrl.mcmc}{list of MCMC controls (see details).}
+\item{ctrl.mcmc}{list of MCMC controls (see Section MCMC control in Details).}
 
 \item{iteration}{number of MCMC steps to be performed.}
 
@@ -77,7 +77,7 @@ A list consisting of:
 
 The model is given by
 \deqn{\mathbf{y} = \mathbf{X}\beta + \mathbf{G}\mathbf{X}\gamma + \alpha \mathbf{G}\mathbf{y} + \epsilon.}{y = X\beta + GX\gamma + \alpha Gy + \epsilon,}
-where \deqn{\epsilon ~ N(0, \sigma^2).}{\epsilon ~ N(0, se^2).}
+where \deqn{\epsilon \sim N(0, \sigma^2).}{\epsilon ~ N(0, se^2).}
 The parameters to estimate in this model are the matrix \eqn{\mathbf{G}}{G}, the vectors \eqn{\beta}, \eqn{\gamma} and the scalar \eqn{\alpha}, \eqn{\sigma}{se}.
 Prior distributions are assumed on \eqn{\mathbf{A}}, the adjacency matrix in which \eqn{\mathbf{A}_{ij} = 1}{A[i,j] = 1} if i is  connected to j and
 \eqn{\mathbf{A}_{ij} = 0}{A[i,j] = 0} otherwise, and on \eqn{\beta}, \eqn{\gamma}, \eqn{\alpha} and \eqn{\sigma^2}{se^2}.
@@ -90,18 +90,18 @@ where \eqn{\mathbf{P}}{P} is the linking probability. The linking probability is
 
 \subsection{Network formation model}{
 
-The linking probability can be set fixed or updated using a network formation model. Information about how \code{P} should be handled in in the MCMC can be set through the
+The linking probability can be set fixed or updated using a network formation model. Information about how \eqn{\mathbf{P}}{P} should be handled in in the MCMC can be set through the
 argument \code{mlinks} which should be a list with named elements. Divers specifications of network formation model are possible. The list assigned to \code{mlist} should include
 an element named \code{model}. The expected values of \code{model} are \code{"none"} (default value), \code{"logit"}, \code{"probit"}, and \code{"latent space"}.
 \itemize{
-\item \code{"none"} means that the network distribution \eqn{P} is set fixed throughout the MCMC,
-\item \code{"probit"} and \code{"logit"} imply that the network distribution \eqn{P} will be updated using a Probit or Logit model,
-\item \code{"latent spate"} means that \eqn{P} will be updated using Breza et al. (2020).}
+\item \code{"none"} means that the network distribution \eqn{\mathbf{P}}{P} is set fixed throughout the MCMC,
+\item \code{"probit"} or \code{"logit"} implies that the network distribution \eqn{\mathbf{P}}{P} will be updated using a Probit or Logit model,
+\item \code{"latent spate"} means that \eqn{\mathbf{P}}{P} will be updated following Breza et al. (2020).}
 \subsection{Fixed network distribution}{
 
-To set \eqn{P} fixed, \code{mlinks} could contain,
+To set \eqn{\mathbf{P}}{P} fixed, \code{mlinks} could contain,
 \itemize{
-\item \code{dnetwork}, a list, where the m-th element is the matrix of
+\item \code{dnetwork}, a list, where the m-th elements is the matrix of
 link probability in the m-th sub-network.
 \item \code{model = "none"} (optional as \code{"none"} is the default value).
 }
@@ -109,18 +109,18 @@ link probability in the m-th sub-network.
 
 \subsection{Probit and Logit models}{
 
-For the Probit and Logit specification as network formation model, the following element could be declared in \code{mlinks}.
+For the Probit and Logit specification as network formation model, the following elements could be declared in \code{mlinks}.
 \itemize{
 \item \code{model = "probit"} or \code{model = "logit"}.
-\item \code{coraviates} as a matrix of dyadic observable characteristics (distance) which explain link formation. Even in the case many sub-networks,
-\code{covariates} is still a matrix as polled version (row combination) of sub-matrix in each sub-network. \code{covariates} should verify \code{nrow(covariates) == sum(N^2 - N)},
+\item \code{coraviates} as a matrix of dyadic observable characteristics which explain link formation. Even in the case many sub-networks,
+\code{covariates} is still a matrix as a polled version (row combination) of sub-matrix in each sub-network. \code{covariates} should verify \code{nrow(covariates) == sum(N^2 - N)},
 where \code{N} is a vector of the number of individual in each sub-network. Indeed, the rows of \code{covariates} are the explanatory variables of
-the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the link probability of the first sub-network and
-so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to format compatible with
+the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability if the first sub-network and
+so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to a format that suits
 \code{covariates} (see examples below).
 \item \code{estimates} (optional when a part of the network is observed) is a list containing \code{rho}, a vector of the estimates of the Probit or Logit
 parameters, and \code{var.rho} the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
-In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \code{N}, a vector of the number of individual in each sub-network.
+In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \code{N}, a vector of the number of individuals in each sub-network.
 }
 }
 
@@ -129,14 +129,14 @@ In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \co
 The following element could be declared in \code{mlinks}.
 \itemize{
 \item \code{model = "latent space"}.
-\item \code{estimates} a list of objects of class \code{mcmcARD} as returned by the function \verb{\link{mcmcARD}}, where the m-th element is Breza et al. (2020) estimator in
+\item \code{estimates} a list of objects of class \code{mcmcARD}, where the m-th element is Breza et al. (2020) estimator as returned by the function \code{\link{mcmcARD}}
 in the m-th sub-network.
-\item \code{covariates} (required only when ARD are partially observed) is a list of matrices, where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
+\item \code{covariates} (required only when ARD are partially observed) is a list of matrices (equivalent to the argument \code{X} in the function \code{\link{fit.dnetwork}}), where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
 The distances are used to compute gregariousness and coordinates for individuals without ARD by k-nearest approach.
 \item \code{obsARD} (required only when ARD are partially observed) is a list of logical vectors, where the i-th entry of the m-th vector indicates by \code{TRUE} or \code{FALSE} if  the i-th individual in the m-th
-sub-network has ARD or not.
-\item \code{mARD} (optional, default value is \verb{rep(1, M})) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach.
-\item \code{burninARD} (optional) set the burn-in to summarize the posterior distribution in \code{estimates}. The default valued use the last 50\% of simulations.
+sub-network has ARD or not (equivalent to the argument \code{obsARD} in the function \code{\link{fit.dnetwork}}).
+\item \code{mARD} (optional, default value is \verb{rep(1, M})) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach (equivalent to the argument \code{m} in the function \code{\link{fit.dnetwork}}).
+\item \code{burninARD} (optional) set the burn-in to summarize the posterior distribution in \code{estimates} (equivalent to the argument \code{burnin} in the function \code{\link{fit.dnetwork}}).
 }
 }
 
@@ -157,7 +157,7 @@ Inverses are used for the prior variance through the argument \code{hyperparms} 
 variance to 0 is equivalent to assume a non informative prior.
 }
 
-\subsection{Adaptive MCMC}{
+\subsection{MCMC control}{
 
 During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate to the \code{target} value. This
 requires to set a minimal and a maximal jumping scales through the parameter \code{ctrl.mcmc}. The parameter \code{ctrl.mcmc} is a list which can contain the following named components.
@@ -343,6 +343,13 @@ plot(out.prob3.2)
 plot(out.prob3.2, plot.type = "dens")
 plot(out.prob3.2, which.parms = "rho")
 }
+}
+\references{
+Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
+
+Boucher, V., & Houndetoungan, A., 2020, Estimating peer effects using partial network data, \emph{Centre de recherche sur les risques les enjeux économiques et les politiques publiques}, \url{http://www.crrep.ca/estimating-peer-effects-using-partial-network-data}.
+
+Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
 }
 \seealso{
 \code{\link{sim.IV}}

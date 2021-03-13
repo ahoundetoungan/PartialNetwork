@@ -22,7 +22,6 @@ a matrix of linking probabilities.
 Compute the distribution of the network following  McCormick and Zheng (2015) and Breza et al. (2020).
 }
 \examples{
-\donttest{
 N       <- 500 
 zeta    <- 1
 
@@ -35,14 +34,15 @@ nu      <- rnorm(N, -1.35, 0.37)
 # Generate degrees
 d       <- runif(N, 0, 45)
 
-dist    <- sim.dnetwork(nu, d, zeta, z)}
+dist    <- sim.dnetwork(nu, d, zeta, z)
 }
 \references{
-Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M. (2020). Using aggregated relational data to feasibly
-identify network structure without network data. \emph{American Economic Review, Forthcoming} \url{https://arxiv.org/abs/1703.04157}
 
-McCormick, T. H., & Zheng, T. (2015). Latent surface models for networks using Aggregated Relational Data.
-Journal of the American Statistical Association, 110(512), 1684-1695. \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.991395}.
+
+Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
+
+McCormick, T. H., & Zheng, T., 2015, Latent surface models for networks using Aggregated Relational Data,
+\emph{Journal of the American Statistical Association}, 110(512), 1684-1695, \doi{10.1080/01621459.2014.991395}.
 }
 \seealso{
 \code{\link{sim.network}}

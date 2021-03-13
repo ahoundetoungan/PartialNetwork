@@ -43,41 +43,41 @@
 #' an element named `model`. The expected values of `model` are `"none"` (default value), `"logit"`, `"probit"`, and `"latent space"`.
 #' \itemize{
 #' \item `"none"` means that the network distribution \eqn{\mathbf{P}}{P} is set fixed throughout the MCMC,
-#' \item `"probit"` and `"logit"` imply that the network distribution \eqn{\mathbf{P}}{P} will be updated using a Probit or Logit model,
-#' \item `"latent spate"` means that \eqn{\mathbf{P}}{P} will be updated using Breza et al. (2020).}
+#' \item `"probit"` or `"logit"` implies that the network distribution \eqn{\mathbf{P}}{P} will be updated using a Probit or Logit model,
+#' \item `"latent spate"` means that \eqn{\mathbf{P}}{P} will be updated following Breza et al. (2020).}
 #' ### Fixed network distribution
 #' To set \eqn{\mathbf{P}}{P} fixed, `mlinks` could contain,
 #' \itemize{
-#' \item `dnetwork`, a list, where the m-th element is the matrix of
+#' \item `dnetwork`, a list, where the m-th elements is the matrix of
 #' link probability in the m-th sub-network. 
 #' \item `model = "none"` (optional as `"none"` is the default value).
 #' }
 #' ### Probit and Logit models
-#' For the Probit and Logit specification as network formation model, the following element could be declared in `mlinks`.
+#' For the Probit and Logit specification as network formation model, the following elements could be declared in `mlinks`.
 #' \itemize{
 #' \item `model = "probit"` or `model = "logit"`.
-#' \item `coraviates` as a matrix of dyadic observable characteristics (distance) which explain link formation. Even in the case many sub-networks,
-#' `covariates` is still a matrix as polled version (row combination) of sub-matrix in each sub-network. `covariates` should verify `nrow(covariates) == sum(N^2 - N)`,
+#' \item `coraviates` as a matrix of dyadic observable characteristics which explain link formation. Even in the case many sub-networks,
+#' `covariates` is still a matrix as a polled version (row combination) of sub-matrix in each sub-network. `covariates` should verify `nrow(covariates) == sum(N^2 - N)`,
 #' where `N` is a vector of the number of individual in each sub-network. Indeed, the rows of `covariates` are the explanatory variables of
-#' the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the link probability of the first sub-network and 
-#' so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to format compatible with
+#' the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability if the first sub-network and 
+#' so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to a format that suits
 #' `covariates` (see examples below).
 #' \item `estimates` (optional when a part of the network is observed) is a list containing `rho`, a vector of the estimates of the Probit or Logit
 #' parameters, and `var.rho` the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
-#' In addition, if `G0.obs = "none"`, `estimates` should also include `N`, a vector of the number of individual in each sub-network.
+#' In addition, if `G0.obs = "none"`, `estimates` should also include `N`, a vector of the number of individuals in each sub-network.
 #' }
 #' ### Latent space models
 #' The following element could be declared in `mlinks`.
 #' \itemize{
 #' \item `model = "latent space"`.
-#' \item `estimates` a list of objects of class `mcmcARD` as returned by the function `\link{mcmcARD}`, where the m-th element is Breza et al. (2020) estimator in 
+#' \item `estimates` a list of objects of class `mcmcARD`, where the m-th element is Breza et al. (2020) estimator as returned by the function \code{\link{mcmcARD}}
 #' in the m-th sub-network.
-#' \item `covariates` (required only when ARD are partially observed) is a list of matrices, where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
+#' \item `covariates` (required only when ARD are partially observed) is a list of matrices (equivalent to the argument `X` in the function \code{\link{fit.dnetwork}}), where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
 #' The distances are used to compute gregariousness and coordinates for individuals without ARD by k-nearest approach.
 #' \item `obsARD` (required only when ARD are partially observed) is a list of logical vectors, where the i-th entry of the m-th vector indicates by `TRUE` or `FALSE` if  the i-th individual in the m-th
-#' sub-network has ARD or not.
-#' \item `mARD` (optional, default value is `rep(1, M`)) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach.
-#' \item `burninARD` (optional) set the burn-in to summarize the posterior distribution in `estimates`. The default valued use the last 50% of simulations.
+#' sub-network has ARD or not (equivalent to the argument `obsARD` in the function \code{\link{fit.dnetwork}}).
+#' \item `mARD` (optional, default value is `rep(1, M`)) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach (equivalent to the argument `m` in the function \code{\link{fit.dnetwork}}).
+#' \item `burninARD` (optional) set the burn-in to summarize the posterior distribution in `estimates` (equivalent to the argument `burnin` in the function \code{\link{fit.dnetwork}}). 
 #' }
 #' ## Hyperparameters
 #' All the hyperparameters can be defined through the argument `hyperparms` (a list) and should be named as follow.
@@ -107,6 +107,11 @@
 #' If `block.max` > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
 #' chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
 #' then the entries (i, 1), (i, 3), (i, 8), and so on. 
+#' @references 
+#' Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
+#' @references 
+#' Boucher, V., & Houndetoungan, A., 2020, Estimating peer effects using partial network data, \emph{Centre de recherche sur les risques les enjeux économiques et les politiques publiques}, \url{http://www.crrep.ca/estimating-peer-effects-using-partial-network-data}.
+#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
 #' @return A list consisting of:
 #'     \item{n.group}{number of groups.}
 #'     \item{N}{vector of each group size.}

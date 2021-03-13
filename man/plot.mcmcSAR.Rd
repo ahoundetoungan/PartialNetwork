@@ -29,12 +29,15 @@ A list consisting of:
 \item{N}{vector of each group size.}
 \item{iteration}{number of MCMC steps performed.}
 \item{burnin}{number of MCMC steps which will be considered as burn-in iterations.}
-\item{posterior}{summary of the posterior distribution.}
+\item{posterior}{summary of the posterior distribution to be plotted.}
 \item{hyperparms}{return value of \code{hyperparms}.}
 \item{accept.rate}{acceptance rate of zeta.}
+\item{propG0.obs}{proportion of observed network data.}
+\item{method.net}{network formation model specification.}
 \item{formula}{input value of \code{formula}.}
-\item{plot.type}{type of the plot.}
 \item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
+\item{which.parms}{return value of \code{which.parms}.}
+\item{plot.type}{type of the plot.}
 \item{...}{arguments passed to methods.}
 }
 \description{

@@ -9,7 +9,8 @@ dvMF(z, theta, log.p = FALSE)
 \arguments{
 \item{z}{is a matrix where each row is a spherical coordinate at which the density will be evaluated.}
 
-\item{theta}{is a vector of dimension \code{p} such that \code{eta*mu}.}
+\item{theta}{is a vector of dimension \code{p} equal to \eqn{\eta\mu}, where \eqn{\eta} is the concentration parameter, and
+\eqn{\mu} the location parameter.}
 
 \item{log.p}{is logical; if TRUE, probabilities p are given as log(p).}
 }
@@ -18,7 +19,6 @@ Density function for the von Mises-Fisher Distribution
 of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter \code{eta}.
 }
 \examples{
-\donttest{
 # Draw 1000 vectors from vMF with parameter eta = 1 and mu = c(1,0)
 z <- rvMF(1000, c(1,0))
 
@@ -26,5 +26,5 @@ z <- rvMF(1000, c(1,0))
 dvMF(z, c(1,0))
 
 # Density of c(0, 1, 0, 0) with the parameter eta = 3 and mu = c(0, 1, 0, 0)
-dvMF(matrix(c(0, 1, 0, 0), nrow = 1), c(0, 3, 0, 0))} 
+dvMF(matrix(c(0, 1, 0, 0), nrow = 1), c(0, 3, 0, 0))
 }

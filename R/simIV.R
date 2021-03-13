@@ -73,6 +73,10 @@
 #' }
 #' @seealso 
 #' \code{\link{mcmcSAR}}
+#' @references 
+#' Boucher, V., & Houndetoungan, A., 2020, Estimating peer effects using partial network data, \emph{Centre de recherche sur les risques les enjeux économiques et les politiques publiques}, \url{http://www.crrep.ca/estimating-peer-effects-using-partial-network-data}.
+#' @references 
+#' Bramoullé, Y., Djebbari, H., & Fortin, B., 2009, Identification of peer effects through social networks, \emph{Journal of econometrics}, 150(1), 41-55, \doi{10.1016/j.jeconom.2008.12.021}.
 #' @importFrom abind abind
 #' @export
 

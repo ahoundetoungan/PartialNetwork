@@ -5,16 +5,26 @@
 #' @importFrom stats model.response
 #' @importFrom stats model.matrix
 #' @importFrom stats delete.response
-formula.to.data <- function(formula, contextual, data) {
+formula.to.data <- function(formula, contextual, data, type = "outcome") {
   
   ## Extract data from the formula
-  cl               <- match.call()
   formula          <- as.Formula(formula)
   if (missing(data)) {
     data           <- environment(formula)
+  } else {
+    if(is.null(data)) {
+      data         <- environment(formula)
+    }
   }
   
-  stopifnot(length(formula)[1] == 1L, length(formula)[2] %in% 1:2)
+  if (type == "outcome") {
+    stopifnot(length(formula)[1] == 1L, length(formula)[2] %in% 1:2)
+  } else {
+    if (!all(length(formula) == c(0, 1))) {
+      stop("mlinks.formula is not defined as mlinks.formula = ~ X1 + X2 + ...")
+    }
+  }
+  
   
   # try to handle dots in formula
   has_dot          <- function(formula) inherits(try(terms(formula), silent = TRUE), "try-error")

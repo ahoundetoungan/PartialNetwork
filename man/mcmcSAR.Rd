@@ -50,7 +50,7 @@ observed network data. \code{G0} is optional when \code{G0.obs = "none"}.}
 \item{iteration}{number of MCMC steps to be performed.}
 
 \item{data}{optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
-in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{mcmcARD} is called.}
+in the model. If missing, the variables are taken from \code{environment(formula)}, typically the environment from which \code{mcmcARD} is called.}
 }
 \value{
 A list consisting of:
@@ -62,10 +62,10 @@ A list consisting of:
 \item{hyperparms}{return value of \code{hyperparms}.}
 \item{mlinks}{return value of \code{mlinks}.}
 \item{accept.rate}{acceptance rates.}
-\item{propG0.obs}{proportion of observed network data.}
+\item{prop.net}{proportion of observed network data.}
 \item{method.net}{network formation model specification.}
 \item{start}{starting values.}
-\item{formula}{input value of \code{formula}.}
+\item{formula}{input value of \code{formula} and \code{mlinks.formula}.}
 \item{contextual}{input value of \code{contextual}.}
 \item{ctrl.mcmc}{return value of \code{ctrl.mcmc}.}
 }
@@ -112,12 +112,13 @@ link probability in the m-th sub-network.
 For the Probit and Logit specification as network formation model, the following elements could be declared in \code{mlinks}.
 \itemize{
 \item \code{model = "probit"} or \code{model = "logit"}.
-\item \code{coraviates} as a matrix of dyadic observable characteristics which explain link formation. Even in the case many sub-networks,
-\code{covariates} is still a matrix as a polled version (row combination) of sub-matrix in each sub-network. \code{covariates} should verify \code{nrow(covariates) == sum(N^2 - N)},
-where \code{N} is a vector of the number of individual in each sub-network. Indeed, the rows of \code{covariates} are the explanatory variables of
-the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability if the first sub-network and
-so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to a format that suits
-\code{covariates} (see examples below).
+\item \code{mlinks.formula} object of class \link[stats]{formula}: a symbolic description of the Logit or Probit model. The \code{formula} should only specify the explanatory variables, as for example \code{~ x1 + x2},
+the variables \code{x1} and \code{x2} are the dyadic observable characteristics. Each variable should verify \code{length(x) == sum(N^2 - N)},
+where \code{N} is a vector of the number of individual in each sub-network. Indeed, \code{x} will be associated with the entries
+\eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability and
+as so, in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of dyadic variable as in matrix form to a format that suits \code{mlinks.formula}.
+\item \code{mlinks.data} optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
+If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which \code{mcmcARD} is called.
 \item \code{estimates} (optional when a part of the network is observed) is a list containing \code{rho}, a vector of the estimates of the Probit or Logit
 parameters, and \code{var.rho} the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
 In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \code{N}, a vector of the number of individuals in each sub-network.
@@ -131,12 +132,12 @@ The following element could be declared in \code{mlinks}.
 \item \code{model = "latent space"}.
 \item \code{estimates} a list of objects of class \code{mcmcARD}, where the m-th element is Breza et al. (2020) estimator as returned by the function \code{\link{mcmcARD}}
 in the m-th sub-network.
-\item \code{covariates} (required only when ARD are partially observed) is a list of matrices (equivalent to the argument \code{X} in the function \code{\link{fit.dnetwork}}), where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
-The distances are used to compute gregariousness and coordinates for individuals without ARD by k-nearest approach.
+\item \code{mlinks.data} (required only when ARD are partially observed) is a list of matrices, where the m-th element is the variable matrix to use to compute distance between individuals (could be the list of traits) in the m-th sub-network.
+The distances will be used to compute gregariousness and coordinates for individuals without ARD by k-nearest neighbors approach.
 \item \code{obsARD} (required only when ARD are partially observed) is a list of logical vectors, where the i-th entry of the m-th vector indicates by \code{TRUE} or \code{FALSE} if  the i-th individual in the m-th
-sub-network has ARD or not (equivalent to the argument \code{obsARD} in the function \code{\link{fit.dnetwork}}).
-\item \code{mARD} (optional, default value is \verb{rep(1, M})) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach (equivalent to the argument \code{m} in the function \code{\link{fit.dnetwork}}).
-\item \code{burninARD} (optional) set the burn-in to summarize the posterior distribution in \code{estimates} (equivalent to the argument \code{burnin} in the function \code{\link{fit.dnetwork}}).
+sub-network has ARD or not.
+\item \code{mARD} (optional, default value is \verb{rep(1, M})) is a vector indicating the number of neighbors to use in each sub-network.
+\item \code{burninARD} (optional) set the burn-in to summarize the posterior distribution in \code{estimates}.
 }
 }
 
@@ -243,7 +244,7 @@ plot(out.none3.1)
 plot(out.none3.1, plot.type = "dens")
 # Infer the network data
 out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
-                        G0 = G0.tmp, data = dataset, mlinks = list(dnetwork = prior),
+                        data = dataset, mlinks = list(dnetwork = prior),
                         iteration = 2e4)
 summary(out.none3.2)  
 plot(out.none3.2)
@@ -311,9 +312,11 @@ summary(out.prob2.1) # the peer effets seem overestimated
 plot(out.prob2.1)
 plot(out.prob2.1, plot.type = "dens")
 # Infer the missing links in the network data
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+                     mlinks.data = as.data.frame(covar))
 out.prob2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start,   data = dataset, 
-                        mlinks = list(model = "logit", covariates = covar), iteration = 2e4)
+                        G0 = G0.start,   data = dataset, mlinks = mlinks, 
+                        iteration = 2e4)
 summary(out.prob2.2)
 plot(out.prob2.2)
 plot(out.prob2.2, plot.type = "dens")
@@ -335,9 +338,10 @@ slogestim    <- summary(logestim)
 estimates    <- list("rho"     = logestim$coefficients, 
                      "var.rho" = slogestim$cov.unscaled,
                      "N"       = N)
-out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset, 
-                        mlinks = list(model = "logit", covariates = covar, estimates = estimates),
-                        iteration = 2e4)
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+                     mlinks.data = as.data.frame(covar), estimates = estimates)
+                     out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset,
+                                             mlinks = mlinks, iteration = 2e4)
 summary(out.prob3.2)  
 plot(out.prob3.2)
 plot(out.prob3.2, plot.type = "dens")

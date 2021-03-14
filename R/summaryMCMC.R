@@ -18,7 +18,7 @@
 #'     \item{posterior}{matrix (or list of matrices) containing the simulations.}
 #'     \item{hyperparms}{return value of `hyperparms`.}
 #'     \item{accept.rate}{acceptance rate of zeta.}
-#'     \item{propG0.obs}{proportion of observed network data.}
+#'     \item{prop.net}{proportion of observed network data.}
 #'     \item{method.net}{network formation model specification.}
 #'     \item{formula}{input value of `formula`.}
 #'     \item{alpha}{significance level of parameter.}
@@ -79,7 +79,7 @@
                              posterior   = sum.post,
                              hyperparms  = object$hyperparms, 
                              accept.rate = object$accept.rate,
-                             propG0.obs  = object$propG0.obs,
+                             prop.net    = object$prop.net,
                              method.net  = object$method.net,
                              formula     = object$formula,
                              alpha       = alpha,
@@ -112,18 +112,24 @@
     sposrtmp <- c(list(x = sumposr, ... = ...), x[-(1:12)])
   }
   sumN       <- sum(N)
-  propG0.obs <- x$propG0.obs
+  prop.net   <- x$prop.net
   method.net <- x$method.net
   
   
   cat("Bayesian estimation of SAR model", "\n\n")
-  cat("Formula = ", Reduce(paste, deparse(x$formula)), "\n", sep = "")
+  cat("Outcome model's formula = ", Reduce(paste, deparse(x$formula$outcome.model)), "\n", sep = "")
   cat("Method: MCMC\n")
   cat("Number of steps performed: ", x$iteration, "\n", sep = "")
   cat("Burn-in: ", x$burnin, "\n", sep = "")
   
-  cat("\nPercentage of Observed Network Data: ", propG0.obs, "%", sep = "")
+  cat("\nPercentage of Observed Network Data: ", prop.net$propG0.obs*100, "%", sep = "")
   cat("\nNetwork formation model: ", method.net, sep = "")
+  if (method.net %in% c("logit", "probit")){
+    cat("\nFormula = ", Reduce(paste, deparse(x$formula$network.model)), sep = "")
+  }
+  if (method.net %in% c("latent space")){
+    cat("\nPercentage of Observed ARD: ", prop.net$propARD*100, "%", sep = "")
+  }
   
   cat("\n\nNetwork Sampling \nMethod: Gibbs sampler")
   b.max  <- x$ctrl.mcmc$block.max

@@ -6,8 +6,8 @@
 #' @param theta is the parameter as \code{eta*mu}.
 #' @importFrom Rcpp sourceCpp
 #' @examples
-#' # Draw 1000 vectors from vMF with parameters eta = 1 and mu = c(1,0)
-#' rvMF(1000,c(1,0))
+#' # Draw 10 vectors from vMF with parameters eta = 1 and mu = c(1,0)
+#' rvMF(10,c(1,0))
 #' 
 #' # Draw 10 vectors from vMF with parameters eta = sqrt(14) and mu proportional to (2,1,3)
 #' rvMF(10,c(2,1,3))

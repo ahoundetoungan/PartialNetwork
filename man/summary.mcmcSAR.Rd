@@ -38,7 +38,7 @@ A list consisting of:
 \item{posterior}{matrix (or list of matrices) containing the simulations.}
 \item{hyperparms}{return value of \code{hyperparms}.}
 \item{accept.rate}{acceptance rate of zeta.}
-\item{propG0.obs}{proportion of observed network data.}
+\item{prop.net}{proportion of observed network data.}
 \item{method.net}{network formation model specification.}
 \item{formula}{input value of \code{formula}.}
 \item{alpha}{significance level of parameter.}

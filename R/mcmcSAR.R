@@ -23,7 +23,7 @@
 #' @param ctrl.mcmc list of MCMC controls (see Section MCMC control in Details).
 #' @param iteration number of MCMC steps to be performed.
 #' @param data optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
-#' in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcARD` is called.
+#' in the model. If missing, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcARD` is called.
 #' @details 
 #' ## Outcome model
 #' The model is given by
@@ -56,12 +56,13 @@
 #' For the Probit and Logit specification as network formation model, the following elements could be declared in `mlinks`.
 #' \itemize{
 #' \item `model = "probit"` or `model = "logit"`.
-#' \item `coraviates` as a matrix of dyadic observable characteristics which explain link formation. Even in the case many sub-networks,
-#' `covariates` is still a matrix as a polled version (row combination) of sub-matrix in each sub-network. `covariates` should verify `nrow(covariates) == sum(N^2 - N)`,
-#' where `N` is a vector of the number of individual in each sub-network. Indeed, the rows of `covariates` are the explanatory variables of
-#' the entries \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability if the first sub-network and 
-#' so on in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of distance matrices to a format that suits
-#' `covariates` (see examples below).
+#' \item `mlinks.formula` object of class \link[stats]{formula}: a symbolic description of the Logit or Probit model. The `formula` should only specify the explanatory variables, as for example \code{~ x1 + x2},
+#' the variables `x1` and `x2` are the dyadic observable characteristics. Each variable should verify `length(x) == sum(N^2 - N)`,
+#' where `N` is a vector of the number of individual in each sub-network. Indeed, `x` will be associated with the entries
+#' \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability and 
+#' as so, in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of dyadic variable as in matrix form to a format that suits `mlinks.formula`.
+#' \item `mlinks.data` optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
+#' If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which `mcmcARD` is called.
 #' \item `estimates` (optional when a part of the network is observed) is a list containing `rho`, a vector of the estimates of the Probit or Logit
 #' parameters, and `var.rho` the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
 #' In addition, if `G0.obs = "none"`, `estimates` should also include `N`, a vector of the number of individuals in each sub-network.
@@ -72,12 +73,12 @@
 #' \item `model = "latent space"`.
 #' \item `estimates` a list of objects of class `mcmcARD`, where the m-th element is Breza et al. (2020) estimator as returned by the function \code{\link{mcmcARD}}
 #' in the m-th sub-network.
-#' \item `covariates` (required only when ARD are partially observed) is a list of matrices (equivalent to the argument `X` in the function \code{\link{fit.dnetwork}}), where the m-th matrix contains the variables to use to compute distance between individuals (could be the list of traits).
-#' The distances are used to compute gregariousness and coordinates for individuals without ARD by k-nearest approach.
+#' \item `mlinks.data` (required only when ARD are partially observed) is a list of matrices, where the m-th element is the variable matrix to use to compute distance between individuals (could be the list of traits) in the m-th sub-network.
+#' The distances will be used to compute gregariousness and coordinates for individuals without ARD by k-nearest neighbors approach.
 #' \item `obsARD` (required only when ARD are partially observed) is a list of logical vectors, where the i-th entry of the m-th vector indicates by `TRUE` or `FALSE` if  the i-th individual in the m-th
-#' sub-network has ARD or not (equivalent to the argument `obsARD` in the function \code{\link{fit.dnetwork}}).
-#' \item `mARD` (optional, default value is `rep(1, M`)) is a vector, where the m-th entry is the number of neighbors to use in the m-th sub-network for the k-nearest approach (equivalent to the argument `m` in the function \code{\link{fit.dnetwork}}).
-#' \item `burninARD` (optional) set the burn-in to summarize the posterior distribution in `estimates` (equivalent to the argument `burnin` in the function \code{\link{fit.dnetwork}}). 
+#' sub-network has ARD or not.
+#' \item `mARD` (optional, default value is `rep(1, M`)) is a vector indicating the number of neighbors to use in each sub-network.
+#' \item `burninARD` (optional) set the burn-in to summarize the posterior distribution in `estimates`. 
 #' }
 #' ## Hyperparameters
 #' All the hyperparameters can be defined through the argument `hyperparms` (a list) and should be named as follow.
@@ -121,10 +122,10 @@
 #'     \item{hyperparms}{return value of `hyperparms`.}
 #'     \item{mlinks}{return value of `mlinks`.}
 #'     \item{accept.rate}{acceptance rates.}
-#'     \item{propG0.obs}{proportion of observed network data.}
+#'     \item{prop.net}{proportion of observed network data.}
 #'     \item{method.net}{network formation model specification.}
 #'     \item{start}{starting values.}
-#'     \item{formula}{input value of `formula`.}
+#'     \item{formula}{input value of `formula` and `mlinks.formula`.}
 #'     \item{contextual}{input value of `contextual`.}
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 #' @examples 
@@ -194,7 +195,7 @@
 #' plot(out.none3.1, plot.type = "dens")
 #' # Infer the network data
 #' out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
-#'                         G0 = G0.tmp, data = dataset, mlinks = list(dnetwork = prior),
+#'                         data = dataset, mlinks = list(dnetwork = prior),
 #'                         iteration = 2e4)
 #' summary(out.none3.2)  
 #' plot(out.none3.2)
@@ -262,9 +263,11 @@
 #' plot(out.prob2.1)
 #' plot(out.prob2.1, plot.type = "dens")
 #' # Infer the missing links in the network data
+#' mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+#'                      mlinks.data = as.data.frame(covar))
 #' out.prob2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-#'                         G0 = G0.start,   data = dataset, 
-#'                         mlinks = list(model = "logit", covariates = covar), iteration = 2e4)
+#'                         G0 = G0.start,   data = dataset, mlinks = mlinks, 
+#'                         iteration = 2e4)
 #' summary(out.prob2.2)
 #' plot(out.prob2.2)
 #' plot(out.prob2.2, plot.type = "dens")
@@ -286,9 +289,10 @@
 #' estimates    <- list("rho"     = logestim$coefficients, 
 #'                      "var.rho" = slogestim$cov.unscaled,
 #'                      "N"       = N)
-#' out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset, 
-#'                         mlinks = list(model = "logit", covariates = covar, estimates = estimates),
-#'                         iteration = 2e4)
+#' mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+#'                      mlinks.data = as.data.frame(covar), estimates = estimates)
+#'                      out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset,
+#'                                              mlinks = mlinks, iteration = 2e4)
 #' summary(out.prob3.2)  
 #' plot(out.prob3.2)
 #' plot(out.prob3.2, plot.type = "dens")
@@ -322,7 +326,7 @@ mcmcSAR <- function(formula,
     contextual <- FALSE
   }
   
-  f.t.data     <- formula.to.data(formula, contextual, data)
+  f.t.data     <- formula.to.data(formula = formula, contextual = contextual, data = data)
   formula      <- f.t.data$formula
   Xone         <- f.t.data$Xone
   X            <- f.t.data$X
@@ -347,7 +351,8 @@ mcmcSAR <- function(formula,
   ### model of links
   lmodel       <- toupper(mlinks$model)
   estimates    <- mlinks$estimates
-  dZ           <- mlinks$covariates
+  dZ           <- mlinks$mlinks.data
+  Zformula     <- mlinks$mlinks.formula
   mARD         <- mlinks$mARD
   burninARD    <- mlinks$burninARD
   obsARD       <- mlinks$obsARD
@@ -367,8 +372,11 @@ mcmcSAR <- function(formula,
   weight       <- NULL
   iARD         <- NULL
   inonARD      <- NULL
+  propARD      <- NULL
   
-  tmodel       <- f.tmodel(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD)
+  tmodel       <- f.tmodel(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD)
+  dZ           <- tmodel$dZ
+  Zformula     <- tmodel$Zformula
   M            <- tmodel$M
   N            <- tmodel$N
   N1           <- tmodel$N1
@@ -472,7 +480,6 @@ mcmcSAR <- function(formula,
     }
     Krho       <- ncol(dZ)
     cn.rho     <- colnames(dZ)
-    cn.rho     <- unlist(lapply(1:Krho, function(x) ifelse(length(cn.rho[x]) == 0, paste0("covariates.", x), cn.rho[x])))
     
     murho      <- estimates$rho
     Vrho       <- estimates$var.rho
@@ -505,6 +512,7 @@ mcmcSAR <- function(formula,
   
   # latent space model
   if(lmodel == "LATENT SPACE") {
+    propARD          <- sum(N1)/sum(N)
     murho            <- list()  # mean z nu
     Vrho             <- list()  # covariance z nu
     dnetwork         <- list()
@@ -516,6 +524,10 @@ mcmcSAR <- function(formula,
     zetaest          <- c()
     Krho             <- c()
     P                <- c()
+    burninARD        <- as.numeric(burninARD)
+    if(length(burninARD) > 0) {
+      burninARD[1:M] <- burninARD
+    }
     
     if(is.null(mARD)) {
       mARD           <- rep(1, M)
@@ -540,8 +552,8 @@ mcmcSAR <- function(formula,
       P[m]           <- estimatesm$p
       out            <- NULL
       Mst            <- round(T/2) + 1
-      if (!is.null(burninARD)){
-        Mst          <- burninARD + 1
+      if (!is.na(burninARD[m])){
+        Mst          <- burninARD[m] + 1
       }
       if (Mst >= T) {
         stop("BurninARD is too high")
@@ -741,10 +753,12 @@ mcmcSAR <- function(formula,
                        "posterior"   = out$posterior,
                        "hyperparms"  = hyperparms, 
                        "accept.rate" = out$acceptance, 
-                       "propG0.obs"  = sum(sumG0.obs)/sum(N*(N - 1))*100,
+                       "prop.net"    = list("propG0.obs" = sum(sumG0.obs)/sum(N*(N - 1)), 
+                                            "propARD"    = probARD),
                        "method.net"  = tolower(lmodel),
-                       "start"       = c(start),
-                       "formula"     = formula,
+                       "start"       = start,
+                       "formula"     = list("outcome.model" = formula, 
+                                            "network.model" = Zformula),
                        "contextual"  = contextual,
                        "ctrl.mcmc"   = ctrl.mcmc))
   
@@ -1161,7 +1175,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma
 
 
 # This function compute the type of the model and also return N, M
-f.tmodel         <- function(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD) {
+f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD) {
   # Object's class
   if(!is.null(G0)) {
     if (!is.list(G0)) {
@@ -1273,12 +1287,12 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD
         if(!is.list(dZ)){
           stop(paste0("for the ",
                       tolower(lmodel),
-                      " model, covariates in mlinks should be a list of M covariate matrices (for individuals with and without ARD) to be used to compute distances between individuals."))
+                      " model, mlinks.data should be a list of M (where M is number of sub-networks) matrices to be used to compute distances between individuals."))
         }
         
         Ntmp  <- unlist(lapply(obsARD, length))
         if(any(Ntmp < N)){
-          stop("nrow(covariates[[m]]) != length(obsARD[[m]]) for at least one m")
+          stop("nrow(mlinks.data[[m]]) != length(obsARD[[m]]) for at least one m")
         }
         N     <- Ntmp
       }
@@ -1289,30 +1303,31 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, estimates, dnetwork, obsARD
       murho    <- estimates$rho
       Vrho     <- estimates$var.rho
       
-      if(!is.matrix(dZ)){
-        stop(paste0("For the ",
-                    tolower(lmodel),
-                    " model, covariates in mlinks should be a matrice of covariates of the network formation model."))
+      if(is.null(Zformula)) {
+        stop("mlinks.formula is missing")
       }
+
+      f.t.data     <- formula.to.data(formula = Zformula, contextual = FALSE, data = dZ, type = "mlinks")
+      Zformula     <- f.t.data$formula
+      dZ           <- f.t.data$Xone
       if (tmodel == "NONE") {
         if(is.null(N)) N  <- estimates$N
         if (is.null(murho) | is.null(Vrho) | is.null(N)) {
           stop(paste0("For the ",
                       tolower(lmodel),
-                      " model without partial information in G0, estimates in mlinks should be a list containing 'rho', the estimate of rho, 'var.rho', the variance of the estimation, 'M', and 'N', a vector of the number of individuals in each sub-network."))
+                      " model without partial information in G0, estimates in mlinks should be a list containing 'rho', the estimate of rho, 'var.rho', the variance of the estimation, and 'N', the vector of the number of individuals in each sub-network)."))
           
         }
         M                <- length(N)
-        sumG0.obs         <- rep(0, M)
       }
       if(nrow(dZ) != sum(N^2 - N)) {
-        stop("nrow(covariates) != sum(N^2 - N)")
+        stop(paste0("explanatory variables of the ", lmodel, " model does not have sum(N^2 - N) elements"))
       }
     }
   }
   
   
-  return(list("M" = M, "N" = N, "N1" = N1, "tmodel" = tmodel, "lmodel" = lmodel, "sumG0.obs" = sumG0.obs, "obsARD" = obsARD))
+  return(list("M" = M, "N" = N, "N1" = N1, "tmodel" = tmodel, "lmodel" = lmodel, "sumG0.obs" = sumG0.obs, "obsARD" = obsARD, "dZ" = dZ, "Zformula" = Zformula))
 }
 
 # this function set target and jumping

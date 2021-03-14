@@ -32,7 +32,7 @@
 #' \deqn{b_k \sim log-\mathcal{N}(\mu_b, \sigma_b)}{bk ~ log-Normal(mub, sigmab)}
 #' \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
 #' \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \
-#' ## Idendification
+#' ## Identification
 #' For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to be exogenously fixed around their given starting value
 #' (see McCormick and Zheng, 2015 for more details). The parameter `fixv` can be used
 #' to set the desired value for \eqn{\mathbf{v}_k}{vk} while `fixb` can be used to set the desired values for \eqn{b_k}{bk}.\cr

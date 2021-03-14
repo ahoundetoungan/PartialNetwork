@@ -20,7 +20,7 @@
 #' u <- unlist(lapply(1: 3, function(x) rbinom(N[x]*(N[x] - 1), 1, p[x])))
 #' W <- vec.to.mat(u, N)
 #' 
-#' # Convert G into a list of non-normalized matrices
+#' # Convert G into a list of row-normalized matrices
 #' G <- norm.network(W)
 #' 
 #' # recover u

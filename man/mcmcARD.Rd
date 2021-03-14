@@ -79,7 +79,7 @@ prior distributions are defined.
 \deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \
 }
 
-\subsection{Idendification}{
+\subsection{Identification}{
 
 For identification, some \eqn{\mathbf{v}_k}{vk} and \eqn{b_k}{bk} need to be exogenously fixed around their given starting value
 (see McCormick and Zheng, 2015 for more details). The parameter \code{fixv} can be used

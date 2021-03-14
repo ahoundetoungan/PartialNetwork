@@ -122,16 +122,16 @@
   cat("Number of steps performed: ", x$iteration, "\n", sep = "")
   cat("Burn-in: ", x$burnin, "\n", sep = "")
   
-  cat("\nPercentage of Observed Network Data: ", prop.net$propG0.obs*100, "%", sep = "")
+  cat("\nPercentage of observed network data: ", prop.net$propG0.obs*100, "%", sep = "")
   cat("\nNetwork formation model: ", method.net, sep = "")
   if (method.net %in% c("logit", "probit")){
     cat("\nFormula = ", Reduce(paste, deparse(x$formula$network.model)), sep = "")
   }
   if (method.net %in% c("latent space")){
-    cat("\nPercentage of Observed ARD: ", prop.net$propARD*100, "%", sep = "")
+    cat("\nPercentage of observed ARD: ", prop.net$propARD*100, "%", sep = "")
   }
   
-  cat("\n\nNetwork Sampling \nMethod: Gibbs sampler")
+  cat("\n\nNetwork sampling \nMethod: Gibbs sampler")
   b.max  <- x$ctrl.mcmc$block.max
   r.max  <- ifelse(b.max > 1, paste0("Yes (max size: ",b.max,")") , "No")
   cat("\nUpdate per block: ", r.max, "\n", sep = "")

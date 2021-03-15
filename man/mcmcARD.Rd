@@ -76,7 +76,7 @@ prior distributions are defined.
 \deqn{d_i \sim log-\mathcal{N}(\mu_d, \sigma_d)}{di ~ log-Normal(mud, sigmad)}
 \deqn{b_k \sim log-\mathcal{N}(\mu_b, \sigma_b)}{bk ~ log-Normal(mub, sigmab)}
 \deqn{\eta_k \sim Gamma(\alpha_{\eta}, \beta_{\eta})}{etak ~ Gamma(alphaeta, betaeta)}
-\deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)} \
+\deqn{\zeta \sim Gamma(\alpha_{\zeta}, \beta_{\zeta})}{zeta ~ Gamma(alphazeta, betazeta)}
 }
 
 \subsection{Identification}{

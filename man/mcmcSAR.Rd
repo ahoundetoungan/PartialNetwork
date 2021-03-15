@@ -147,7 +147,7 @@ sub-network has ARD or not.
 
 All the hyperparameters can be defined through the argument \code{hyperparms} (a list) and should be named as follow.
 \itemize{
-\item \code{mutheta}, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se^2}. The default value assumes that
+\item \code{mutheta}, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' \gamma')'|se^2}. The default value assumes that
 the prior mean is zero.
 \item \code{invstheta} as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
 \item \code{muzeta}, the prior mean of \eqn{\zeta}. The default value is zero.

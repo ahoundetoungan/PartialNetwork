@@ -83,7 +83,7 @@
 #' ## Hyperparameters
 #' All the hyperparameters can be defined through the argument `hyperparms` (a list) and should be named as follow.
 #' \itemize{
-#' \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' ~ \gamma')'|se^2}. The default value assumes that
+#' \item `mutheta`, the prior mean of \eqn{(\beta' ~ \gamma')'|\sigma^2}{(\beta' \gamma')'|se^2}. The default value assumes that
 #' the prior mean is zero.
 #' \item `invstheta` as \eqn{\Sigma_{\theta}^{-1}}{inverse of `stheta`}. The default value is a diagonal matrix with 0.01 on the diagonal.
 #' \item `muzeta`, the prior mean of \eqn{\zeta}. The default value is zero.
@@ -291,8 +291,8 @@
 #'                      "N"       = N)
 #' mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
 #'                      mlinks.data = as.data.frame(covar), estimates = estimates)
-#'                      out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset,
-#'                                              mlinks = mlinks, iteration = 2e4)
+#' out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
+#'                         data = dataset, mlinks = mlinks, iteration = 2e4)
 #' summary(out.prob3.2)  
 #' plot(out.prob3.2)
 #' plot(out.prob3.2, plot.type = "dens")

@@ -340,8 +340,8 @@ estimates    <- list("rho"     = logestim$coefficients,
                      "N"       = N)
 mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
                      mlinks.data = as.data.frame(covar), estimates = estimates)
-                     out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", data = dataset,
-                                             mlinks = mlinks, iteration = 2e4)
+out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
+                        data = dataset, mlinks = mlinks, iteration = 2e4)
 summary(out.prob3.2)  
 plot(out.prob3.2)
 plot(out.prob3.2, plot.type = "dens")

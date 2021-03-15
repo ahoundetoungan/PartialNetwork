@@ -250,6 +250,7 @@ plot(out.none3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 # Bayesian estimator with logit model as network formation model
 ```{r BayesLog0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.logi.rda?raw=true'))
+# save(out.logi2.2, out.logi3.2, file = "out.logi.rda")
 ```
 ```{r BayesLog1a, eval=FALSE}
 # EXAMPLE II: NETWORK FORMATION MODEL: LOGIT 
@@ -303,9 +304,10 @@ G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
 # replace the non-observed part of the network by 0
 G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
 # Infer the missing links in the network data
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+                     mlinks.data = as.data.frame(covar))
 out.logi2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start,   data = dataset, 
-                        mlinks = list(model = "logit", covariates = covar), 
+                        G0 = G0.start, data = dataset, mlinks = mlinks, 
                         iteration = 2e4)
 ```
 ```{r BayesLog22aa, echo=FALSE}
@@ -315,11 +317,11 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 
 The program successfully executed 
 
-*************SUMMARY************* 
-Number of group        :  50 
-Iteration              :  20000 
-Elapsed time           :  0  HH  31  mm  41  ss 
- 
+*************SUMMARY*************
+Number of group        :  50
+Iteration              :  20000
+Elapsed time           :  0  HH  33  mm  1  ss
+
 Peer effects acceptance rate: 0.438
 rho acceptance rate         : 0.27185")
 ```
@@ -346,7 +348,8 @@ slogestim    <- summary(logestim)
 estimates    <- list("rho"     = logestim$coefficients, 
                      "var.rho" = slogestim$cov.unscaled,
                      "N"       = N)
-mlinks       <- list(model = "logit", covariates = covar, estimates = estimates)
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+                     mlinks.data = as.data.frame(covar), estimates = estimates)
 out.logi3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
                         data = dataset, mlinks = mlinks, iteration = 2e4)
 ```
@@ -361,7 +364,7 @@ The program successfully executed
 *************SUMMARY************* 
 Number of group        :  50 
 Iteration              :  20000 
-Elapsed time           :  1  HH  18  mm  54  ss 
+Elapsed time           :  1  HH  20  mm  2  ss 
  
 Peer effects acceptance rate: 0.4446
 rho acceptance rate         : 0.27905")
@@ -382,6 +385,7 @@ plot(out.logi3.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
 ## ARD, @breza2020using
 ```{r Bayesard0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.ard.rda?raw=true'))
+# save(data.plot1, data.plot2, file = "out.ard.rda")
 ```
 
 The data is simulated following a procedure similar to the one in @breza2020using. 
@@ -460,7 +464,7 @@ n              :  500
 K              :  12 
 Dimension      :  3 
 Iteration      :  5000 
-Elapsed time   :  0  HH  1  mm  37  ss 
+Elapsed time   :  0  HH  1  mm  29  ss 
  
 Average acceptance rate 
                       z:  0.441114 
@@ -510,7 +514,7 @@ n              :  350
 K              :  12 
 Dimension      :  3 
 Iteration      :  5000 
-Elapsed time   :  0  HH  1  mm  19  ss 
+Elapsed time   :  0  HH  1  mm  0  ss 
  
 Average acceptance rate 
                       z:  0.4406074 
@@ -534,7 +538,7 @@ cat("ARD non observed on the entire population
 
 Average link probabilities estimated 
 Iteration             : 2500 
-Elapsed time          : 0  HH  0  mm  14  ss ")
+Elapsed time          : 0  HH  0  mm  5  ss ")
 ```
 ```{r arde, eval=FALSE}
 # estimated degree
@@ -553,13 +557,14 @@ ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_AR
 ## Estimating the SAR model with ARD
 ```{r Bayesard00, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.lsp.rda?raw=true'))
+# save(out.lspa1, file = "out.lsp.rda")
 ```
 ```{r bayesard1, eval=FALSE}
 library(PartialNetwork)
 set.seed(123)
-M             <- 10
-N             <- rep(100, M)
-genzeta       <- 3.5
+M             <- 30
+N             <- rep(60, M)
+genzeta       <- 3
 mu            <- -1.35
 sigma         <- 0.37
 K             <- 12    # number of traits
@@ -616,15 +621,15 @@ for (m in 1:M) {
   z0     <- matrix(rvMF(N[m], rep(0,P)), N[m]); v0 <- matrix(rvMF(K,rep(0, P)), K)
   # We should fix some vk and bk
   vfixcolumn      <- 1:5
-  bfixcolumn      <- 1:8
+  bfixcolumn      <- c(1, 3, 5, 7, 9, 11)
   b0[bfixcolumn]  <- genb[bfixcolumn]
   v0[vfixcolumn,] <- genv[vfixcolumn,]
   start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
                           "zeta" = zeta0)
   # MCMC
   estimates[[m]]  <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn, 
-                             sim.d = FALSE, sim.zeta = FALSE, consb = bfixcolumn, 
-                             iteration = 5000)
+                             consb = bfixcolumn, sim.d = FALSE, sim.zeta = FALSE, 
+                             iteration = 5000, ctrl.mcmc = list(print = FALSE))
 }
 ## Simulate X and y
 # individual effects
@@ -649,7 +654,8 @@ dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 ```{r bayesard2, eval=FALSE}
 mlinks       <- list(model = "latent space", estimates = estimates)
 out.lspa1    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
-                        data = dataset, mlinks = mlinks, iteration = 2e4)
+                        data = dataset, mlinks = mlinks, iteration = 2e4,
+                        ctrl.mcmc = list(print.level = 2))
 ```
 ```{r ayesarda, echo=FALSE}
 cat("0%   10   20   30   40   50   60   70   80   90   100%
@@ -674,3 +680,135 @@ summary(out.lspa1)
 plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
 
+
+## Estimating the SAR model with partial ARD
+```{r bayesard3, eval=FALSE}
+library(PartialNetwork)
+set.seed(123)
+M             <- 30
+N             <- rep(60, M)
+genzeta       <- 3
+mu            <- -1.35
+sigma         <- 0.37
+K             <- 12    # number of traits
+P             <- 3     # Sphere dimension 
+# In this loop, we generate data for the latent space model and 
+# estimate the latent space model in the M sub-networks
+estimates     <- list()
+list.trait    <- list()
+obARD         <- list()
+prior         <- list()
+G0            <- list()
+for (m in 1:M) {
+  # ARD parameters
+  # Generate z (spherical coordinates)
+  genz    <- rvMF(N[m], rep(0,P))
+  # Generate nu  from a Normal(mu, sigma^2) (The gregariousness)
+  gennu   <- rnorm(N[m],mu,sigma)
+  # compute degrees
+  gend    <- N[m]*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
+  # Link probabilities
+  Probabilities <- sim.dnetwork(gennu, gend, genzeta, genz) 
+  prior[[m]]    <- Probabilities
+  # Adjacency matrix
+  G        <- sim.network(Probabilities)
+  G0[[m]]  <- G
+  # Generate vk, the trait location
+  genv     <- rvMF(K, rep(0, P))
+  # set fixed some vk  distant
+  genv[1,] <- c(1, 0, 0)
+  genv[2,] <- c(0, 1, 0)
+  genv[3,] <- c(0, 0, 1)
+  # eta, the intensity parameter
+  geneta   <-abs(rnorm(K, 2, 1))
+  # Build traits matrix
+  densityatz       <- matrix(0, N[m], K)
+  for(k in 1:K){
+    densityatz[,k] <- dvMF(genz, genv[k,]*geneta[k])
+  }
+  trait            <- matrix(0, N[m], K)
+  for(k in 1:K){
+    tmp       <- exp(geneta[k] + logCpvMF(3, geneta[k]))
+    trait[,k] <- runif(N[m], 0.5*tmp, tmp) < densityatz[,k]
+  }
+  list.trait[[m]]  <- trait
+  # Build ADR
+  ARD         <- G %*% trait
+  # generate b
+  genb        <- numeric(K)
+  for(k in 1:K){
+    genb[k]  <- sum(G[,trait[,k]==1])/sum(G) + 1e-8
+  }
+  # sample with ARD 
+  n          <- round(0.5*N[m])
+  # individual with ARD
+  iselect    <- sort(sample(1:N[m], n, replace = FALSE))
+  hasARD     <- (1:N[m]) %in% iselect
+  obARD[[m]] <- hasARD
+  ARDs       <- ARD[iselect,]
+  traits     <- trait[iselect,]
+  # initialization 
+  d0         <- gend[iselect]; b0 <- exp(rnorm(K)); eta0 <- rep(1,K); zeta0 <- genzeta
+  z0         <- matrix(rvMF(n, rep(0,P)), n); v0 <- matrix(rvMF(K, rep(0, P)), K) 
+  # We should fix some vk and bk
+  vfixcolumn      <- 1:5
+  bfixcolumn      <- c(1, 3, 5, 7, 9, 11)
+  b0[bfixcolumn]  <- genb[bfixcolumn]
+  v0[vfixcolumn,] <- genv[vfixcolumn,]
+  start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
+                          "zeta" = zeta0)
+  # MCMC
+  estimates[[m]]  <- mcmcARD(Y = ARDs, traitARD = traits, start = start, fixv = vfixcolumn, 
+                            consb = bfixcolumn,  sim.d = FALSE, sim.zeta = FALSE, 
+                            iteration = 5000, ctrl.mcmc = list(print = FALSE))
+}
+## Simulate X and y
+# individual effects
+beta          <- c(2,1,1.5) 
+# contextual effects
+gamma         <- c(5,-3) 
+# endogenous effects
+alpha         <- 0.4
+# std-dev errors
+se            <- 1
+# covariates
+X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
+# Normalise G0
+G0norm        <- norm.network(G0)
+# simulate dependent variable use an external package
+y             <- CDatanet::simSARnet(~ X, contextual = TRUE, Glist = G0norm, 
+                                     theta = c(alpha, beta, gamma, se))
+y             <- y$y
+# dataset
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+```
+```{r bayesard4, eval=FALSE}
+mlinks       <- list(model = "latent space", estimates = estimates,
+                     mlinks.data = list.trait, obsARD = obARD)
+out.lspa2    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
+                        data = dataset, mlinks = mlinks, iteration = 2e4,
+                        ctrl.mcmc = list(print.level = 2))
+```
+
+```{r ayesarda, echo=FALSE}
+cat("0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+**************************************************|
+
+The program successfully executed 
+
+*************SUMMARY************* 
+Number of group        :  50 
+Iteration              :  20000 
+Elapsed time           :  3  HH  46  mm  59  ss 
+ 
+Peer effects acceptance rate: 0.44765
+rho acceptance rate         : 0.269653")
+```
+
+```{r Bayesard4a}
+summary(out.lspa2) 
+```
+```{r Bayesard4b, fig.height = 3, fig.align = "center"}
+plot(out.lspa2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
+```

@@ -3,7 +3,7 @@ Type: Package
 Title: Estimating Peer Effects Using Partial Network Data
 Version: 0.1.0
 Date: 2021-03-10
-Authors@R: c(person("Elysée Aristide", "Houndetoungan",  role = c("cre","aut"), email =  "ariel92and@gmail.com"), person("Vincent", "Boucher",  role = c("aut"), email =  "vincent.boucher@ecn.ulaval.ca"))
+Authors@R: c(person("Vincent", "Boucher",  role = c("aut"), email =  "vincent.boucher@ecn.ulaval.ca"), person("Elysée Aristide", "Houndetoungan",  role = c("cre","aut"), email =  "ariel92and@gmail.com"))
 Description: Implements IV-estimator and Bayesian estimator for linear-in-means Spatial Autoregressive (SAR) model (see LeSage, 1997 <doi:10.1177/016001769702000107>; Lee, 2004 <doi:10.1111/j.1468-0262.2004.00558.x>; Bramoullé et al., 2009 <doi:10.1016/j.jeconom.2008.12.021>), while assuming that only a partial information about the network structure is available. Examples are when the adjacency matrix is not fully observed or when only consistent estimation of the network formation model is available (see Boucher and Houndetoungan <https://www.crrep.ca/estimating-peer-effects-using-partial-network-data>).
 License: GPL-3
 Encoding: UTF-8

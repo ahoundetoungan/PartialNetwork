@@ -5,14 +5,13 @@ The **PartialNetwork** package includes all functions for the replication of the
 ## Installation
 ### Requirements
 - **PartialNetwork** package needs [**R**](https://cran.r-project.org/) version 3.0.0 or later which can be installed on Linux, Mac and Windows. See [**CRAN**](https://cran.r-project.org/) for installation details. 
-- [**devtools**](https://cran.r-project.org/package=devtools) package should be installed on [**R**](https://cran.r-project.org/). If not already done, install [**devtools**](https://cran.r-project.org/package=devtools) using the code ` install.packages("devtools") `.
+- [**remotes**](https://cran.r-project.org/package=remotes) package should be installed on [**R**](https://cran.r-project.org/).
 - (*Only for windows users*) Windows users should install  [**Rtools**](https://cran.r-project.org/bin/windows/Rtools/) compatible with their [**R**](https://cran.r-project.org/) version. 
 
 ### How to install
-**PartialNetwork** package can be installed from this GitHub repos using the `install_github` function of the [**devtools**](https://cran.r-project.org/package=devtools) package. All the dependencies will also be installed automatically.
+**PartialNetwork** package can be installed from this GitHub repos using the `install_github` function of the [**remotes**](https://cran.r-project.org/package=remotes) package.
 ```R
-library(devtools) 
-install_github("ahoundetoungan/PartialNetwork")
+remotes::install_github("ahoundetoungan/PartialNetwork")
 ```
 ### Load PartialNetwork
 Once the installation is done, **PartialNetwork** can be loaded as a common package in [**R**](https://cran.r-project.org/).

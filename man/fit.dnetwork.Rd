@@ -92,10 +92,10 @@ for(k in 1:K){
   densityatz[,k] <- dvMF(genz,genv[k,]*geneta[k])
 }
 
-trait       <- matrix(0, N, K)
-for(k in 1:K){
-  tmp       <- exp(geneta[k] + logCpvMF(3, geneta[k]))
-  trait[,k] <- runif(N, 0.5*tmp, tmp) < densityatz[,k]
+trait       <- matrix(0,N,K)
+NK          <- floor(runif(K, 0.8, 0.95)*colSums(densityatz)/apply(densityatz, 2, max)) 
+for (k in 1:K) {
+  trait[,k]       <- rbinom(N, 1, NK[k]*densityatz[,k]/sum(densityatz[,k]))
 }
 
 # print a percentage of peaople having a trait

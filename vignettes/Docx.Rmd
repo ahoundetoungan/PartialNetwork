@@ -385,7 +385,7 @@ plot(out.logi3.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
 ## ARD, @breza2020using
 ```{r Bayesard0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.ard.rda?raw=true'))
-# save(data.plot1, data.plot2, file = "out.ard.rda")
+# save(data.plot1, data.plot2, genz, genv, zi, vk, file = "out.ard.rda")
 ```
 
 The data is simulated following a procedure similar to the one in @breza2020using. 
@@ -473,11 +473,51 @@ Average acceptance rate
                     eta:  0.4397833 
                    zeta:  0.4402")
 ```
+```{r ardaa1, eval=FALSE}
+# plot coordinates of individual 123
+i     <- 123
+zi    <- estim.ard1$simulations$z[i,,]
+par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
+invisible(lapply(1:3, function(x) {
+  plot(zi[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+  abline(h = genz[i, x], col = "red")
+}))
+```
+
+```{r ardaa1a, echo=FALSE, fig.height = 4, fig.align = "center"}
+i     <- 123
+par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
+invisible(lapply(1:3, function(x) {
+  plot(zi[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+  abline(h = genz[i, x], col = "red")
+}))
+```
+
+```{r ardaa2, eval=FALSE}
+# plot coordinates of traits 8
+k     <- 8
+vk    <- estim.ard1$simulations$v[k,,]
+par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
+invisible(lapply(1:3, function(x) {
+  plot(vk[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+  abline(h = genv[k, x], col = "red")
+}))
+```
+
+```{r ardaa2a, echo=FALSE, fig.height = 4, fig.align = "center"}
+k     <- 8
+par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
+invisible(lapply(1:3, function(x) {
+  plot(vk[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+  abline(h = genv[k, x], col = "red")
+}))
+```
 
 ```{r ardb, message=FALSE, eval=FALSE}
+# plot degree
 library(ggplot2)
 data.plot1 <- data.frame(True_degree  = gend, 
-                        Estim_degree = colMeans(tail(estim.ard1$simulations$d, 2500)))
+                         Estim_degree = colMeans(tail(estim.ard1$simulations$d, 2500)))
 ggplot(data = data.plot1, aes(x = True_degree, y = Estim_degree)) + 
    geom_abline(col = "red") + geom_point(col = "blue")
 ```
@@ -538,7 +578,7 @@ cat("ARD non observed on the entire population
 
 Average link probabilities estimated 
 Iteration             : 2500 
-Elapsed time          : 0  HH  0  mm  16  ss ")
+Elapsed time          : 0  HH  0  mm  13  ss ")
 ```
 ```{r arde, eval=FALSE}
 # estimated degree

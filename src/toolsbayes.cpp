@@ -422,6 +422,7 @@ void cneighbor(const double& N1, const double& N2, const double& N,
 }
 
 // This function add non ARD objects to ARD objects
+// ARD objects are zm, num and dm
 void frhononARD(arma::mat& zm, arma::vec& num, arma::vec& dm, const double& logCpzeta,  const int& N1m, const int& N2m,
                 const int& Nm,  const int& P, const arma::umat& neighbor, const arma::mat& weight, 
                 const arma::uvec& iARD, const arma::uvec& inonARD) {
@@ -443,9 +444,9 @@ void frhononARD(arma::mat& zm, arma::vec& num, arma::vec& dm, const double& logC
   znonARD             = arma::normalise(znonARD, 2, 1);
   zall.rows(inonARD)  = znonARD;
   nuall.rows(inonARD) = nunonARD;
+  dall.rows(inonARD)  = (Nm*1.0/N1m)*arma::exp(nunonARD)*arma::accu(exp(num))/exp(logCpzeta);
   
   // compute Probabilities
-  dall.elem(inonARD)  = (Nm*1.0/N1m)*arma::exp(nunonARD)*sum(exp(num))/exp(logCpzeta);
   zm                  = zall;
   num                 = nuall;
   dm                  = dall;
@@ -453,11 +454,12 @@ void frhononARD(arma::mat& zm, arma::vec& num, arma::vec& dm, const double& logC
 
 // This function returns zeta, z, nu, d, ie  (initial values for sarARD)
 // [[Rcpp::export]]
-List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d,
+List flspacerho1(const double& T, const double& P, const arma::cube& z, const arma::mat& d,
                       const arma::vec& zeta, const unsigned int& N1,  const unsigned int& Metrostart){
   // Number of people with ARD
   double N = N1, zetat, logCpzetat, ngraph = T-Metrostart+1;      
-  arma::rowvec nuARDt(N), ds(N, arma::fill::zeros);
+  arma::rowvec nuARDt(N), ds(N, arma::fill::zeros), dt;
+  arma::mat zt;
   
   //export
   arma::mat znut(N, P + 1);
@@ -467,12 +469,12 @@ List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d,
   //loop 
   for(int t(0);t<ngraph;++t){  
     zetat           = zeta(t+Metrostart);      // extract zeta for iteration t+Metrostart
-    arma::mat zt    = z(t+Metrostart);         // extract z for iteration t+Metrostart
-    arma::rowvec dt = d.row(t+Metrostart);     // extract d for iteration t+Metrostart
+    zt              = z.slice(t+Metrostart);   // extract z for iteration t+Metrostart
+    dt              = d.row(t+Metrostart);     // extract d for iteration t+Metrostart
     ds             += dt;
     logCpzetat      = logCpvMFcpp(P,zetat);     
     //compute nu for ARD
-    nuARDt          = log(dt) + 0.5*logCpzetat - 0.5*log(sum(dt)) ;
+    nuARDt          = log(dt) + 0.5*logCpzetat - 0.5*log(arma::accu(dt)) ;
     
     //save
     znut                           = arma::join_rows(zt, nuARDt.t());
@@ -484,13 +486,14 @@ List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d,
                       Named("degree") = ds);
 }
 // [[Rcpp::export]]
-List flspacerho2(const double& T, const double& P, List& z, const arma::mat& d,
+List flspacerho2(const double& T, const double& P, const arma::cube& z, const arma::mat& d,
                       const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, 
                       const unsigned int& N1, const unsigned int& N2, const unsigned int& M, 
                       const unsigned int& Metrostart){
   // Number of people with ARD
   double N = N1 + N2, zetat, logCpzetat,  ngraph = T - Metrostart + 1;
-  arma::vec nut, dt, ds(N1, arma::fill::zeros);
+  arma::rowvec nut, dt, ds(N1, arma::fill::zeros);
+  arma::mat zt;
   
   //export
   arma::mat znu(ngraph, N1*(P + 1) + 1);
@@ -508,12 +511,12 @@ List flspacerho2(const double& T, const double& P, List& z, const arma::mat& d,
   //loop 
   for(int t(0);t<ngraph;++t){  // thus convergence for t from Metrostart to T+1
     zetat           = zeta(t+Metrostart);     
-    arma::mat zt    = z(t+Metrostart);       
-    dt              = arma::trans(d.row(t+Metrostart)); 
+    zt              = z.slice(t+Metrostart);       
+    dt              = d.row(t+Metrostart); 
     ds             += dt;
     logCpzetat      = logCpvMFcpp(P,zetat);     
     //compute nu for ARD
-    nut             = log(dt) + 0.5*logCpzetat + 0.5*log(N1*1.0/N) - 0.5*log(sum(dt)) ;
+    nut             = log(dt) + 0.5*logCpzetat + 0.5*log(N1*1.0/N) - 0.5*log(arma::accu(dt)) ;
     
     //save
     arma::mat znut  = arma::join_rows(zt, nut);

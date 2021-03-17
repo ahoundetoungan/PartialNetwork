@@ -60,111 +60,109 @@
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 #' @examples 
 #' \donttest{
-#' # Sample size
-#' N       <- 500 
-#' 
-#' # ARD parameters
-#' genzeta <- 1
-#' mu      <- -1.35
-#' sigma   <- 0.37
-#' K       <- 12    # number of traits
-#' P       <- 3     # Sphere dimension 
-#' 
-#' 
-#' # Generate z (spherical coordinates)
-#' genz    <- rvMF(N,rep(0,P))
-#' 
-#' # Generate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
-#' gennu   <- rnorm(N,mu,sigma)
-#' 
-#' # compute degrees
-#' gend <- N*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
-#' 
-#' # Link probabilities
-#' Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz) 
-#' 
-#' # Adjacency matrix
-#' G <- sim.network(Probabilities)
-#' 
-#' # Generate vk, the trait location
-#' genv <- rvMF(K,rep(0,P))
-#' 
-#' # set fixed some vk  distant
-#' genv[1,] <- c(1,0,0)
-#' genv[2,] <- c(0,1,0)
-#' genv[3,] <- c(0,0,1)
-#' 
-#' # eta, the intensity parameter
-#' geneta   <-abs(rnorm(K,2,1))
-#' 
-#' # Build traits matrix
-#' densityatz       <- matrix(0,N,K)
-#' for(k in 1:K){
-#'   densityatz[,k] <- dvMF(genz,genv[k,]*geneta[k])
-#' }
-#' 
-#' trait       <- matrix(0,N,K)
-#' NK          <- floor(runif(K, 0.8, 0.95)*colSums(densityatz)/apply(densityatz, 2, max)) 
-#' for (k in 1:K) {
-#'   trait[,k]       <- rbinom(N, 1, NK[k]*densityatz[,k]/sum(densityatz[,k]))
-#' }
-#' 
-#' # print a percentage of people having a trait
-#' colSums(trait)*100/N
+#'   # Sample size
+#'   N       <- 500
 #'   
-#' # Build ARD
-#' ARD         <- G %*% trait
+#'   # ARD parameters
+#'   genzeta <- 1
+#'   mu      <- -1.35
+#'   sigma   <- 0.37
+#'   K       <- 12    # number of traits
+#'   P       <- 3     # Sphere dimension
 #'   
-#' # generate b
-#' genb        <- numeric(K)
-#' for(k in 1:K){
-#'    genb[k]   <- sum(G[,trait[,k]==1])/sum(G)
-#' }
 #'   
-#' ############ ARD Posterior distribution ################### 
-#' # initialization 
-#' d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
-#' zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
+#'   # Generate z (spherical coordinates)
+#'   genz    <- rvMF(N,rep(0,P))
 #'   
-#' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-#' vfixcolumn      <- 1:6
-#' bfixcolumn      <- c(3, 5)
-#' b0[bfixcolumn]  <- genb[bfixcolumn]
-#' v0[vfixcolumn,] <- genv[vfixcolumn,]
-#' start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
+#'   # Generate nu  from a Normal distribution with parameters mu and sigma (The gregariousness)
+#'   gennu   <- rnorm(N,mu,sigma)
 #'   
-#' # MCMC
-#' out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
-#'                 consb = bfixcolumn, iteration = 5000)
-#'                    
-#' # plot simulations
-#' # plot d
-#' plot(out$simulations$d[,100], type = "l", col = "blue", ylab = "")
-#' abline(h = gend[100], col = "red")
+#'   # compute degrees
+#'   gend <- N*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
 #'   
-#' # plot coordinates of individuals
-#' i <- 123 # individual 123
-#' {
-#'   par(mfrow = c(3, 1))
-#'   lapply(1:3, function(x) {
-#'       plot(unlist(lapply(1:5000, function(w)
-#'             out$simulations$z[[w]][i, x])) , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
-#'                  abline(h = genz[i, x], col = "red")
-#'   })
-#'   par(mfrow = c(1, 1))
-#' }
-#' 
-#' # plot coordinates of traits
-#' k <- 8
-#' {
-#'   par(mfrow = c(3, 1))
+#'   # Link probabilities
+#'   Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz)
+#'   
+#'   # Adjacency matrix
+#'   G <- sim.network(Probabilities)
+#'   
+#'   # Generate vk, the trait location
+#'   genv <- rvMF(K,rep(0,P))
+#'   
+#'   # set fixed some vk  distant
+#'   genv[1,] <- c(1,0,0)
+#'   genv[2,] <- c(0,1,0)
+#'   genv[3,] <- c(0,0,1)
+#'   
+#'   # eta, the intensity parameter
+#'   geneta   <-abs(rnorm(K,2,1))
+#'   
+#'   # Build traits matrix
+#'   densityatz       <- matrix(0,N,K)
+#'   for(k in 1:K){
+#'     densityatz[,k] <- dvMF(genz,genv[k,]*geneta[k])
+#'   }
+#'   
+#'   trait       <- matrix(0,N,K)
+#'   NK          <- floor(runif(K, 0.8, 0.95)*colSums(densityatz)/apply(densityatz, 2, max))
+#'   for (k in 1:K) {
+#'     trait[,k]  <- rbinom(N, 1, NK[k]*densityatz[,k]/sum(densityatz[,k]))
+#'   }
+#'   
+#'   # print a percentage of people having a trait
+#'   colSums(trait)*100/N
+#'   
+#'   # Build ARD
+#'   ARD         <- G %*% trait
+#'   
+#'   # generate b
+#'   genb        <- numeric(K)
+#'   for(k in 1:K){
+#'     genb[k]   <- sum(G[,trait[,k]==1])/sum(G)
+#'   }
+#'   
+#'   ############ ARD Posterior distribution ###################
+#'   # initialization
+#'   d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
+#'   zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
+#'   
+#'   # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
+#'   vfixcolumn      <- 1:6
+#'   bfixcolumn      <- c(3, 5)
+#'   b0[bfixcolumn]  <- genb[bfixcolumn]
+#'   v0[vfixcolumn,] <- genv[vfixcolumn,]
+#'   start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
+#'   
+#'   # MCMC
+#'   out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
+#'                    consb = bfixcolumn, iteration = 5000)
+#'   
+#'   # plot simulations
+#'   # plot d
+#'   plot(out$simulations$d[,100], type = "l", col = "blue", ylab = "")
+#'   abline(h = gend[100], col = "red")
+#'   
+#'   # plot coordinates of individuals
+#'   i <- 123 # individual 123
+#'   {
+#'     par(mfrow = c(3, 1))
 #'     lapply(1:3, function(x) {
-#'         plot(unlist(lapply(1:5000, function(w)
-#'               out$simulations$v[[w]][k, x])) , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
-#'                   abline(h = genv[k, x], col = "red")
+#'       plot(out$simulations$z[i, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+#'       abline(h = genz[i, x], col = "red")
 #'     })
-#'   par(mfrow = c(1, 1))
-#' }} 
+#'     par(mfrow = c(1, 1))
+#'   }
+#'   
+#'   # plot coordinates of traits
+#'   k <- 8
+#'   {
+#'     par(mfrow = c(3, 1))
+#'     lapply(1:3, function(x) {
+#'       plot(out$simulations$v[k, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+#'       abline(h = genv[k, x], col = "red")
+#'     })
+#'     par(mfrow = c(1, 1))
+#'   }}
 #' @references 
 #' Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}

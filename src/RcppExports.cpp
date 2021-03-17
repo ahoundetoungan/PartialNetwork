@@ -37,14 +37,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // dnetwork1
-List dnetwork1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const unsigned int& N, const unsigned int& Metrostart, const bool& display_progress);
+List dnetwork1(const double& T, const double& P, const arma::cube& z, const arma::mat& d, const arma::vec& zeta, const unsigned int& N, const unsigned int& Metrostart, const bool& display_progress);
 RcppExport SEXP _PartialNetwork_dnetwork1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP NSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
     Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
     Rcpp::traits::input_parameter< const unsigned int& >::type N(NSEXP);
@@ -55,14 +55,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // dnetwork2
-List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, const arma::uvec& iARD, const arma::uvec& inonARD, const unsigned int& M, const unsigned int& Metrostart, const bool& display_progress);
+List dnetwork2(const double& T, const double& P, const arma::cube& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, const arma::uvec& iARD, const arma::uvec& inonARD, const unsigned int& M, const unsigned int& Metrostart, const bool& display_progress);
 RcppExport SEXP _PartialNetwork_dnetwork2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP XardSEXP, SEXP XnonardSEXP, SEXP iARDSEXP, SEXP inonARDSEXP, SEXP MSEXP, SEXP MetrostartSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
     Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Xard(XardSEXP);
@@ -801,14 +801,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // flspacerho1
-List flspacerho1(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const unsigned int& N1, const unsigned int& Metrostart);
+List flspacerho1(const double& T, const double& P, const arma::cube& z, const arma::mat& d, const arma::vec& zeta, const unsigned int& N1, const unsigned int& Metrostart);
 RcppExport SEXP _PartialNetwork_flspacerho1(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP N1SEXP, SEXP MetrostartSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
     Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
     Rcpp::traits::input_parameter< const unsigned int& >::type N1(N1SEXP);
@@ -818,14 +818,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // flspacerho2
-List flspacerho2(const double& T, const double& P, List& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, const unsigned int& N1, const unsigned int& N2, const unsigned int& M, const unsigned int& Metrostart);
+List flspacerho2(const double& T, const double& P, const arma::cube& z, const arma::mat& d, const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, const unsigned int& N1, const unsigned int& N2, const unsigned int& M, const unsigned int& Metrostart);
 RcppExport SEXP _PartialNetwork_flspacerho2(SEXP TSEXP, SEXP PSEXP, SEXP zSEXP, SEXP dSEXP, SEXP zetaSEXP, SEXP XardSEXP, SEXP XnonardSEXP, SEXP N1SEXP, SEXP N2SEXP, SEXP MSEXP, SEXP MetrostartSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double& >::type T(TSEXP);
     Rcpp::traits::input_parameter< const double& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< List& >::type z(zSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type zeta(zetaSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Xard(XardSEXP);

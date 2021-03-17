@@ -334,8 +334,8 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
   
   //Create output for parameters z, v, d, b, eta and zeta
   //We set the first entry equal to the initialization values
-  List zoutput(nsimul+1); zoutput(0)=z;
-  List voutput(nsimul+1); voutput(0)=v;
+  arma::cube zoutput(n, p, nsimul+1); zoutput.slice(0) = z;
+  arma::cube voutput(K, p, nsimul+1); voutput.slice(0) = v;
   arma::mat doutput(nsimul+1,n); doutput.row(0) = d.t();
   arma::mat boutput(nsimul+1,K); boutput.row(0) = b;
   arma::mat etaoutput(nsimul+1,K); etaoutput.row(0) = eta;
@@ -449,8 +449,8 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
     fsetjump_d(jumpzeta, jumpmin(4), jumpmax(4));
     
     //Save the updates
-    zoutput(t)=z;
-    voutput(t)= v;
+    zoutput.slice(t)=z;
+    voutput.slice(t)= v;
     doutput.row(t)=exp(logd.t());
     boutput.row(t)=exp(logb);
     etaoutput.row(t)=eta;
@@ -490,7 +490,7 @@ List updateGP(const arma::mat& Y, const arma::mat& trait, const arma::mat& z0, c
 
 //////// Compute the graphs when Xnonard = NULL
 // [[Rcpp::export]]
-List dnetwork1(const double& T, const double& P, List& z, const arma::mat& d,
+List dnetwork1(const double& T, const double& P, const arma::cube& z, const arma::mat& d,
                     const arma::vec& zeta, const unsigned int& N,  const unsigned int& Metrostart,
                     const bool& display_progress){
   // Number of people with ARD
@@ -512,19 +512,19 @@ List dnetwork1(const double& T, const double& P, List& z, const arma::mat& d,
     prgcpp.increment();
     
     zetat           = zeta(t+Metrostart);          // extract zeta for itaration t+Metrostart
-    arma::mat zt    = z(t+Metrostart);             // extract z for iteration t+Metrostart
+    arma::mat zt    = z.slice(t+Metrostart);       // extract z for iteration t+Metrostart
     arma::rowvec dt = d.row(t+Metrostart);         // extract d for iteration t+Metrostart
     ds             += dt;
     logCpzetat      = logCpvMFcpp(P,zetat);        // Cp(P,zetat)
     //compute nu for ARD
-    nuARDt          = log(dt) + 0.5*logCpzetat - 0.5*log(sum(dt)) ;
+    nuARDt          = log(dt) + 0.5*logCpzetat - 0.5*log(arma::accu(dt)) ;
     nus            += nuARDt;
     
     // compute Probabilities
     numat = arma::repmat(nuARDt,N,1);
     probt = arma::exp(zetat*zt*zt.t() + numat + numat.t());
     probt.diag()=arma::zeros(N);   //zero on the diagonal
-    probt*=(arma::sum(dt)/arma::accu(probt));
+    probt*=(arma::accu(dt)/arma::accu(probt));
     
     prob += probt;
   }
@@ -542,7 +542,7 @@ List dnetwork1(const double& T, const double& P, List& z, const arma::mat& d,
 
 
 // [[Rcpp::export]]
-List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
+List dnetwork2(const double& T, const double& P, const arma::cube& z, const arma::mat& d,
                     const arma::vec& zeta, const arma::mat& Xard, const arma::mat& Xnonard, 
                     const arma::uvec& iARD, const arma::uvec& inonARD, const unsigned int& M, 
                     const unsigned int& Metrostart, const bool& display_progress){
@@ -580,11 +580,11 @@ List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
     prgcpp.increment();
     
     zetat           = zeta(t+Metrostart);     
-    arma::mat zt    = z(t+Metrostart);       
+    arma::mat zt    = z.slice(t+Metrostart);       
     dt              = arma::trans(d.row(t+Metrostart)); 
     logCpzetat      = logCpvMFcpp(P,zetat);     
     //compute nu for ARD
-    nut             = log(dt) + 0.5*logCpzetat + 0.5*log(n*1.0/N) - 0.5*log(sum(dt)) ;
+    nut             = log(dt) + 0.5*logCpzetat + 0.5*log(n*1.0/N) - 0.5*log(arma::accu(dt)) ;
     
     //compute nu and z for non ARD
     frhononARD(zt, nut, dt, logCpzetat, n, n2, N, P, neighbor, weight, iARD, inonARD);
@@ -594,7 +594,7 @@ List dnetwork2(const double& T, const double& P, List& z, const arma::mat& d,
     probt        = arma::exp(zetat*zt*zt.t() + numat + numat.t());
     probt.diag() = arma::zeros(N); //zero on the diagonal
     // normalization
-    probt   *= ((sum(dt))/arma::accu(probt));
+    probt   *= ((arma::accu(dt))/arma::accu(probt));
     
     ds               += dt;
     nus              += nut;

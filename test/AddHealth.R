@@ -324,6 +324,7 @@ miss.est   <- mcmcSAR(formula    = Model,
 summary(miss.est)
 plot(miss.est, mar = c(2, 2, 1, 1))
 
+# save(miss.est)
 #### Top coding only
 top.est    <- mcmcSAR(formula    = Model,
                       contextual = TRUE,

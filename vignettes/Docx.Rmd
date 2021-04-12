@@ -1,5 +1,5 @@
 ---
-title: "PartialNetwork: An R package for estimating peer effects using partial network information"
+title: "Online Appendix -- PartialNetwork: An R package for estimating peer effects using partial network information"
 author: "Vincent Boucher and Elysée Aristide Houndetoungan"
 date: "`r Sys.Date()`"
 output:
@@ -22,8 +22,10 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Instrumental Variable procedure
-We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnetwork` is the network linking probabilities, `X` is a matrix of covariates, `y` (optional) is the vector of outcome, `replication` (optional, default = 1) is the number of replication, and `power` (optional, default = 1) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for `Gy` and simulated instruments. The following code provides an example using a single group of network.
+# Instrumental Variable (IV) procedure
+We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnetwork` is the network linking probabilities, `X` is a matrix of covariates, `y` (optional) is the vector of outcome, `replication` (optional, default = 1) is the number of replications, and `power` (optional, default = 1) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for `Gy` and simulated instruments.
+
+The following code provides an example using a sample of 30 networks of size 50 each. For the sake of the example, we assume that linking probabilities are *known* and drawn from an uniform distribution. We first simulate data. Then, we estimate the linear-in-means model using our IV procedure, using the known linking probabilities to generate approximations of the true network.
 
 ```{r IV1, echo = TRUE, eval = TRUE}
 library(PartialNetwork)
@@ -62,7 +64,8 @@ GXc2          <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 dataset           <- as.data.frame(cbind(y, X, GY1c1, GXc1, GXc2)) 
 colnames(dataset) <- c("y","X1","X2","G1y", "G1X1", "G1X2", "G2X1", "G2X2") 
 ```
-Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function ivreg from the *AER* package. For example:
+Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the **AER** package. For example, if we use the same draw for the proxy and the instruments, the estimation is "bad".
+
 ```{r IV2, echo = TRUE, eval = TRUE, message=FALSE}
 library(AER)
 # Same draws
@@ -70,6 +73,7 @@ out.iv1           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G1X1 + G1X2, data = dat
 summary(out.iv1)
 ```
 
+If we use different draws for the proxy and the instruments, the estimation is "good".
 
 ```{r IV3, echo = TRUE, eval = TRUE, message=FALSE}
 # Different draws
@@ -78,7 +82,15 @@ summary(out.iv2)
 ```
 
 # Bayesian estimator without network formation model
-The Bayesian estimator is neatly packed in the function `mcmcSAR`. Below, we provide a simple example using simulated data.
+The Bayesian estimator is neatly packed in the function `mcmcSAR` (see the help page of the function in the package, using `?mcmcSAR`, for more details on the function). Below, we provide a simple example using simulated data.
+
+For the sake of the example, we assume that linking probabilities are *known* and drawn from an uniform distribution. We first simulate data. Then, we estimate the linear-in-means model using our Bayesian estimator.
+
+For Example I-1 (`out.none1`), we assume that the network is entirely observed.
+
+For Example I-2, we assume that only 60% of the links are observed. Estimation `out.none2.1` assumes that the sampled network is the true one (inconsistent, peer effects are overestimated). Estimation `out.none2.2` specifies which links are observed and which ones are not. The true probabilities are used to sample un-observed links (consistent).
+
+For Example I-3, we assume that only linking probabilities are known. Estimation `out.none3.1` assumes the researcher uses a draw from that distribution as the true network (inconsistent, peer effects are overestimated). Estimation `out.none3.2` specifies that no link is observed, but that the distribution is known (consistent).
 
 ```{r BayesNone0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.none.rda?raw=true'))
@@ -248,6 +260,9 @@ plot(out.none3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
 
 # Bayesian estimator with logit model as network formation model
+
+For this example, we assume that links are generated using a simple logit model. We first simulate data. Then, we assume that the researcher only observes 60% of the links (Example II-1), but know that the network formation model is logistic.
+
 ```{r BayesLog0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.logi.rda?raw=true'))
 # save(out.logi2.2, out.logi3.2, file = "out.logi.rda")
@@ -335,8 +350,7 @@ plot(out.logi2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 plot(out.logi2.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
 ```
 
-
-
+Example II-2 disregards the information about observed links (which we used to estimate the logit model) and only uses the asymptotic distribution of the network formation parameters.
 
 ```{r BayesLog31a, eval=FALSE}
 # Example II-2: When only the network distribution is available
@@ -383,6 +397,9 @@ plot(out.logi3.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
 
 # Bayesian estimator with latent space model as network formation model
 ## ARD, @breza2020using
+
+We also offer a function of the estimator in @breza2020using. We first simulate data. We then estimate the model's parameters assuming that the researcher only knows ARD. We present two examples, one for which we observe ARD for the entire population (Example 1) and one for which we observe ARD for only 70% of the population (Example 2).
+
 ```{r Bayesard0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.ard.rda?raw=true'))
 # save(data.plot1, data.plot2, genz, genv, zi, vk, file = "out.ard.rda")
@@ -594,7 +611,10 @@ ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_AR
   geom_abline(col = "red") + geom_point() 
 ```
 
-## Estimating the SAR model with ARD
+## Estimating peer effects model with ARD
+
+Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for the entire population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
+
 ```{r Bayesard00, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.lsp.rda?raw=true'))
 #save(out.lspa1, out.lspa2, file = "PartialNetwork/datavignettes/out.lsp.rda")
@@ -720,7 +740,11 @@ plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
 
 
-## Estimating the SAR model with partial ARD
+## Estimating peer effects with partial ARD
+
+Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for 70% of the population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
+
+
 ```{r bayesard3, eval=FALSE}
 library(PartialNetwork)
 set.seed(123)

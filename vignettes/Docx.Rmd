@@ -86,18 +86,16 @@ The Bayesian estimator is neatly packed in the function `mcmcSAR` (see the help 
 
 For the sake of the example, we assume that linking probabilities are *known* and drawn from an uniform distribution. We first simulate data. Then, we estimate the linear-in-means model using our Bayesian estimator.
 
-For Example I-1 (`out.none1`), we assume that the network is entirely observed.
+**In the following example (example I-1, output `out.none1`), we assume that the network is entirely observed.**
 
-For Example I-2, we assume that only 60% of the links are observed. Estimation `out.none2.1` assumes that the sampled network is the true one (inconsistent, peer effects are overestimated). Estimation `out.none2.2` specifies which links are observed and which ones are not. The true probabilities are used to sample un-observed links (consistent).
-
-For Example I-3, we assume that only linking probabilities are known. Estimation `out.none3.1` assumes the researcher uses a draw from that distribution as the true network (inconsistent, peer effects are overestimated). Estimation `out.none3.2` specifies that no link is observed, but that the distribution is known (consistent).
+**We first simulate data.** 
 
 ```{r BayesNone0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.none.rda?raw=true'))
 # save(out.none1, out.none2.1, out.none2.2, out.none3.1, out.none3.2, file = "out.none.rda")
 ```
 
-```{r BayesNone1a, eval=FALSE}
+```{r BayesNone1as, eval=FALSE}
 library(PartialNetwork)
 set.seed(123)
 # EXAMPLE I: WITHOUT NETWORK FORMATION MODEL 
@@ -128,6 +126,9 @@ y             <- CDatanet::simSARnet(~ X, contextual = TRUE, Glist = G0norm,
 y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+```
+**Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**
+```{r BayesNone1ae, eval=FALSE}
 # Example I-1: When the network is fully observed 
 out.none1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
                          G0 = G0, data = dataset, iteration = 2e4)
@@ -152,10 +153,15 @@ summary(out.none1)
 ```{r BayesNone1c, fig.height = 3, fig.align = "center"}
 plot(out.none1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
-```{r BayesNone21a, eval=FALSE}
+**For Example I-2, we assume that only 60% of the links are observed. **
+```{r BayesNone21s, eval=FALSE}
 # Example I-2: When a part of the network is observed 
 # 60% of the network data is observed
 G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
+```
+**Estimation `out.none2.1` assumes that the sampled network is the true one (inconsistent, peer effects are overestimated).**
+
+```{r BayesNone21e, eval=FALSE}
 # replace the non-observed part of the network by 0 (missing links)
 G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
 # Use network with missing data as the true network
@@ -182,6 +188,7 @@ summary(out.none2.1) # the peer effets seem overestimated
 ```{r BayesNone21c, fig.height = 3, fig.align = "center"}
 plot(out.none2.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
+**Estimation `out.none2.2` specifies which links are observed and which ones are not. The true probabilities are used to sample un-observed links (consistent).**
 ```{r BayesNone22a, eval=FALSE}
 out.none2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
                         G0 = G0.start, data = dataset, 
@@ -207,7 +214,10 @@ summary(out.none2.2)
 ```{r BayesNone22c, fig.height = 3, fig.align = "center"}
 plot(out.none2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
-```{r BayesNone31a, eval=FALSE}
+**For Example I-3, we assume that only linking probabilities are known. **
+
+**Estimation `out.none3.1` assumes the researcher uses a draw from that distribution as the true network (inconsistent, peer effects are overestimated).**
+```{r BayesNone31as, eval=FALSE}
 # Example I-3: When only the network distribution is available 
 # Simulate a fictitious network and use as true network
 G0.tmp       <- sim.network(prior)
@@ -234,6 +244,7 @@ summary(out.none3.1)  # the peer effets seem overestimated
 ```{r BayesNone31c, fig.height = 3, fig.align = "center"}
 plot(out.none3.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
+**Estimation `out.none3.2` specifies that no link is observed, but that the distribution is known (consistent).**
 ```{r BayesNone32a, eval=FALSE}
 out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
                         data = dataset, mlinks = list(dnetwork = prior), iteration = 2e4)
@@ -261,13 +272,15 @@ plot(out.none3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 
 # Bayesian estimator with logit model as network formation model
 
-For this example, we assume that links are generated using a simple logit model. We first simulate data. Then, we assume that the researcher only observes 60% of the links (Example II-1), but know that the network formation model is logistic.
+For this example, we assume that links are generated using a simple logit model. 
+
+**We first simulate data.** 
 
 ```{r BayesLog0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.logi.rda?raw=true'))
 # save(out.logi2.2, out.logi3.2, file = "out.logi.rda")
 ```
-```{r BayesLog1a, eval=FALSE}
+```{r BayesLog1as, eval=FALSE}
 # EXAMPLE II: NETWORK FORMATION MODEL: LOGIT 
 library(PartialNetwork)
 set.seed(123)
@@ -311,8 +324,8 @@ y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
 ```
-
-```{r BayesLog21a, eval=FALSE}
+For example II-1, we assume that the researcher only **observes 60% of the links**, but **know that the network formation model is logistic**.
+```{r BayesLog21as, eval=FALSE}
 # Example II-1: When a part of the network is observed 
 # 60% of the network data is observed
 G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
@@ -321,10 +334,15 @@ G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
 # Infer the missing links in the network data
 mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
                      mlinks.data = as.data.frame(covar))
+```
+**Once the data are simulated, the estimation can be performed.**
+```{r BayesLog21ae, eval=FALSE}
 out.logi2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
                         G0 = G0.start, data = dataset, mlinks = mlinks, 
                         iteration = 2e4)
 ```
+
+
 ```{r BayesLog22aa, echo=FALSE}
 cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
@@ -350,9 +368,9 @@ plot(out.logi2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 plot(out.logi2.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
 ```
 
-Example II-2 disregards the information about observed links (which we used to estimate the logit model) and only uses the asymptotic distribution of the network formation parameters.
+**Example II-2 disregards the information about observed links (which we used to estimate the logit model) and only uses the asymptotic distribution of the network formation parameters.**
 
-```{r BayesLog31a, eval=FALSE}
+```{r BayesLog31as, eval=FALSE}
 # Example II-2: When only the network distribution is available
 # Infer the network data
 # We only provide estimate of rho and its variance
@@ -364,6 +382,8 @@ estimates    <- list("rho"     = logestim$coefficients,
                      "N"       = N)
 mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
                      mlinks.data = as.data.frame(covar), estimates = estimates)
+```
+```{r BayesLog31ae, eval=FALSE}
 out.logi3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
                         data = dataset, mlinks = mlinks, iteration = 2e4)
 ```
@@ -453,7 +473,8 @@ for(k in 1:K){
   genb[k]   <- sum(G[,trait[,k]==1])/sum(G)
 }
 ```
-```{r ard1a, eval=FALSE}
+**Example 1: we observe ARD for the entire population**
+```{r ard1as, eval=FALSE}
 # Example1: ARD is observed for the whole population
 # initialization 
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K)
@@ -465,6 +486,9 @@ b0[bfixcolumn]  <- genb[bfixcolumn]
 v0[vfixcolumn,] <- genv[vfixcolumn,]
 start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
                         "zeta" = zeta0)
+```
+**The estimation can be performed using the function `mcmcARD`**
+```{r ard1e, eval=FALSE}
 # MCMC
 estim.ard1      <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
                            consb = bfixcolumn, iteration = 5000)  
@@ -511,7 +535,7 @@ invisible(lapply(1:3, function(x) {
 ```
 
 ```{r ardaa2, eval=FALSE}
-# plot coordinates of traits 8
+# plot coordinates of the trait 8
 k     <- 8
 vk    <- estim.ard1$simulations$v[k,,]
 par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
@@ -543,8 +567,8 @@ library(ggplot2)
 ggplot(data = data.plot1, aes(x = True_degree, y = Estim_degree)) + 
    geom_abline(col = "red") + geom_point(col = "blue")
 ```
-
-```{r ard2a, eval=FALSE}
+**Example 2: we observe ARD for only 70% of the population**
+```{r ard2as, eval=FALSE}
 # Example2: ARD is observed for 70% population
 # sample with ARD 
 n          <- round(0.7*N)
@@ -555,6 +579,9 @@ traits     <- trait[iselect,]
 # initialization 
 d0         <- d0[iselect]; z0 <- z0[iselect,] 
 start      <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
+```
+**The estimation can be performed using the function `mcmcARD`**
+```{r ard2ae, eval=FALSE}
 # MCMC
 estim.ard2 <- mcmcARD(Y = ARDs, traitARD = traits, start = start, fixv = vfixcolumn,
                       consb = bfixcolumn, iteration = 5000)  
@@ -619,6 +646,7 @@ Given the predicted probabilities, estimated using the estimator proposed by @br
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.lsp.rda?raw=true'))
 #save(out.lspa1, out.lspa2, file = "PartialNetwork/datavignettes/out.lsp.rda")
 ```
+**We first simulate data.** 
 ```{r bayesard1, eval=FALSE}
 library(PartialNetwork)
 set.seed(123)
@@ -711,7 +739,8 @@ y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
 ```
-```{r bayesard2, eval=FALSE}
+**Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**
+```{r bayesard2s, eval=FALSE}
 mlinks       <- list(model = "latent space", estimates = estimates)
 out.lspa1    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
                         data = dataset, mlinks = mlinks, iteration = 2e4)
@@ -744,7 +773,7 @@ plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 
 Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for 70% $\sim$ 100% of the population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
 
-
+**We first simulate data.** 
 ```{r bayesard3, eval=FALSE}
 library(PartialNetwork)
 set.seed(123)
@@ -845,7 +874,8 @@ y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
 ```
-```{r bayesard4, eval=FALSE}
+**Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**
+```{r bayesard4s, eval=FALSE}
 mlinks       <- list(model = "latent space", estimates = estimates,
                      mlinks.data = list.trait, obsARD = obARD)
 out.lspa2    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 

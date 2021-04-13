@@ -742,7 +742,7 @@ plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 
 ## Estimating peer effects with partial ARD
 
-Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for 70% of the population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
+Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for 70% $\sim$ 100% of the population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
 
 
 ```{r bayesard3, eval=FALSE}

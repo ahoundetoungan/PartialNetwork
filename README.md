@@ -18,6 +18,8 @@ Once the installation is done, **PartialNetwork** can be loaded as a common pack
 ```R
 library(PartialNetwork)
 ```
+## How to use the `PartialNetwork` package?
+See our [vignette in pdf](https://nbviewer.jupyter.org/github.com/ahoundetoungan/PartialNetwork/blob/master/doc/Docx.pdf).
 <!--## Instrumental Variable procedure
 
 We provide the function `sim.IV(dnetwork, X, y, replication, power)` where `dnetwork` is the network linking probabilities, `X` is a matrix of covariates, `y` (optional) is the vector of outcome, `replication` (optional, default = 1) is the number of replication, and `power` (optional, default = 1) is the number of powers of the interaction matrix used to generate the instruments. The function outputs a proxy for Gy and simulated instruments. See the help file (`? sim.IV`) of the function for details. The following code provides an example using a single group of network.

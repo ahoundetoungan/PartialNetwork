@@ -656,14 +656,18 @@ genzeta       <- 3
 mu            <- -1.35
 sigma         <- 0.37
 K             <- 12    # number of traits
-P             <- 3     # Sphere dimension 
-# In this loop, we generate data for the latent space model and 
-# estimate the latent space model in the M sub-networks
+P             <- 3     # Sphere dimension
+
+# IN THIS LOOP, WE GENERATE DATA FOLLOWING BREZA ET AL. (2020) AND 
+# ESTIMATE THEIR LATENT SPACE MODEL FOR EACH SUB-NETWORK.
 estimates     <- list()
 list.trait    <- list()
 prior         <- list()
 G0            <- list()
 for (m in 1:M) {
+  #######################################################################################
+  #######                             SIMULATION STAGE                           ########
+  #######################################################################################
   # ARD parameters
   # Generate z (spherical coordinates)
   genz    <- rvMF(N[m], rep(0,P))
@@ -714,12 +718,15 @@ for (m in 1:M) {
   v0[vfixcolumn,] <- genv[vfixcolumn,]
   start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
                           "zeta" = zeta0)
-  # MCMC
+  #######################################################################################
+  #######                             ESTIMATION STAGE                           ########
+  #######################################################################################
   estimates[[m]]  <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn, 
                              consb = bfixcolumn, sim.d = FALSE, sim.zeta = FALSE, 
                              iteration = 5000, ctrl.mcmc = list(print = FALSE))
 }
-## Simulate X and y
+
+# SIMULATE DATA FOR THE OUTCOME MODEL
 # individual effects
 beta          <- c(2,1,1.5) 
 # contextual effects
@@ -784,14 +791,18 @@ mu            <- -1.35
 sigma         <- 0.37
 K             <- 12
 P             <- 3
-# In this loop, we generate data for the latent space model and 
-# estimate the latent space model in the M sub-networks
+
+# IN THIS LOOP, WE GENERATE DATA FOLLOWING BREZA ET AL. (2020) AND 
+# ESTIMATE THEIR LATENT SPACE MODEL FOR EACH SUB-NETWORK.
 estimates     <- list()
 list.trait    <- list()
 obARD         <- list()
 prior         <- list()
 G0            <- list()
 for (m in 1:M) {
+  #######################################################################################
+  #######                             SIMULATION STAGE                           ########
+  #######################################################################################
   # ARD parameters
   # Generate z (spherical coordinates)
   genz    <- rvMF(N[m], rep(0,P))
@@ -849,12 +860,15 @@ for (m in 1:M) {
   v0[vfixcolumn,] <- genv[vfixcolumn,]
   start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
                           "zeta" = zeta0)
-  # MCMC
+  #######################################################################################
+  #######                             ESTIMATION STAGE                           ########
+  #######################################################################################
   estimates[[m]]  <- mcmcARD(Y = ARDs, traitARD = traits, start = start, fixv = vfixcolumn, 
                              consb = bfixcolumn,  sim.d = FALSE, sim.zeta = FALSE, 
                              iteration = 5000, ctrl.mcmc = list(print = FALSE))
 }
-## Simulate X and y
+
+# SIMULATE DATA FOR THE OUTCOME MODEL
 # individual effects
 beta          <- c(2,1,1.5) 
 # contextual effects

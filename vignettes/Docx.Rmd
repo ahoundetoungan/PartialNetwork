@@ -708,6 +708,9 @@ for (m in 1:M) {
     genb[k]  <- sum(G[,trait[,k]==1])/sum(G) + 1e-8
   }
   
+  #######################################################################################
+  #######                             ESTIMATION STAGE                           ########
+  #######################################################################################
   # initialization 
   d0     <- gend; b0 <- exp(rnorm(K)); eta0 <- rep(1,K); zeta0 <- genzeta 
   z0     <- matrix(rvMF(N[m], rep(0,P)), N[m]); v0 <- matrix(rvMF(K,rep(0, P)), K)
@@ -718,9 +721,6 @@ for (m in 1:M) {
   v0[vfixcolumn,] <- genv[vfixcolumn,]
   start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
                           "zeta" = zeta0)
-  #######################################################################################
-  #######                             ESTIMATION STAGE                           ########
-  #######################################################################################
   estimates[[m]]  <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn, 
                              consb = bfixcolumn, sim.d = FALSE, sim.zeta = FALSE, 
                              iteration = 5000, ctrl.mcmc = list(print = FALSE))
@@ -850,6 +850,9 @@ for (m in 1:M) {
   obARD[[m]] <- hasARD
   ARDs       <- ARD[iselect,]
   traits     <- trait[iselect,]
+  #######################################################################################
+  #######                             ESTIMATION STAGE                           ########
+  #######################################################################################
   # initialization 
   d0         <- gend[iselect]; b0 <- exp(rnorm(K)); eta0 <- rep(1,K); zeta0 <- genzeta
   z0         <- matrix(rvMF(n, rep(0,P)), n); v0 <- matrix(rvMF(K, rep(0, P)), K) 
@@ -860,9 +863,6 @@ for (m in 1:M) {
   v0[vfixcolumn,] <- genv[vfixcolumn,]
   start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
                           "zeta" = zeta0)
-  #######################################################################################
-  #######                             ESTIMATION STAGE                           ########
-  #######################################################################################
   estimates[[m]]  <- mcmcARD(Y = ARDs, traitARD = traits, start = start, fixv = vfixcolumn, 
                              consb = bfixcolumn,  sim.d = FALSE, sim.zeta = FALSE, 
                              iteration = 5000, ctrl.mcmc = list(print = FALSE))

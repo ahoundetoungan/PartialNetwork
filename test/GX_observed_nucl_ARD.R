@@ -1,6 +1,6 @@
 ##################################################################################
 # This code replicates the Monte Carlo simulations when GX is observed and       #
-# the network is estimated using nuclear ARD.                                    #
+# the network is estimated using nuclear ARD  (section 3.1).                     #
 #####################################Headline#####################################
 rm(list = ls())
 library(AER)                          # Install AER if not already done.
@@ -22,10 +22,11 @@ our.sum <- function(x) {
 
 # function to perform the simulation
 # l stands for the l-th simulation
+# kappa is the concentration parameter
 # parlambda is the tuning parameter for 
 # nuclear estimation see Alidaee, H., E. Auerbach, and M. P. Leung (2020):
 # “Recovering Network Structure from Aggregated Relational Data using Penalized Regression,” 
-fsim <- function(l, parlambda){
+fsim <- function(l, parlambda, kappa){
   M          <- 20           # Number of groups
   N          <- rep(250,M)   # Group size
   # Parameters
@@ -56,11 +57,11 @@ fsim <- function(l, parlambda){
   for (m in 1:M) {
     print(paste("Iteration :", l," -- Group:", m))
     #1- Generate z
-    genz  <- rvMF(N[m], rep(0, P))
+    genz  <- rvMF(N[m], kappa*rvMF(1, rep(0, P)))
     #2- Genetate nu  from a Normal distribution with parameters mu and sigma
     gennu <- rnorm(N[m], mu, sigma)
     #3- Generate a graph G
-    #Before, lets's compute d
+    #Before, let's compute d
     gend  <- N[m] * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * exp(logCpvMF(P, 0) - logCpvMF(P, genzeta))
     
     #Link probabilities
@@ -101,9 +102,7 @@ fsim <- function(l, parlambda){
     distr    <- accel_nuclear_gradient(inputs = t(trait), outputs = t(ARD), lambda = parlambda)
     
     #True network row normalized
-    rs               <- rowSums(G)
-    rs[rs == 0]      <- 1
-    W[[m]]           <- G / rs
+    W[[m]]   <- norm.network(G)
     
     #Covariates
     X[[m]]   <- cbind(rnorm(N[m],0,5),rpois(N[m],6))
@@ -259,8 +258,8 @@ fsim <- function(l, parlambda){
 }
 
 # monte carlo function for each parlambda
-f.mc <- function(iteration, parlambda) {
-  out.mc        <- mclapply(1:iteration, function(w) fsim(w, parlambda), mc.cores = 8L)
+f.mc   <- function(iteration, parlambda, kappa, mc.cores) {
+  out.mc        <- mclapply(1:iteration, function(w) fsim(w, parlambda, kappa), mc.cores = mc.cores)
   # simu as m matrix
   simu          <- t(do.call(cbind, out.mc))
   
@@ -278,7 +277,7 @@ f.mc <- function(iteration, parlambda) {
   c9  <- paste0("Fix eff - GY obs ", tmp)
   tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), paste0("GXc", 1:2), "alpha", "Weak", "Wu", "Sargan")
   c8  <- paste0("Wit Con - GY no obs ", tmp)
-  c10 <- paste0("Fix eff - GY obs ", tmp)
+  c10 <- paste0("Fix eff - GY no obs ", tmp)
   
   colnames(simu) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
   
@@ -290,11 +289,29 @@ f.mc <- function(iteration, parlambda) {
 set.seed(123)
 
 # Number of simulation
-iteration <- 1000
-out1      <- f.mc(iteration, 200)
-out2      <- f.mc(iteration, 600)
-out3      <- f.mc(iteration, 1374)
+iteration    <- 1000
+parlambda    <- c(200, 600, 1374)
+n.parlambda  <- length(parlambda)
+# kappa = 0
+out0         <- list()
+for (x in 1:n.parlambda) {
+  out0[[x]]  <- f.mc(iteration, parlambda = parlambda[x], kappa = 0, mc.cores = 31L)
+}
 
-print(out1)
-print(out2)
-print(out3)
+# kappa = 10
+out10         <- list()
+for (x in 1:n.parlambda) {
+  out10[[x]]  <- f.mc(iteration, parlambda = parlambda[x], kappa = 10, mc.cores = 31L)
+}
+
+# kappa = 20
+out20         <- list()
+for (x in 1:n.parlambda) {
+  out20[[x]]  <- f.mc(iteration, parlambda = parlambda[x], kappa = 20, mc.cores = 31L)
+}
+
+# present result for parlambda = 1374
+x  <- 3
+out0[[x]]
+out10[[x]]
+out20[[x]]

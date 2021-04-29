@@ -1,6 +1,6 @@
 ##################################################################################
 # This code replicates the Monte Carlo simulations when GX is observed and       #
-# the network is estimated using latent  space model with ARD (section 5).       #
+# the network is estimated using latent  space model with ARD (section 3.1).     #
 #####################################Headline#####################################
 rm(list = ls())
 library(AER)                          # Install AER if not already done.
@@ -20,7 +20,8 @@ our.sum <- function(x) {
 
 # function to perform the simulation
 # l stands for the l-th simulation
-f.mc  <- function(l){
+# kappa is the concentration parameter
+f.mc  <- function(l, kappa){
   M          <- 20           # Number of groups
   N          <- rep(250,M)   # Group size
   # Parameters
@@ -51,18 +52,18 @@ f.mc  <- function(l){
   for (m in 1:M) {
     print(paste("Iteration :", l," -- Group:", m))
     #1- Generate z
-    genz  <- rvMF(N[m], rep(0, P))
+    genz  <- rvMF(N[m], kappa*rvMF(1, rep(0, P)))
     #2- Genetate nu  from a Normal distribution with parameters mu and sigma
     gennu <- rnorm(N[m], mu, sigma)
     #3- Generate a graph G
-    #Before, lets's compute d
+    #Before, let's compute d
     gend  <- N[m] * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * exp(logCpvMF(P, 0) - logCpvMF(P, genzeta))
     
     #Link probabilities
     Probabilities     <- sim.dnetwork(nu = gennu, d = gend, zeta = genzeta, z = genz) 
     
     #The complete graph
-    G                 <- sim.network(dnetwork = Probabilities)
+    G                 <- sim.network(Probabilities)
     
     #4a Generate vk
     genv              <- rvMF(K, rep(0, P))
@@ -89,18 +90,18 @@ f.mc  <- function(l){
       trait[,k]       <- rbinom(N[m], 1, NK[k] * densityatz[,k] / sum(densityatz[,k]))
     } 
     
-    #5 contruct ADR
+    #5 construct ADR
     ARD               <- G %*% trait
     
     #generate b
     genb              <- numeric(K)
     for (k in 1:K) {
-      genb[k]         <- sum(G[, trait[, k] == 1]) / sum(G)
+      genb[k]         <- sum(G[, trait[, k] == 1]) / sum(G) + 1e-8
     }
     ###### Fit Breza et al. (2017) parameter #####
     # We should fix one bk
     vfixcolumn       <- 1:5
-    bfixcolumn       <- 3
+    bfixcolumn       <- c(1, 3, 5, 7, 11)
     
     # Initialization
     # We initialize using the true parameter in order to run just few MCMC steps
@@ -113,16 +114,14 @@ f.mc  <- function(l){
     
     # hyperparameter
     hparms           <- c(0, 1, 0, 1, 5, 0.5, 1, 1)
-
+    
     # fit the parameters
     # we consider the model with zeta = 1
-    Gparms           <- mcmcARD(ARD, trait, start, vfixcolumn, bfixcolumn, iteration = 1000L,
-                                sim.zeta = F,ctrl.mcmc = list(print = FALSE))
+    Gparms           <- mcmcARD(ARD, trait, start, vfixcolumn, bfixcolumn, iteration = 5000L,
+                                ctrl.mcmc = list(print = FALSE))
     
     #True network row normalized
-    rs               <- rowSums(G)
-    rs[rs == 0]      <- 1
-    W[[m]]           <- G / rs
+    W[[m]]   <- norm.network(G)
     
     #Covariates
     X[[m]]   <- cbind(rnorm(N[m],0,5),rpois(N[m],6))
@@ -147,13 +146,13 @@ f.mc  <- function(l){
     
     
     #Estimate the network distribution
-    distr  <- fit.dnetwork(Gparms, trait, print = FALSE)
+    distr  <- fit.dnetwork(Gparms, print = FALSE)$dnetwork
     
     #Compute instruments
     instr1 <- sim.IV(dnetwork = distr, X[[m]], Y1[[m]], replication = 1, power = 2)
     instr2 <- sim.IV(dnetwork = distr, X[[m]], Y2[[m]], replication = 1, power = 2)
     instr3 <- sim.IV(dnetwork = distr, X[[m]], Y3[[m]], replication = 1, power = 2)
-
+    
     GY1c[[m]]   <- instr1[[1]]$G1y
     GX1c0[[m]]  <- instr1[[1]]$G1X[, , 1] 
     G2X1c0[[m]] <- instr1[[1]]$G1X[, , 2]  
@@ -280,14 +279,21 @@ f.mc  <- function(l){
     lest1.2.2.2, lest2.1, lest2.2, lest3.1, lest3.2)
 }
 
-
 set.seed(123)
 # Number of simulation
 iteration     <- 1000
-out.mc        <- mclapply(1:iteration, f.mc, mc.cores = 8L)
+kappa         <- c(0, 10, 20)
+n.kappa       <- length(kappa)
+
+#######
+
+out.mc        <- list()
+for (x in 1:n.kappa) {
+  out.mc[[x]] <- mclapply(1:iteration, function(nc) f.mc(nc, kappa = kappa[x]), mc.cores = 4L)
+}
 
 # simu as m matrix
-simu          <- t(do.call(cbind, out.mc))
+simu          <- lapply(1:n.kappa, function(x)  t(do.call(cbind, out.mc[[x]])))
 
 # the colnames
 tmp <- c("Intercept",paste0("X",1:2),"alpha","Weak","Wu","Sargan")
@@ -305,8 +311,11 @@ tmp <- c("Intercept", paste0("X", 1:2), paste0("GX", 1:2), paste0("GXc", 1:2), "
 c8  <- paste0("Wit Con - GY no obs ", tmp)
 c10 <- paste0("Fix eff - GY obs ", tmp)
 
-colnames(simu) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-
+colnames(simu[[1]]) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+colnames(simu[[2]]) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+colnames(simu[[3]]) <- c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 # summary for all simulation using ARD
-results        <- t(apply(simu, 2, our.sum))
-print(results)
+results        <-  lapply(1:n.kappa, function(x) t(apply(simu[[x]], 2, our.sum)))
+print(results[[1]])
+print(results[[2]])
+print(results[[3]])

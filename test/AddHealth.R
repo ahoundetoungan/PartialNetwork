@@ -319,12 +319,11 @@ miss.est   <- mcmcSAR(formula    = Model,
                       mlinks     = list(model = "logit", covariates = Xlogit),
                       data       = dataset,
                       iteration  = 2e4)
-
-
+# summarize results
 summary(miss.est)
-plot(miss.est, mar = c(2, 2, 1, 1))
+# # plot (we provide more beautiful graphics below)
+# plot(miss.est, mar = c(2, 2, 1, 1))
 
-# save(miss.est)
 #### Top coding only
 top.est    <- mcmcSAR(formula    = Model,
                       contextual = TRUE,
@@ -335,13 +334,13 @@ top.est    <- mcmcSAR(formula    = Model,
                       mlinks     = list(model = "logit", covariates = Xlogit),
                       data       = dataset,
                       iteration  = 2e4)
-
-# save(top.est)
+# summarize results
 summary(top.est)
-plot(top.est, mar = c(2, 2, 1, 1))
-plot(top.est, mar = c(2, 2, 1, 1), which.parms = "rho")
-plot(top.est, plot.type = "dens", mar = c(2, 2, 1, 1))
-plot(top.est, plot.type = "dens", mar = c(2, 2, 1, 1), which.parms = "rho")
+# # plot (we provide more beautiful graphics below)
+# plot(top.est, mar = c(2, 2, 1, 1))
+# plot(top.est, mar = c(2, 2, 1, 1), which.parms = "rho")
+# plot(top.est, plot.type = "dens", mar = c(2, 2, 1, 1))
+# plot(top.est, plot.type = "dens", mar = c(2, 2, 1, 1), which.parms = "rho")
 
 #### Top coding and missing
 tmiss.est  <- mcmcSAR(formula    = Model,
@@ -353,14 +352,17 @@ tmiss.est  <- mcmcSAR(formula    = Model,
                       mlinks     = list(model = "logit", covariates = Xlogit),
                       data       = dataset,
                       iteration  = 2e4)
-
-
+# summarize results
 summary(tmiss.est)
-plot(tmiss.est, mar = c(2, 2, 1, 1))
+# # plot (we provide more beautiful graphics below)
+# plot(tmiss.est, mar = c(2, 2, 1, 1))
+# plot(tmiss.est, mar = c(2, 2, 1, 1), which.parms = "rho")
+# plot(tmiss.est, plot.type = "dens", mar = c(2, 2, 1, 1))
+# plot(tmiss.est, plot.type = "dens", mar = c(2, 2, 1, 1), which.parms = "rho")
 
 ####### Plot simulations
 obs.ntw           <- obs.est$posterior
-recons.ntw        <- miss.est$posterior$theta
+recons.ntw        <- tmiss.est$posterior$theta
 Xnames            <- c("Female", "Hispanic", paste("Race =", c("Black", "Asian", "Other")),
                        paste0("Mother Edu ", c("< High", "> High", "= Missing")), 
                        paste("Mother Job =", c("Professional", "Other", "Missing")), "Age")

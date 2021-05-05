@@ -6,6 +6,7 @@ using namespace Rcpp;
 using namespace arma;
 using namespace std;
 
+
 /*
  *  Estimate graph parameters Mccormick and Zheng (2015)
  *  

@@ -10,6 +10,7 @@ using namespace std;
 //using namespace Numer;
 
 
+
 // update theta
 void updtheta (arma::vec& theta,
                List& Vtheta,

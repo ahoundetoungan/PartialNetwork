@@ -13,6 +13,7 @@ using namespace std;
 //using namespace Eigen;
 //using namespace Numer;
 
+
 // USE A WAY TO QUICLY COMPUTE THE DET AND THE INVERSE 
 // A Structural Model for the Coevolution of Networks and Behavior
 

@@ -13,6 +13,7 @@ using namespace std;
 //using namespace Numer;
 //In this file there are the functions which update the network and the prior distribution of the network
 
+
 // compute the block of the line
 arma::vec cBlock(
     const int& nupmax, 

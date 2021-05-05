@@ -10,6 +10,7 @@ using namespace std;
 //using namespace Eigen;
 //using namespace Numer;
 
+
 //typedef Eigen::Map<Eigen::MatrixXd> MapMat;
 //typedef Eigen::Map<Eigen::VectorXd> MapVec;
 

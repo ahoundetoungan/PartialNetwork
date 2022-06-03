@@ -5,6 +5,7 @@
 #' @param y (optional) the endogenous variable as a vector.
 #' @param replication (optional, default = 1) is the number of repetitions (see details).
 #' @param power (optional, default = 1) is the number of powers of the interaction matrix used to generate the instruments (see details).
+#' @param exp.network (optional, default = FALSE) indicates if simulated network should be exported.
 #' 
 #' @return list of `replication` components. Each component is a list containing `G1y` (if the argument `y` was provided), `G1X` and `G2X` where `G1` and `G2` are independent draws of network from the distribution (see details).
 #' \item{G1y}{is an approximation of \eqn{Gy}.}
@@ -49,7 +50,7 @@
 #' # normalise 
 #' G0norm        <- norm.network(G0)
 #' # simulate dependent variable use an external package
-#' y             <- CDatanet::simSARnet(~ X, contextual = FALSE, Glist = G0norm, 
+#' y             <- CDatanet::simsar(~ X, contextual = FALSE, Glist = G0norm, 
 #'                                      theta = c(alpha, beta, se))
 #' y             <- y$y
 #' # generate instruments 
@@ -73,14 +74,10 @@
 #' }
 #' @seealso 
 #' \code{\link{mcmcSAR}}
-#' @references 
-#' Boucher, V., & Houndetoungan, A., 2020, Estimating peer effects using partial network data, \emph{Centre de recherche sur les risques les enjeux économiques et les politiques publiques}, \url{http://www.crrep.ca/estimating-peer-effects-using-partial-network-data}.
-#' @references 
-#' Bramoullé, Y., Djebbari, H., & Fortin, B., 2009, Identification of peer effects through social networks, \emph{Journal of econometrics}, 150(1), 41-55, \doi{10.1016/j.jeconom.2008.12.021}.
 #' @importFrom abind abind
 #' @export
 
-sim.IV  <- function(dnetwork, X, y = NULL, replication = 1L, power = 1L) {
+sim.IV  <- function(dnetwork, X, y = NULL, replication = 1L, power = 1L, exp.network = FALSE) {
   
   M     <- NULL
   if (is.list(dnetwork)) {
@@ -103,9 +100,9 @@ sim.IV  <- function(dnetwork, X, y = NULL, replication = 1L, power = 1L) {
   r1    <- Ncum[1] + 1
   r2    <- Ncum[2]
   if (is.null(y)) {
-    out <- instruments2(dnetwork[[1]], X[r1:r2,], S = replication, pow = power)
+    out <- instruments2(dnetwork[[1]], X[r1:r2,], S = replication, pow = power, expG = exp.network)
   } else {
-    out <- instruments1(dnetwork[[1]], X[r1:r2,], y[r1:r2], S = replication, pow = power)
+    out <- instruments1(dnetwork[[1]], X[r1:r2,], y[r1:r2], S = replication, pow = power, expG = exp.network)
   }
   
   if (M > 1)
@@ -114,15 +111,19 @@ sim.IV  <- function(dnetwork, X, y = NULL, replication = 1L, power = 1L) {
     r1    <- Ncum[m] + 1
     r2    <- Ncum[m + 1]
     if (is.null(y)) {
-      outm <- instruments2(dnetwork[[m]], X[r1:r2,], S = replication, pow = power)
+      outm <- instruments2(dnetwork[[m]], X[r1:r2,], S = replication, pow = power, expG = exp.network)
     } else {
-      outm <- instruments1(dnetwork[[m]], X[r1:r2,], y[r1:r2], S = replication, pow = power)
+      outm <- instruments1(dnetwork[[m]], X[r1:r2,], y[r1:r2], S = replication, pow = power, expG = exp.network)
     }
     
     for (s in 1:replication) {
-      out[[s]]$G1y <- c(out[[s]]$G1y, outm[[s]]$G1y)
-      out[[s]]$G1X <- abind(out[[s]]$G1X, outm[[s]]$G1X, along = 1)
-      out[[s]]$G2X <- abind(out[[s]]$G2X, outm[[s]]$G2X, along = 1)
+      out[[s]]$G1y  <- c(out[[s]]$G1y, outm[[s]]$G1y)
+      out[[s]]$G1X  <- abind(out[[s]]$G1X, outm[[s]]$G1X, along = 1)
+      out[[s]]$G2X  <- abind(out[[s]]$G2X, outm[[s]]$G2X, along = 1)
+      if(exp.network) {
+        out[[s]]$G1 <- c(out[[s]]$G1, outm[[s]]$G1)
+        out[[s]]$G2 <- c(out[[s]]$G2, outm[[s]]$G2)
+      }
     }
 
   } 

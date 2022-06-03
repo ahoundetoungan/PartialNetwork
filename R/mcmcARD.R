@@ -163,11 +163,6 @@
 #'     })
 #'     par(mfrow = c(1, 1))
 #'   }}
-#' @references 
-#' Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
-#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
-#' @references McCormick, T. H., & Zheng, T., 2015, Latent surface models for networks using Aggregated Relational Data, 
-#' \emph{Journal of the American Statistical Association}, 110(512), 1684-1695, \doi{10.1080/01621459.2014.991395}.
 #' @export
 mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, sim.d = TRUE, sim.zeta = TRUE, hyperparms = NULL, ctrl.mcmc = list()) {
   t1           <- Sys.time()

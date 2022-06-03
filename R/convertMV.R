@@ -9,7 +9,7 @@
 #' @param W matrix or list of matrixes to convert. 
 #' @param N vector of sub-network sizes  such that `length(u) == sum(N*(N - 1))`.
 #' @param normalise boolean takes `TRUE` if the returned matrices should be row-normalized and `FALSE` otherwise.
-#' @param ceiled boolean takes `TRUE` if the given matrices should be ceiled before conversion and `FALSE` otherwise..
+#' @param ceiled boolean takes `TRUE` if the given matrices should be ceiled before conversion and `FALSE` otherwise.
 #' @examples 
 #' # Generate a list of adjacency matrices
 #' ## sub-network size
@@ -27,7 +27,7 @@
 #' v <- mat.to.vec(G, ceiled = TRUE)
 #' all.equal(u, v)
 #' @seealso 
-#' \code{\link{sim.network}}, \code{\link{sim.dnetwork}}
+#' \code{\link{sim.network}}, \code{\link{sim.dnetwork}}, \code{\link{peer.avg}}.
 #' @export
 vec.to.mat <- function(u, N, normalise = FALSE) {
   M        <- length(N)

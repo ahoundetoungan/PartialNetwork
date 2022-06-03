@@ -14,7 +14,7 @@
 #' @param G0.obs list of matrices (or simply matrix if the list contains only one matrix) indicating the part of the network data which is observed. If the (i,j)-th element
 #' of the m-th matrix is one, then the element at the same position in the network data will be considered as observed and will not be inferred in the MCMC. In contrast, 
 #' if the (i,j)-th element of the m-th matrix is zero, the element at the same position in the network data will be considered as a starting value of the missing link which will be inferred. 
-#' `G0.obs` can also take `none` when no part of the network data is observed (equivalent to the case where all the entries are zeros) and `all` when the network data is fully 
+#' `G0.obs` can also take `"none"` when no part of the network data is observed (equivalent to the case where all the entries are zeros) and `"all"` when the network data is fully 
 #' observed (equivalent to the case where all the entries are ones).
 #' @param G0 list of sub-network matrices (or simply network matrix if there is only one sub-network). `G0` is made up of starting values for the entries with missing network data and observed values for the entries with
 #' observed network data. `G0` is optional when `G0.obs = "none"`. 
@@ -23,7 +23,7 @@
 #' @param ctrl.mcmc list of MCMC controls (see Section MCMC control in Details).
 #' @param iteration number of MCMC steps to be performed.
 #' @param data optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
-#' in the model. If missing, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcARD` is called.
+#' in the model. If missing, the variables are taken from \code{environment(formula)}, typically the environment from which `mcmcSAR` is called.
 #' @details 
 #' ## Outcome model
 #' The model is given by
@@ -108,11 +108,6 @@
 #' If `block.max` > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
 #' chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
 #' then the entries (i, 1), (i, 3), (i, 8), and so on. 
-#' @references 
-#' Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
-#' @references 
-#' Boucher, V., & Houndetoungan, A., 2020, Estimating peer effects using partial network data, \emph{Centre de recherche sur les risques les enjeux économiques et les politiques publiques}, \url{http://www.crrep.ca/estimating-peer-effects-using-partial-network-data}.
-#' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
 #' @return A list consisting of:
 #'     \item{n.group}{number of groups.}
 #'     \item{N}{vector of each group size.}
@@ -130,19 +125,20 @@
 #'     \item{ctrl.mcmc}{return value of `ctrl.mcmc`.}
 #' @examples 
 #' \donttest{
-#' #################### EXAMPLE I: WITHOUT NETWORK FORMATION MODEL ####################
+#' # We assume that the network is fully observed 
+#' # See our vignette for examples where the network is partially observed 
 #' # Number of groups
 #' M             <- 50
 #' # size of each group
 #' N             <- rep(30,M)
 #' # individual effects
-#' beta          <- c(2,1,1.5) 
+#' beta          <- c(2,1,1.5)
 #' # contextual effects
-#' gamma         <- c(5,-3) 
+#' gamma         <- c(5,-3)
 #' # endogenous effects
 #' alpha         <- 0.4
 #' # std-dev errors
-#' se            <- 1 
+#' se            <- 1
 #' # prior distribution
 #' prior         <- runif(sum(N*(N-1)))
 #' prior         <- vec.to.mat(prior, N, normalise = FALSE)
@@ -150,153 +146,19 @@
 #' X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 #' # true network
 #' G0            <- sim.network(prior)
-#' # normalise 
+#' # normalise
 #' G0norm        <- norm.network(G0)
 #' # simulate dependent variable use an external package
-#' y             <- CDatanet::simSARnet(~ X, contextual = TRUE, Glist = G0norm, 
-#'                                      theta = c(alpha, beta, gamma, se))
+#' y             <- CDatanet::simsar(~ X, contextual = TRUE, Glist = G0norm,
+#'                                   theta = c(alpha, beta, gamma, se))
 #' y             <- y$y
 #' # dataset
-#' dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
-#' ############### Example I-1: When the network is fully observed ###############
+#' dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 #' out.none1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
 #'                          G0 = G0, data = dataset, iteration = 1e4)
 #' summary(out.none1)
 #' plot(out.none1)
 #' plot(out.none1, plot.type = "dens")
-#' 
-#' ############### Example I-2: When a part of the network is observed ###############
-#' # 60% of the network data is observed
-#' G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
-#' # replace the non-observed part of the network by 0 (missing links)
-#' G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
-#' # Use network with missing data as the true network
-#' out.none2.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
-#'                         G0 = G0.start,   data = dataset, iteration = 1e4)
-#' summary(out.none2.1) # the peer effets seem overestimated
-#' plot(out.none2.1)
-#' plot(out.none2.1, plot.type = "dens")
-#' # Infer the missing links in the network data
-#' # In this example, the distribution of the network is set fixed
-#' out.none2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-#'                         G0 = G0.start,   data = dataset, mlinks = list(dnetwork = prior),
-#'                         iteration = 2e4)
-#' summary(out.none2.2)
-#' plot(out.none2.2)
-#' plot(out.none2.2, plot.type = "dens")
-#' 
-#' ############### Example I-3: When only the network distribution is available ###############
-#' # Simulate a fictitious network and use as true network
-#' G0.tmp       <- sim.network(prior)
-#' out.none3.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
-#'                         G0 = G0.tmp, data = dataset, iteration = 1e4)
-#' summary(out.none3.1)  # the peer effets seem overestimated
-#' plot(out.none3.1)
-#' plot(out.none3.1, plot.type = "dens")
-#' # Infer the network data
-#' out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
-#'                         data = dataset, mlinks = list(dnetwork = prior),
-#'                         iteration = 2e4)
-#' summary(out.none3.2)  
-#' plot(out.none3.2)
-#' plot(out.none3.2, plot.type = "dens")
-#' 
-#' 
-#' #################### EXAMPLE II: NETWORK FORMATION MODEL: LOGIT ####################
-#' # Number of groups
-#' M             <- 50
-#' # size of each group
-#' N             <- rep(30,M)
-#' # individual effects
-#' beta          <- c(2,1,1.5) 
-#' # contextual effects
-#' gamma         <- c(5,-3) 
-#' # endogenous effects
-#' alpha         <- 0.4
-#' # std-dev errors
-#' se            <- 2 
-#' # parameters of the network formation model
-#' rho           <- c(-2, -.5, .2)
-#' # covariates
-#' X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
-#' # compute distance between individuals 
-#' tmp           <- c(0, cumsum(N))
-#' X1l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],1])
-#' X2l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],2])
-#' dist.net      <- function(x, y) abs(x - y) # distance function
-#' X1.mat        <- lapply(1:M, function(m) {
-#'                  matrix(kronecker(X1l[[m]], X1l[[m]], FUN = dist.net), N[m])}
-#'                  )
-#' X2.mat        <- lapply(1:M, function(m) {
-#'                  matrix(kronecker(X2l[[m]], X2l[[m]], FUN = dist.net), N[m])}
-#'                  )
-#' # true network
-#' covar         <- as.matrix(cbind("Const" = 1, 
-#'                                  "dX1"   = mat.to.vec(X1.mat), 
-#'                                  "dX2"   = mat.to.vec(X2.mat)))
-#' ynet          <- covar %*% rho
-#' ynet          <- 1*((ynet + rlogis(length(ynet))) > 0)
-#' G0            <- vec.to.mat(ynet, N, normalise = FALSE)
-#' G0norm        <- norm.network(G0)
-#' # simulate dependent variable use an external package
-#' y             <- CDatanet::simSARnet(~ X, contextual = TRUE, Glist = G0norm, 
-#'                                      theta = c(alpha, beta, gamma, se))
-#' y             <- y$y
-#' # dataset
-#' dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
-#' ############### Example II-1: When the network is fully observed ###############
-#' out.prob1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
-#'                          G0 = G0norm, data = dataset, iteration = 1e4)
-#' summary(out.prob1)
-#' plot(out.prob1)
-#' plot(out.prob1, plot.type = "dens")
-#' 
-#' ############### Example II-2: When a part of the network is observed ###############
-#' # 60% of the network data is observed
-#' G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
-#' # replace the non-observed part of the network by 0
-#' G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
-#' # Use network with missing data as the true network
-#' out.prob2.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
-#'                         G0 = G0.start,   data = dataset, iteration = 1e4)
-#' summary(out.prob2.1) # the peer effets seem overestimated
-#' plot(out.prob2.1)
-#' plot(out.prob2.1, plot.type = "dens")
-#' # Infer the missing links in the network data
-#' mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
-#'                      mlinks.data = as.data.frame(covar))
-#' out.prob2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-#'                         G0 = G0.start,   data = dataset, mlinks = mlinks, 
-#'                         iteration = 2e4)
-#' summary(out.prob2.2)
-#' plot(out.prob2.2)
-#' plot(out.prob2.2, plot.type = "dens")
-#' plot(out.prob2.2, which.parms = "rho")
-#' 
-#' ############### Example II-3: When only the network distribution is available ###############
-#' # Simulate a fictitious network and use as true network
-#' G0.tmp       <- sim.network(vec.to.mat(plnorm(covar %*% rho), N))
-#' out.prob3.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
-#'                         G0 = G0.tmp, data = dataset, iteration = 1e4)
-#' summary(out.prob3.1)  # the peer effets seem overestimated
-#' plot(out.prob3.1)
-#' plot(out.prob3.1, plot.type = "dens")
-#' # Infer the network data
-#' # We provide information only about rho
-#' Gvec         <- mat.to.vec(G0, ceiled = TRUE)
-#' logestim     <- glm(Gvec ~ -1 + covar, family = binomial(link = "logit"))
-#' slogestim    <- summary(logestim)
-#' estimates    <- list("rho"     = logestim$coefficients, 
-#'                      "var.rho" = slogestim$cov.unscaled,
-#'                      "N"       = N)
-#' mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
-#'                      mlinks.data = as.data.frame(covar), estimates = estimates)
-#' out.prob3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
-#'                         data = dataset, mlinks = mlinks, iteration = 2e4)
-#' summary(out.prob3.2)  
-#' plot(out.prob3.2)
-#' plot(out.prob3.2, plot.type = "dens")
-#' plot(out.prob3.2, which.parms = "rho")
 #' }
 #' @importFrom Formula as.Formula
 #' @importFrom stats model.frame
@@ -307,7 +169,7 @@
 #' @importFrom stats binomial
 #' @importFrom stats cov
 #' @importFrom utils tail
-#' @seealso \code{\link{sim.IV}}
+#' @seealso \code{\link{smmSAR}}, \code{\link{sim.IV}}
 #' @export
 mcmcSAR <- function(formula,
                     contextual,
@@ -457,14 +319,15 @@ mcmcSAR <- function(formula,
   )
   
   # model NONE
+  cl.G0.obs   <- class(G0.obs)
   if(lmodel == "NONE") {
     if(tmodel == "NONE") {
-      if(class(G0.obs) != "list") {
+      if(!any(cl.G0.obs == "list")) {
         G0.obs <- lapply(N, function(x) matrix(0, x, x))
       }
     }
     if(tmodel == "ALL") {
-      if(class(G0.obs) != "list") {
+      if(!any(cl.G0.obs == "list")) {
         G0.obs <- lapply(N, function(x) matrix(1, x, x))
       }
       dnetwork <- G0.obs
@@ -503,7 +366,7 @@ mcmcSAR <- function(formula,
     dnetwork   <- frVtoM(pfit, N, M)
     
     if(tmodel == "NONE") { #else is necessary partial
-      if(class(G0.obs) != "list") {
+      if(!any(cl.G0.obs == "list")) {
         G0.obs    <- lapply(N, function(x) matrix(0, x, x))
       }
     }
@@ -621,7 +484,7 @@ mcmcSAR <- function(formula,
     }
     
     if(tmodel == "NONE") { #else is necessary partial
-      if(class(G0.obs) != "list") {
+      if(!any(cl.G0.obs == "list")) {
         G0.obs    <- lapply(N, function(x) matrix(0, x, x))
       }
     }
@@ -1187,17 +1050,19 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
     }
   }
   
-  if(class(G0.obs) != "list" & class(G0.obs) != "character"){
+  cl.G0.obs   <- class(G0.obs)
+  
+  if(!any(cl.G0.obs %in% c("list", "character"))){
     if (is.matrix(G0.obs)) {
       G0.obs  <- list(G0.obs)
     } else {
-      stop("G0.obs is neither a character, nor a matrix nor a list")
+      stop("G0.obs should be 'none', 'all', a matrix, or list of matrices")
     }
   }
   
-  if(class(G0.obs) == "character") {
+  if(any(cl.G0.obs == "character")){
     G0.obs       <- toupper(G0.obs)
-    if(length(G0.obs) != 1 & G0.obs != "ALL" & G0.obs != "NONE"){
+    if(length(G0.obs) != 1 & !all(G0.obs %in% c("ALL", "NONE"))){
       stop("G0.obs should be 'none', 'all', a matrix, or list of matrices")
     }
   }
@@ -1217,7 +1082,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
   sumG0.obs      <- NULL
   
   # Redefine G0.obs if needed
-  if (class(G0.obs) != "character") {
+  if (cl.G0.obs != "character") {
     tmp          <- do.call(rbind, lapply(G0.obs, function(x) c(sum(x > 0) - sum(diag(x) > 0), nrow(x)))) 
     sumG0.obs    <- tmp[,1]   
     N            <- tmp[,2]

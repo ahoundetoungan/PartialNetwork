@@ -206,11 +206,3 @@ The minimal jumping of every \eqn{\mathbf{z}_i}{zi} is 0, every \eqn{d_i}{di} is
     par(mfrow = c(1, 1))
   }}
 }
-\references{
-Atchadé, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
-
-Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}
-
-McCormick, T. H., & Zheng, T., 2015, Latent surface models for networks using Aggregated Relational Data,
-\emph{Journal of the American Statistical Association}, 110(512), 1684-1695, \doi{10.1080/01621459.2014.991395}.
-}

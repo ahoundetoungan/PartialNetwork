@@ -50,7 +50,7 @@ replace s10b = 0 if s10b > 4
 replace s10c = 0 if s10c > 4
 replace s10d = 0 if s10d > 4
 egen gpa = rowtotal(s10a-s10d)
-replace gpa = gpa/nsubject
+replace gpa = 5 - gpa/nsubject
 replace gpa =. if nsubject == 0
 drop nsubject
 // Live with mother

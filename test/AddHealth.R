@@ -9,12 +9,12 @@ set.seed(123)
 
 # the finale data set is save in the 'filname' path and can be loaded if saved before
 # otherwise, the code will be ran to prepare the data
-filname        <- "~/tmpah/SchoolData/DataPartialNetwork.rda"  
+filname        <- "DataPartialNetwork.rda"  
 if (file.exists(filname)) {
   load(file = filname)
 } else {
   # Data
-  mydata       <- read.dta13("~/tmpah/SchoolData/cleandta.dta")  # data from Stata
+  mydata       <- read.dta13("cleandta.dta")  # data from Stata
   mydata       <- mydata[order(mydata$sschlcde),]
   
   mislist      <- c(55555555, 77777777, 88888888, 99999999, 99959995)
@@ -363,33 +363,45 @@ summary(tmiss.est)
 ####### Plot simulations
 obs.ntw           <- obs.est$posterior
 recons.ntw        <- tmiss.est$posterior$theta
+form.ntw          <- tmiss.est$posterior$rho
 Xnames            <- c("Female", "Hispanic", paste("Race =", c("Black", "Asian", "Other")),
                        paste0("Mother Edu ", c("< High", "> High", "= Missing")), 
                        paste("Mother Job =", c("Professional", "Other", "Missing")), "Age")
 
-  
-### observed network
+XnamesRho         <- c("Intercept", "Same sex", "Both Hispanic", "Both White", "Both Black",
+                       "Both Asian", "Mums Educ < high", "Mums Educ > high",
+                       "Mums Job Professional", "Age absolute diff")
+
+# simulations
+library(scales)
+c1 = alpha("red", .8)
+c2 = alpha("blue", .6)
 par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
-plot(obs.ntw[,26], type = "l", main = "Peer Effect", col = "blue", xlab = "", ylab = "")
+plot(obs.ntw[,26], type = "l", main = "Peer Effects", col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,26], recons.ntw[,26]), max(obs.ntw[,26], recons.ntw[,26])))
+lines(recons.ntw[,26], type = "l", main = "Peer Effects", col = c2, xlab = "", ylab = "")
 
 par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
-plot(obs.ntw[,1], type = "l", main = "Intercept", col = "blue", xlab = "", ylab = "")
+plot(obs.ntw[,1], type = "l", main = "Intercept", col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,1], recons.ntw[,1]), max(obs.ntw[,1], recons.ntw[,1])))
+lines(recons.ntw[,1], type = "l", main = "Intercept", col = c2, xlab = "", ylab = "")
 
 par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
-plot(obs.ntw[,27], type = "l", main = expression(sigma^2), col = "blue", xlab = "", ylab = "")
+plot(obs.ntw[,27], type = "l", main = expression(sigma^2), col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,27], recons.ntw[,27]), max(obs.ntw[,27], recons.ntw[,27])))
+lines(recons.ntw[,27], type = "l", main = expression(sigma^2), col = c2, xlab = "", ylab = "")
 
 for (i in 1: 12) {
   par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
               1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
       new = TRUE)
-  plot(obs.ntw[,i + 1], type = "l", main = Xnames[i], col = "blue", xlab = "", ylab = "")
+  plot(obs.ntw[,i + 1], type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,i + 1], recons.ntw[,i + 1]), max(obs.ntw[,i + 1], recons.ntw[,i + 1])))
+  lines(recons.ntw[,i + 1], type = "l", main = Xnames[i], col = c2, xlab = "", ylab = "")
 }
 
 for (i in 1: 12) {
   par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
               1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
       new = TRUE)
-  plot(obs.ntw[,i + 13], type = "l", main = Xnames[i], col = "blue", xlab = "", ylab = "")
+  plot(obs.ntw[,i + 13], type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,i + 13], recons.ntw[,i + 13]), max(obs.ntw[,i + 13], recons.ntw[,i + 13])))
+  lines(recons.ntw[,i + 13], type = "l", main = Xnames[i], col = c2, xlab = "", ylab = "")
 }
 
 par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
@@ -398,22 +410,48 @@ plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
 plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
+par(fig = c(0.5, 1, 0.75, 1), new = TRUE)
+plot(x = 0, y = 0, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+legend(0, 1.2, legend=c("Observed Network", "Reconstructed Network"),
+       col=c(c1, c2), lty = c(1,1), cex=1, box.lty=0)
 
-### Reconstructed network
+# densities
+c1 = alpha("red", 1)
+c2 = alpha("blue", 1)
+
 par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
-plot(recons.ntw[,26], type = "l", main = "Peer Effect", col = "blue", xlab = "", ylab = "")
+tmpo <- density(obs.ntw[2001:20000,26])
+tmpr <- density(recons.ntw[2001:20000,26])
+plot(tmpo, type = "l", main = "Peer Effects",
+     col = c1, xlab = "", ylab = "", xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))))
+lines(tmpr, col = c2, lty=2)
 
 par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
-plot(recons.ntw[,1], type = "l", main = "Intercept", col = "blue", xlab = "", ylab = "")
+tmpo <- density(obs.ntw[2001:20000,1])
+tmpr <- density(recons.ntw[2001:20000,1])
+plot(tmpo, type = "l", main = "Intercept", col = c1, xlab = "", ylab = "", 
+     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+lines(tmpr, col = c2, lty=2)
 
 par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
-plot(recons.ntw[,27], type = "l", main = expression(sigma^2), col = "blue", xlab = "", ylab = "")
+tmpo <- density(obs.ntw[2001:20000,27])
+tmpr <- density(recons.ntw[2001:20000,27])
+plot(tmpo, type = "l", main = expression(sigma^2), col = c1, xlab = "", ylab = "",
+     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+lines(tmpr, col = c2, lty=2)
 
 for (i in 1: 12) {
   par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
               1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
       new = TRUE)
-  plot(recons.ntw[,i + 1], type = "l", main = Xnames[i], col = "blue", xlab = "", ylab = "")
+  tmpo <- density(obs.ntw[2001:20000, i + 1])
+  tmpr <- density(recons.ntw[2001:20000, i + 1])
+  plot(tmpo, type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "",
+       xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+       ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+  lines(tmpr, col = c2, lty=2)
 }
 
 
@@ -421,69 +459,18 @@ for (i in 1: 12) {
   par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
               1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
       new = TRUE)
-  plot(recons.ntw[,i + 13], type = "l", main = Xnames[i], col = "blue", xlab = "", ylab = "")
-}
-
-par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
-plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-
-par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
-plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-
-
-# plot densities
-par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
-tmpo <- density(obs.ntw[2001:10000,26])
-tmpr <- density(recons.ntw[2001:10000,26])
-plot(tmpo, type = "l", main = "Peer Effect",
-     col = "blue", xlab = "", ylab = "", xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))))
-lines(tmpr, col = "red")
-
-par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
-tmpo <- density(obs.ntw[2001:10000,1])
-tmpr <- density(recons.ntw[2001:10000,1])
-plot(tmpo, type = "l", main = "Intercept", col = "blue", xlab = "", ylab = "", 
-     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-lines(tmpr, col = "red")
-
-par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
-tmpo <- density(obs.ntw[2001:10000,27])
-tmpr <- density(recons.ntw[2001:10000,27])
-plot(tmpo, type = "l", main = expression(sigma^2), col = "blue", xlab = "", ylab = "",
-     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-lines(tmpr, col = "red")
-
-for (i in 1: 12) {
-  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
-              1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
-      new = TRUE)
-  tmpo <- density(obs.ntw[2001:10000, i + 1])
-  tmpr <- density(recons.ntw[2001:10000, i + 1])
-  plot(tmpo, type = "l", main = Xnames[i], col = "blue", xlab = "", ylab = "",
+  tmpo <- density(obs.ntw[2001:20000, i + 13])
+  tmpr <- density(recons.ntw[2001:20000, i + 13])
+  plot(tmpo, type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "",
        xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
        ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-  lines(tmpr, col = "red")
-}
-
-
-for (i in 1: 12) {
-  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
-              1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
-      new = TRUE)
-  tmpo <- density(obs.ntw[2001:10000, i + 13])
-  tmpr <- density(recons.ntw[2001:10000, i + 13])
-  plot(tmpo, type = "l", main = Xnames[i], col = "blue", xlab = "", ylab = "",
-       xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-       ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-  lines(tmpr, col = "red")
+  lines(tmpr, col = c2, lty=2)
 }
 
 par(fig = c(0.5, 1, 0.75, 1), new = TRUE)
 plot(x = 0, y = 0, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 legend(0, 1.2, legend=c("Observed Network", "Reconstructed Network"),
-       col=c("blue", "red"), lty=1:2, cex=1, box.lty=0)
+       col=c(c1, c2), lty=1:2, cex=1, box.lty=0)
 
 par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
 plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
@@ -491,3 +478,10 @@ plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
 plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
+
+# Network formation model
+c1 = "blue"
+par(mfrow = c(2, 5), mar = c(2, 2, 2, 2.1))
+for (i in 1:10) {
+  plot(form.ntw[,i], type = "l", main = XnamesRho[i], col = c1, xlab = "", ylab = "")
+}

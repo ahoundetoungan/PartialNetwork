@@ -77,13 +77,13 @@ arma::mat rvMFcpp(const int& size,const arma::vec& theta){
     // Compute W
     arma::vec W(size);        //Void W
     rw(size, lambda, d, W);   //Fill W using rw
-    arma::mat Wplus=repmat(W,1,d);  //Reshape to [W W W ... W] of dimension (n,d)
+    //arma::mat Wplus=repmat(W,1,d);  //Reshape to [W W W ... W] of dimension (n,d) * remplaced using each_col
     //mean direction parameter
     arma::vec mu=theta/lambda;           
     // Necessary variables declaration
     NumericMatrix Vtemp(size,d,rnorm(size*d).begin());
-    arma::mat V=normalise(as<arma::mat>(Vtemp),2,1);
-    arma::mat X1=sqrt(1-Wplus % Wplus) % V;
+    arma::mat V  = normalise(as<arma::mat>(Vtemp),2,1);
+    arma::mat X1 = V.each_col()%sqrt(1 - pow(W, 2));
     X=join_rows(X1,W);
     //Rotation
     // To get samples from a vMF distribution with arbitrary mean direction

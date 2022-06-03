@@ -21,7 +21,7 @@ norm.network(W)
 
 \item{W}{matrix or list of matrixes to convert.}
 
-\item{ceiled}{boolean takes \code{TRUE} if the given matrices should be ceiled before conversion and \code{FALSE} otherwise..}
+\item{ceiled}{boolean takes \code{TRUE} if the given matrices should be ceiled before conversion and \code{FALSE} otherwise.}
 }
 \description{
 \code{vec.to.mat} creates a list of square matrices from a given vector.
@@ -49,5 +49,5 @@ v <- mat.to.vec(G, ceiled = TRUE)
 all.equal(u, v)
 }
 \seealso{
-\code{\link{sim.network}}, \code{\link{sim.dnetwork}}
+\code{\link{sim.network}}, \code{\link{sim.dnetwork}}, \code{\link{peer.avg}}.
 }

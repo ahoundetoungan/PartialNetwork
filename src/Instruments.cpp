@@ -18,42 +18,50 @@ List instruments1(const arma::mat& dnetwork,
                   arma::mat& X,
                   arma::vec& y,
                   const int& S,
-                  const int& pow){
+                  const int& pow,
+                  const bool& expG = false){
   const int N        = X.n_rows;
   const int Kx       = X.n_cols;
   List output(S);
   
   
-  arma::mat Gt1, Gt2;
-  arma::vec G1Y;
-  NumericVector G1y;
-  arma::cube G1X(N,Kx,pow);
-  arma::cube G2X(N,Kx,pow);
-  List tmp         =  List::create(Named("G1y"), Named("G1X"), Named("G2X"));
+  
   for(int s(0); s<S; ++s){
+    List tmp         =  List::create(Named("G1y"), Named("G1X"), Named("G2X"), Named("G1"), Named("G2"));
     // first draw
     mat matunif1(N,N,fill::randu);
-    Gt1            = arma::normalise(conv_to<mat>::from((matunif1 < dnetwork)),1,1);
+    arma::mat Gt1  = arma::normalise(conv_to<mat>::from((matunif1 < dnetwork)),1,1);
     
-    G1Y            = Gt1*y;   
-    G1y            = wrap(G1Y); G1y.attr("dim") = R_NilValue;
+    arma::vec G1Y  = Gt1*y; NumericVector G1y = wrap(G1Y); G1y.attr("dim") = R_NilValue;
     tmp(0)         = G1y;
+  
+    arma::cube G1X(N,Kx,pow);
     G1X.slice(0)   =  Gt1*X;
     for(int p(1); p<pow; ++p){
       G1X.slice(p) =  Gt1*G1X.slice(p-1);
     }
     tmp(1)         = G1X;
     
+    if (expG) {
+      tmp(3)       = List::create(Gt1);
+    }
+    
     // second draw
     mat matunif2(N,N,fill::randu);
-    Gt2 = arma::normalise(conv_to<mat>::from((matunif2 < dnetwork)),1,1);
+    arma::mat Gt2  = arma::normalise(conv_to<mat>::from((matunif2 < dnetwork)),1,1);
     
+    arma::cube G2X(N,Kx,pow);
     G2X.slice(0)   =  Gt2*X;
     for(int p(1); p<pow; ++p){
       G2X.slice(p) =  Gt2*G2X.slice(p-1);
     }
     
     tmp(2)         = G2X;
+    
+    if (expG) {
+      tmp(4)       = List::create(Gt2);
+    }
+    
     output(s)      = tmp;
   }
   
@@ -66,37 +74,44 @@ List instruments1(const arma::mat& dnetwork,
 List instruments2(const arma::mat& dnetwork,
                   arma::mat& X,
                   const int& S,
-                  const int& pow){
+                  const int& pow,
+                  const bool& expG = false){
   const int N        = X.n_rows;
   const int Kx       = X.n_cols;
   List output(S);
   
   
-  arma::mat Gt1, Gt2;
-  arma::cube G1X(N,Kx,pow);
-  arma::cube G2X(N,Kx,pow);
-  List tmp         =  List::create(Named("G1X"), Named("G2X"));
   for(int s(0); s<S; ++s){
+    List tmp         =  List::create(Named("G1X"), Named("G2X"), Named("G1"), Named("G2"));
     // first draw
     mat matunif1(N,N,fill::randu);
-    Gt1            = arma::normalise(conv_to<mat>::from((matunif1 < dnetwork)),1,1);
+    arma::mat Gt1  = arma::normalise(conv_to<mat>::from((matunif1 < dnetwork)),1,1);
     
+    arma::cube G1X(N,Kx,pow);
     G1X.slice(0)   =  Gt1*X;
     for(int p(1); p<pow; ++p){
       G1X.slice(p) =  Gt1*G1X.slice(p-1);
     }
     tmp(0)         = G1X;
     
+    if (expG) {
+      tmp(2)       = List::create(Gt1);
+    }
     // second draw
     mat matunif2(N,N,fill::randu);
-    Gt2 = arma::normalise(conv_to<mat>::from((matunif2 < dnetwork)),1,1);
+    arma::mat Gt2  = arma::normalise(conv_to<mat>::from((matunif2 < dnetwork)),1,1);
     
+    arma::cube G2X(N,Kx,pow);
     G2X.slice(0)   =  Gt2*X;
     for(int p(1); p<pow; ++p){
       G2X.slice(p) =  Gt2*G2X.slice(p-1);
     }
     
     tmp(1)         = G2X;
+    
+    if (expG) {
+      tmp(3)       = List::create(Gt2);
+    }
     output(s)      = tmp;
   }
   

@@ -520,7 +520,7 @@ List flspacerho2(const double& T, const double& P, const arma::cube& z, const ar
     nut             = log(dt) + 0.5*logCpzetat + 0.5*log(N1*1.0/N) - 0.5*log(arma::accu(dt)) ;
     
     //save
-    arma::mat znut  = arma::join_rows(zt, nut);
+    arma::mat znut  = arma::join_rows(zt, nut.t());
     znut.reshape(1, N1*(P + 1));
     znu.submat(t, 1, t, N1*(P + 1)) = znut;
   }

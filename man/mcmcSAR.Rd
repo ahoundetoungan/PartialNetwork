@@ -119,6 +119,7 @@ where \code{N} is a vector of the number of individual in each sub-network. Inde
 as so, in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of dyadic variable as in matrix form to a format that suits \code{mlinks.formula}.
 \item \code{mlinks.data} optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
 If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which \code{mcmcARD} is called.
+\item \code{weights} is a vector of weights of observed entries. This is important to address the selection problem of observed entries. Detaulf is a vector of ones.
 \item \code{estimates} (optional when a part of the network is observed) is a list containing \code{rho}, a vector of the estimates of the Probit or Logit
 parameters, and \code{var.rho} the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
 In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \code{N}, a vector of the number of individuals in each sub-network.

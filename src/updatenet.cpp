@@ -279,7 +279,7 @@ void updGnormblock (List& Gnorm,
                     const int& nupmax) {
   for(int m(0); m<M; ++m){
     int Nm = N(m);
-    Eigen::MatrixXd eyeM = Eigen::MatrixXd::Identity(Nm,Nm);
+    Eigen::MatrixXd eyeM = Eigen::MatrixXd::Identity(Nm, Nm);
     Eigen::VectorXd ym = y[m];
     Eigen::VectorXd Xmb = Xb[m];  
     Eigen::VectorXd Xmgamma = Xgamma[m];
@@ -482,6 +482,7 @@ void updrhopl(List& Gnorm,
               arma::vec& rho,
               Eigen::VectorXd& lFdZrhoE1,
               Eigen::VectorXd& lFdZrhoE0,
+              const Rcpp::NumericVector weight,
               const arma::mat& dZ,
               const arma::vec& murho,
               const arma::mat& iVrho,
@@ -504,7 +505,8 @@ void updrhopl(List& Gnorm,
     lFdZrhostR1    = Rcpp::plogis(dZrhostR, 0, 1, true, true);
     lFdZrhostR0    = Rcpp::plogis(dZrhostR, 0, 1, false, true);
   }
-  
+  lFdZrhostR1                    = lFdZrhostR1*weight;
+  lFdZrhostR0                    = lFdZrhostR0*weight;
   Eigen::VectorXd lFdZrhostE1    = as<Eigen::VectorXd>(lFdZrhostR1);
   Eigen::VectorXd lFdZrhostE0    = as<Eigen::VectorXd>(lFdZrhostR0);
   

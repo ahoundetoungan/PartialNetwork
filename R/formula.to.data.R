@@ -1,4 +1,5 @@
 #' @importFrom Formula as.Formula
+#' @importFrom formula.tools env
 #' @importFrom stats model.frame
 #' @importFrom stats terms
 #' @importFrom stats update
@@ -7,11 +8,10 @@
 #' @importFrom stats delete.response
 formula.to.data <- function(formula, contextual, data, type = "outcome") {
   if (missing(data)) {
-    data           <- environment(formula)
-  } else {
-    if(is.null(data)) {
-      data         <- environment(formula)
-    }
+    data           <- env(formula)
+  }
+  if(is.null(data)) {
+    data           <- env(formula)
   }
   
   ## Extract data from the formula
@@ -79,12 +79,12 @@ formula.to.data <- function(formula, contextual, data, type = "outcome") {
 
 formula.to.data.smm <- function(formula, data, fixed.effects) {
   if (missing(data)) {
-    data           <- environment(formula)
-  } else {
-    if(is.null(data)) {
-      data         <- environment(formula)
-    }
+    data           <- env(formula)
   }
+  if(is.null(data)) {
+    data           <- env(formula)
+  }
+  
   ftmp              <- gsub(" ", "", as.character(Reduce(paste, deparse(formula))), fixed = TRUE)
   pospipe           <- gregexpr("\\|", ftmp)[[1]]
   Gyobs             <- FALSE

@@ -211,8 +211,8 @@ if (file.exists(filname)) {
       va.zx     <- mydata[c(tmp[x] + 1):tmp[x+1],z]   
       matrix(kronecker(va.zx, va.zx, FUN = dist2), sch.size[x])}))
   }))
-  Xlogit        <- as.matrix(cbind(1, X1tmp, X2tmp))   
-  colnames(Xlogit)  <- c("(Intercept)", "same.sex", va.log1[-1], "diff.age")
+  Xlogit        <- cbind(X1tmp, X2tmp)  
+  colnames(Xlogit)  <- c("same.sex", va.log1[-1], "diff.age")
 
   save(list = ls(all=TRUE), file = filname)
 }
@@ -285,6 +285,9 @@ ggplot(data = data.frame(mm = nmatchall), aes(x = mm)) +
 dataset    <- data.frame(GPA = Y, X)
 Model      <- GPA ~ female + hispanic + raceblack + raceasian + raceother + melhigh + memhigh + memiss + mjprof + mjother + mjmiss + age
 Kv         <- 2*ncol(X) + 1  # Number of exogenous explanatory variables
+mlinks     <- list(model          = "logit", 
+                   mlinks.formula = paste0("~ ", paste0(c("same.sex", va.log1[-1], "diff.age"), collapse = "+")), 
+                   mlinks.data    = Xlogit)
 
 # Hyperparameters
 hyperp     <- list("mutheta"       = rep(0,Kv),
@@ -316,7 +319,7 @@ miss.est   <- mcmcSAR(formula    = Model,
                       G          = G,
                       hyperparms = hyperp,
                       ctrl.mcmc  = list(print.level = 2),
-                      mlinks     = list(model = "logit", covariates = Xlogit),
+                      mlinks     = mlinks,
                       data       = dataset,
                       iteration  = 2e4)
 # summarize results
@@ -331,7 +334,7 @@ top.est    <- mcmcSAR(formula    = Model,
                       G          = G,
                       hyperparms = hyperp,
                       ctrl.mcmc  = list(print.level = 2),
-                      mlinks     = list(model = "logit", covariates = Xlogit),
+                      mlinks     = mlinks,
                       data       = dataset,
                       iteration  = 2e4)
 # summarize results
@@ -349,7 +352,7 @@ tmiss.est  <- mcmcSAR(formula    = Model,
                       G          = G,
                       hyperparms = hyperp,
                       ctrl.mcmc  = list(print.level = 2),
-                      mlinks     = list(model = "logit", covariates = Xlogit),
+                      mlinks     = mlinks,
                       data       = dataset,
                       iteration  = 2e4)
 # summarize results
@@ -485,3 +488,70 @@ par(mfrow = c(2, 5), mar = c(2, 2, 2, 2.1))
 for (i in 1:10) {
   plot(form.ntw[,i], type = "l", main = XnamesRho[i], col = c1, xlab = "", ylab = "")
 }
+
+# Centrality
+library(doParallel)
+# observed network
+cent.obs    <- unlist(lapply(norm.network(G), function(x) solve(diag(nrow(x)) - colMeans(tail(obs.est$posterior, 1e4))["Gy"]*x, rep(1, nrow(x)))))
+
+# reconstructed network
+f.cent.rec  <- function(p.log, alpha){
+  network   <- 1*(as.matrix(cbind(1, Xlogit[,c("same.sex", va.log1[-1], "diff.age")])) %*% p.log + rlogis(nrow(Xlogit)) > 0)
+  network.n <- vec.to.mat(network, sch.size)
+  network.n <- lapply(1:nsch, function(x) Go3[[x]]*G[[x]] + (1 - Go3[[x]])*network.n[[x]])
+  network.n <- norm.network(network.n)
+  unlist(lapply(network.n, function(x) solve(diag(nrow(x)) - alpha*x, rep(1, nrow(x)))))
+}
+cent.tmiss  <- mclapply(19900:20000, function(x) f.cent.rec(miss.est$posterior$rho[x,], miss.est$posterior$theta[x, "Gy"]), mc.cores = 3)
+cent.tmiss  <- apply(as.data.frame(cent.tmiss), 1, mean) 
+
+centdata    <- data.frame(observed = cent.obs, reconstructed = cent.tmiss)
+
+save(cent.tmiss, file = "~/Dropbox/Papers - In progress/Partial Network/AddHealth/centrality.rda")
+ggplot(data = centdata, aes(x = observed, y = reconstructed)) + geom_point()
+
+# # Simulate the impact of shock on the network
+# # estimate logit on the observed network
+nFobs       <- unlist(lapply(G, function(x) rowSums(x > 0)))
+nFmis       <- unlist(nmatch)
+nFr         <- nFobs + nFmis
+mean(nFobs); mean(nFr)
+sd(nFobs); sd(nFr)
+Xlogit$link <- mat.to.vec(G)
+
+logit0      <- glm(paste0("link ~ ", paste0(c("same.sex", va.log1[-1], "diff.age"), collapse = "+")), family = "binomial", data = Xlogit)
+summary(logit0)
+# 
+# # This function simulate impact of policy on the network and y
+# conterfact  <- function(p.log, p.sar, impact){
+#   print(impact)
+#   p.log[1]  <- p.log[1] + impact
+#   network   <- 1*(as.matrix(cbind(1, Xlogit[,c("same.sex", va.log1[-1], "diff.age")])) %*% p.log + rlogis(nrow(Xlogit)) > 0)
+#   network.n <- vec.to.mat(network, sch.size, normalise = TRUE)
+#   ysim      <- CDatanet::simsar(formula    = ~ female + hispanic + raceblack + raceasian + raceother + melhigh + memhigh + memiss + mjprof + mjother + mjmiss + age,
+#                                 contextual = TRUE,
+#                                 Glist      = network.n,
+#                                 theta      = p.sar,
+#                                 data       = mydata)$y
+#   nfriends  <- unlist(lapply(network.n, function(x) rowSums(x > 0)))
+#   out       <- c(mean(nfriends), sd(nfriends), mean(ysim), sd(ysim))
+#   names(out)<- c("mean.nfriends", "sd.nfriends", "mean.y", "sd.y")
+#   out
+# }
+# 
+# # application using the observed network
+# impact      <- c(sort(seq(-3, -0, 0.05), decreasing = TRUE), seq(0.05, 0.5, 0.05))
+# p.sar.obs   <- apply(tail(obs.est$posterior, 1e4), 2, mean)
+# p.sar.obs   <- c(p.sar.obs["Gy"], p.sar.obs[names(p.sar.obs) != "Gy"])
+# p.log.obs   <- logit0$coefficients
+# policy.obs  <- sapply(impact, function(x) conterfact(p.log.obs, p.sar.obs, x))
+# 
+# # application using the reconstructed network
+# p.sar.nobs  <- apply(tail(tmiss.est$posterior$theta, 1e4), 2, mean)
+# p.sar.nobs  <- c(p.sar.nobs["Gy"], p.sar.nobs[names(p.sar.nobs) != "Gy"])
+# p.log.nobs  <- apply(tail(tmiss.est$posterior$rho, 1e4), 2, mean)
+# policy.nobs <- sapply(impact, function(x) conterfact(p.log.nobs, p.sar.nobs, x))
+# 
+# 
+# policy      <- cbind(impact = impact, t(policy.obs), t(policy.nobs))
+# write.csv(policy, row.names = FALSE, file = "~/Dropbox/Papers - In progress/Partial Network/AddHealth/policy.csv")

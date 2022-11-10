@@ -63,6 +63,7 @@
 #' as so, in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of dyadic variable as in matrix form to a format that suits `mlinks.formula`.
 #' \item `mlinks.data` optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
 #' If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which `mcmcARD` is called.
+#' \item `weights` is a vector of weights of observed entries. This is important to address the selection problem of observed entries. Detaulf is a vector of ones.
 #' \item `estimates` (optional when a part of the network is observed) is a list containing `rho`, a vector of the estimates of the Probit or Logit
 #' parameters, and `var.rho` the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
 #' In addition, if `G0.obs = "none"`, `estimates` should also include `N`, a vector of the number of individuals in each sub-network.
@@ -231,7 +232,7 @@ mcmcSAR <- function(formula,
   dest         <- NULL
   zetaest      <- NULL
   neighbor     <- NULL
-  weight       <- NULL
+  weights      <- NULL
   iARD         <- NULL
   inonARD      <- NULL
   propARD      <- NULL
@@ -346,22 +347,36 @@ mcmcSAR <- function(formula,
     
     murho      <- estimates$rho
     Vrho       <- estimates$var.rho
+    weights    <- c(mlinks$weights)
+    
+    Gobsvec    <- NULL
     
     if (is.null(murho) | is.null(Vrho)) {
       G0vec    <- frMceiltoV(G0, N, M)
       Gobsvec  <- as.logical(frMceiltoV(G0.obs, N, M))
-      G0vec    <- G0vec[Gobsvec]
+      G0vec    <- c(G0vec[Gobsvec])
+      if(is.null(weights)){
+        weights<- rep(1, length(G0vec))
+      } else{
+        if(length(weights) != length(G0vec)){
+          stop("length(weights) is different from the number of observed entries")
+        }
+      }
+
       dZtmp    <- dZ[Gobsvec, ]
-      myp      <- glm(G0vec ~ -1 + dZtmp, family = binomial(link = ifelse(typeprob == 1, "probit", "logit")))
+      myp      <- glm(G0vec ~ -1 + dZtmp, family = binomial(link = ifelse(typeprob == 1, "probit", "logit")), weights = weights)
       smyp     <- summary(myp)
       murho    <- smyp$coefficients[,1]
       Vrho     <- smyp$cov.unscaled
     } 
     
+    tmpwei     <- rep(1, length(Gobsvec)); tmpwei[Gobsvec] <- weights
+    weights    <- tmpwei
+    
     pfit       <- ifelse(typeprob == 1, pnorm, plogis)(c(dZ%*%murho))
     
-    lFdZrho1   <- log(pfit)
-    lFdZrho0   <- log(1- pfit)
+    lFdZrho1   <- log(pfit)*weights
+    lFdZrho0   <- log(1- pfit)*weights
     
     dnetwork   <- frVtoM(pfit, N, M)
     
@@ -381,7 +396,7 @@ mcmcSAR <- function(formula,
     dnetwork         <- list()
     dest             <- list()  
     neighbor         <- lapply(1:M, function(x) matrix(0, 0, 0))
-    weight           <- lapply(1:M, function(x) matrix(0, 0, 0))
+    weights          <- lapply(1:M, function(x) matrix(0, 0, 0))
     iARD             <- lapply(1:M, function(x) matrix(0, 0, 0))
     inonARD          <- lapply(1:M, function(x) matrix(0, 0, 0))
     zetaest          <- c()
@@ -444,7 +459,7 @@ mcmcSAR <- function(formula,
         # estimate rho
         lspaceZNU      <- flspacerho2(T, P[m], z, d, zeta, XARDm, XnonARDm, N1[m], N2[m], mARD[m], Mst) 
         neighbor[[m]]  <- lspaceZNU$neighbor
-        weight[[m]]    <- lspaceZNU$weight
+        weights[[m]]   <- lspaceZNU$weights
       }
       
       # estimates murho and Vrho
@@ -459,7 +474,7 @@ mcmcSAR <- function(formula,
       num              <- tail(murhom, N1[m])
       
       dnetwork[[m]]    <-  fdnetARD(zm, num,  dest[[m]], N1[m], N2[m], N[m], P[m], zetaest[m], logCpvMF(P[m], zetaest[m]),
-                                    neighbor[[m]], weight[[m]], iARD[[m]], inonARD[[m]])
+                                    neighbor[[m]], weights[[m]], iARD[[m]], inonARD[[m]])
       
       if (typeprob[m] == 0){
         murho[[m]]     <- murhom
@@ -546,7 +561,7 @@ mcmcSAR <- function(formula,
     colnames(out$posterior)      <- col.post
   }
   if(lmodel %in% c("PROBIT", "LOGIT")) {
-    out        <- SARMCMCpl(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+    out        <- SARMCMCpl(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                             muzeta, invszeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, iteration,
                             target, jumpmin, jumpmax, cpar, print.level, typeprob, block.max)
     colnames(out$posterior$theta) <- col.post
@@ -554,7 +569,7 @@ mcmcSAR <- function(formula,
   }
   if(lmodel == "LATENT SPACE") {
     out        <- SARMCMCard(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
-                             muzeta, invszeta, a, b, dest, zetaest, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, iteration,
+                             muzeta, invszeta, a, b, dest, zetaest, murho, Vrho, Krho, neighbor, weights, iARD, inonARD, P, iteration,
                              target, jumpmin, jumpmax, cpar, typeprob, print.level, block.max)
     
     colnames(out$posterior$theta) <- col.post
@@ -738,7 +753,7 @@ SARMCMCnone    <- function(y, X, Xone, G0, start, M, N, kbeta, kgamma, dnetwork,
 }
 
 # MCMC for the models PL
-SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                            muzeta, invszeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, iteration,
                            target, jumpmin, jumpmax, cpar, print.level,
                            typeprob, block.max) {
@@ -760,6 +775,7 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, d
                                  invsigma2zeta = invszeta, 
                                  a             = a, 
                                  b             = b, 
+                                 weight        = weights,
                                  dZ            = dZ,
                                  murho         = murho,
                                  Vrho          = Vrho,
@@ -790,6 +806,7 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, d
                                       invsigma2zeta = invszeta, 
                                       a             = a, 
                                       b             = b, 
+                                      weight        = weights,
                                       dZ            = dZ,
                                       murho         = murho,
                                       Vrho          = Vrho,
@@ -825,6 +842,7 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, d
                               invsigma2zeta = invszeta, 
                               a             = a, 
                               b             = b, 
+                              weight        = weights,
                               dZ            = dZ,
                               murho         = murho,
                               Vrho          = Vrho,
@@ -857,6 +875,7 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, d
                                    invsigma2zeta = invszeta, 
                                    a             = a, 
                                    b             = b, 
+                                   weight        = weights,
                                    dZ            = dZ,
                                    murho         = murho,
                                    Vrho          = Vrho,
@@ -879,7 +898,7 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, start, M, N, kbeta, kgamma, d
 
 # MCMC for the latent space model
 SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
-                          muzeta, invszeta, a, b,  dest, zetaest, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P,
+                          muzeta, invszeta, a, b,  dest, zetaest, murho, Vrho, Krho, neighbor, weights, iARD, inonARD, P,
                           iteration, target, jumpmin, jumpmax, cpar,  typeprob, print.level, block.max) {
   out          <- NULL
   if (is.null(X)) {
@@ -906,7 +925,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma
                                   Vrho          = Vrho,
                                   Krho          = Krho,
                                   neighbor      = neighbor,
-                                  weight        = weight,
+                                  weight        = weights,
                                   iARD          = iARD,
                                   inonARD       = inonARD,
                                   P             = P,
@@ -941,7 +960,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma
                                        Vrho          = Vrho,
                                        Krho          = Krho,
                                        neighbor      = neighbor,
-                                       weight        = weight,
+                                       weight        = weights,
                                        iARD          = iARD,
                                        inonARD       = inonARD,
                                        P             = P,
@@ -981,7 +1000,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma
                                Vrho          = Vrho,
                                Krho          = Krho,
                                neighbor      = neighbor,
-                               weight        = weight,
+                               weight        = weights,
                                iARD          = iARD,
                                inonARD       = inonARD,
                                P             = P,
@@ -1018,7 +1037,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma
                                     Vrho          = Vrho,
                                     Krho          = Krho,
                                     neighbor      = neighbor,
-                                    weight        = weight,
+                                    weight        = weights,
                                     iARD          = iARD,
                                     inonARD       = inonARD,
                                     P             = P,

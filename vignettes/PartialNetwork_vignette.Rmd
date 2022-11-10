@@ -417,7 +417,7 @@ The SMM estimator performs well even when we only have the distribution of the n
 smm <- list(smm1 = out.smm1, smm2 = out.smm2,
             smm3 = out.smm3, smm4 = out.smm4,
             smme1 = out.smmeff1, smme2 = out.smmeff2,
-            smme3 = out.smmeff3, smmmc = Reduce('+', smm.Monte.C)/250)
+            smme3 = out.smmeff3, smmmc = smm$smmmc)
 save(smm, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smm.rda")
 ```
 ## How to compute the variance when the network distribution is estimated?
@@ -537,7 +537,8 @@ print(smmlo$smm2)
 We can notice that the variance is larger when we take into account the uncertainty of the estimation of the logit model.
 
 ```{r smmlogitsave, echo = FALSE, eval = FALSE}
-smmlo <- list(smm1 = smm.logit, smm2 = ssmm.logit2)
+smm2  <- summary(smm.logit, dnetwork = d.logit, data = dataset, .fun = fdist, .args = fdist_args, sim = 500, ncores = 8)
+smmlo <- list(smm1 = smm.logit, smm2 = smm2)
 save(smmlo, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smmlogit.rda")
 ```
 

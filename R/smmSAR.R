@@ -10,17 +10,24 @@
 #' are not observed and `contextual = TRUE` means that the estimated model includes contextual effects.
 #' @param fixed.effects logical; if true, group heterogeneity is included as fixed effects.
 #' @param dnetwork a list, where the m-th elements is the matrix of link probability in the m-th sub-network. 
-#' @param iv.power is the number of powers of the network matrix `G` to be used to construct instruments.
 #' @param W is the weighted-matrix in the objective function of the SMM.
-#' @param smm.ctr is the list of some control parameters such as the number of draws `R`, the optimization tolerance `opt.tol` which will be
-#' used in \link[stats]{optimize}, and `print` which indicates if the optimization process should be printed step by step.
+#' @param smm.ctr is the list of some control parameters (see details). 
 #' @param cond.var logical; if true the estimator variance conditional on `dnetwork` will be computed.
 #' @param data optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the variables
 #' in the model. If missing, the variables are taken from \code{environment(formula)}, typically the environment from which `smmSAR` is called.
+#' @details 
+#' The parameter `smm.ctr` is the list of some control parameters such as:
+#'  * `R` numbers of draws R (in the package, we assume S = 1 and T = 1);
+#'  * `iv.power` number of powers of the network matrix `G` to be used to construct instruments;
+#'  * `opt.tol` optimization tolerance that will be used in \link[stats]{optimize};
+#'  * `smoother` (logical) which indicates if draws should be performed using the smoother simulator;
+#'  * `h` bandwith of the smoother (required if `smoother = TRUE`);
+#'  * `print` (logical) indicates if the optimization process should be printed step by step.
+#'
 #' @return A list consisting of:
 #'     \item{n.group}{number of groups.}
 #'     \item{N}{vector of each group size.}
-#'     \item{time}{elapsed time to run the MCMC in second.}
+#'     \item{time}{elapsed time to run the SMM in second.}
 #'     \item{estimates}{vector of estimated parameters.}
 #'     \item{formula}{input value of `formula`.}
 #'     \item{contextual}{input value of `contextual`.}
@@ -92,20 +99,38 @@ smmSAR <- function(formula,
                    contextual    = FALSE,
                    fixed.effects = FALSE,
                    dnetwork,
-                   iv.power      = 2L,
                    W             = "identity",
-                   smm.ctr       = list(R = 30, opt.tol  = .Machine$double.eps^0.25, print = FALSE),
+                   smm.ctr       = list(R = 30L, iv.power = 2L, opt.tol  = 1e-4, smoother = FALSE, print = FALSE),
                    cond.var      = TRUE,
                    data){
+  
   t1           <- Sys.time()
   seed         <- .Random.seed 
   if(class(W)[1] != "character") W <- as.matrix(W)
   stopifnot(class(W) %in% c("character", "matrix", "array"))
+  
+  # controls
+  nR           <- smm.ctr$R; if(is.null(nR)) nR <- 30L
+  # nS           <- smm.ctr$S
+  # nT           <- smm.ctr$T
+  iv.power     <- smm.ctr$iv.power; if(is.null(iv.power)) iv.power <- 2L
+  opt.tol      <- smm.ctr$opt.tol; if(is.null(opt.tol)) opt.tol <- 1e-4
+  smoother     <- smm.ctr$smoother; if(is.null(smoother)) smoother <- FALSE
+  hN           <- smm.ctr$h
+  wprint       <- smm.ctr$print; if(is.null(wprint)) wprint <- FALSE
+  nS           <- 1
+  nT           <- 1
+  
   stopifnot(iv.power >= 1)
   if(contextual){
     if(iv.power < 2) stop("iv.power should be at least 2 if the model includes contextual effects")
   }
-  
+  stopifnot(class(smoother) == "logical")
+  if(smoother){
+    if(is.null(hN)) stop("h is required for the smoother simulator")
+  } else{
+    hN         <- 0 #unused value to avoid having hN = NULL (error in c++)
+  }
   # data
   env.f        <- environment(formula)
   f.t.data     <- formula.to.data.smm(formula = formula, data = data, fixed.effects = fixed.effects) 
@@ -127,25 +152,6 @@ smmSAR <- function(formula,
   if((Kx1 - intercept) != Kx2) stop("The number of observed contextual variables does not suit")
   X2           <- X1[,(1 + intercept):Kx1, drop = FALSE]
   
-  # controls
-  nR           <- smm.ctr$R
-  # nS           <- smm.ctr$S
-  # nT           <- smm.ctr$T
-  opt.tol      <- smm.ctr$opt.tol
-  wprint       <- smm.ctr$print
-  if (is.null(nR)) {
-    nR         <- 30
-  }
-  if (is.null(opt.tol)) {
-    opt.tol    <- .Machine$double.eps^0.25
-  }
-  if (is.null(wprint)) {
-    wprint     <- FALSE
-  }
-  nS           <- 1
-  nT           <- 1
-
-  
   #sizes
   N            <- sapply(dnetwork, nrow)
   M            <- length(N)
@@ -162,7 +168,7 @@ smmSAR <- function(formula,
   
   # Other
   ctr.b     <- list(R = nR, S = nS, T = nT, distr = dnetwork, Ilist = Ilist, y = y, X1 = X1, X2 = X2, 
-                    W = W, Kx1 = Kx1, Kx2 = Kx2, M = M, N = N, Pm = Pm, Ncum = Ncum)
+                    W = W, smoother = smoother, hN = hN, Kx1 = Kx1, Kx2 = Kx2, M = M, N = N, Pm = Pm, Ncum = Ncum)
   ctr       <- c(ctr.b, list(seed = seed, lower = -1, upper = 1, tol = opt.tol, ninstr = ninstr))
   fbeta     <- NULL
   c.sol     <- FALSE
@@ -345,11 +351,15 @@ smmSAR <- function(formula,
   }
   
   # ctr
+  if(!smoother) hN           <- NULL
   smm.ctr                    <- list(R = nR)
   # if(!is.null(nS)) smm.ctr$S <- nS
   # if(!is.null(nT)) smm.ctr$T <- nT
   if(!c.sol) smm.ctr$opt.tol <- opt.tol
   smm.ctr$print              <- wprint
+  smm.ctr$iv.power           <- iv.power
+  smm.ctr$smoother           <- smoother
+  if(smoother) smm.ctr$h     <- hN
   
   # Print the processing time
   t2           <- Sys.time()
@@ -361,6 +371,8 @@ smmSAR <- function(formula,
   # details
   infos        <- list(iv.power     = iv.power,
                        W            = W,
+                       smoother     = smoother,
+                       h            = hN,
                        optimize     = opt,
                        GXobs        = GXobs, 
                        Gyobs        = Gyobs, 
@@ -451,6 +463,13 @@ smmSAR <- function(formula,
   varcov        <- NULL
   if(!cond.var | !missing(.fun)) {
     iv.power      <- details$iv.power
+    smoother      <- details$smoother
+    hN            <- details$h 
+    if(smoother){
+      if(is.null(hN)) stop("h is required for the smoother simulator")
+    } else{
+      hN          <- 0 #unused value to avoid having hN = NULL (error in c++)
+    }
     formula       <- object$formula
     fixed.effects <- object$fixed.effects
     contextual    <- object$contextual
@@ -497,8 +516,8 @@ smmSAR <- function(formula,
     # Functions fmvzeta and fmvzetaH
     fmvzeta      <- NULL
     fmvzetaH     <- NULL
-    Afmvzeta     <- list(alpha = alpha, beta = beta, R = nR, distr = dnetwork, y = y, W = W, Kx1 = Kx1, 
-                         ninstr = ninstr, M = M, N = N, Pm = Pm, Ncum = Ncum)
+    Afmvzeta     <- list(alpha = alpha, beta = beta, R = nR, distr = dnetwork, y = y, W = W, smoother = smoother, 
+                         hN = hN, Kx1 = Kx1, ninstr = ninstr, M = M, N = N, Pm = Pm, Ncum = Ncum)
     # Type = 0
     if(GXobs & Gyobs){
       if(fixed.effects){
@@ -689,18 +708,20 @@ fSIGMA <- function(.fun, .args, fmvzeta, Afmvzeta, M) {
   cat("Formula = ", Reduce(paste, deparse(x$formula)), "\n\n", sep = "")
   cat("Contextual effects: ", ifelse(x$contextual, "Yes", "No"), "\n", sep = "")
   cat("Fixed effects: ", ifelse(x$fixed.effects, "Yes", "No"), "\n\n", sep = "")
-  cat("Network:\n")
+  cat("Network details\n")
   cat("GX ", ifelse(x$details$GXobs, "Observed", "Not Observed"), "\n", sep = "")
   cat("Gy ", ifelse(x$details$Gyobs, "Observed", "Not Observed"), "\n", sep = "")
   cat("Number of groups: ", M, "\n", sep = "")
   cat("Sample size     : ", sum(N), "\n\n", sep = "")
+
   
   #cat("Simulation tuning parameters:\n")
   #cat("R = ", nR, ifelse(!is.null(nS), paste0(", S = ", nS), ""), ifelse(!is.null(nT), paste0(", T = ", nT), "")  , "\n\n", sep = "")
-  cat("Number of simulations used in the moment function:\n")
-  cat("R = ", nR, "\n\n", sep = "")
-  
-  
+  cat("Simulation settings\n")
+  cat("R = ", nR, "\n", sep = "")
+  cat("Smoother : ", x$details$smoother, sep = "")
+  if(x$details$smoother)cat(" (h = ", x$details$h, ")", sep = "")
+  cat("\n\n")
   
   cat("Coefficients:\n")
   do.call("print", out_print)

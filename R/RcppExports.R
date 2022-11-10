@@ -85,20 +85,20 @@ peerMCMCblock_ard <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, 
     .Call(`_PartialNetwork_peerMCMCblock_ard`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, N1, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, d, zetaard, murho, Vrho, Krho, neighbor, weight, iARD, inonARD, P, parms0, iteration, target, jumpmin, jumpmax, c, type, progress, nupmax)
 }
 
-peerMCMCnoc_pl <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type) {
-    .Call(`_PartialNetwork_peerMCMCnoc_pl`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type)
+peerMCMCnoc_pl <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, weight, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type) {
+    .Call(`_PartialNetwork_peerMCMCnoc_pl`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, weight, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type)
 }
 
-peerMCMCblocknoc_pl <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type) {
-    .Call(`_PartialNetwork_peerMCMCblocknoc_pl`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type)
+peerMCMCblocknoc_pl <- function(y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, weight, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type) {
+    .Call(`_PartialNetwork_peerMCMCblocknoc_pl`, y, V, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, weight, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type)
 }
 
-peerMCMC_pl <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type) {
-    .Call(`_PartialNetwork_peerMCMC_pl`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type)
+peerMCMC_pl <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, weight, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type) {
+    .Call(`_PartialNetwork_peerMCMC_pl`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, weight, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, type)
 }
 
-peerMCMCblock_pl <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type) {
-    .Call(`_PartialNetwork_peerMCMCblock_pl`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type)
+peerMCMCblock_pl <- function(y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, weight, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type) {
+    .Call(`_PartialNetwork_peerMCMCblock_pl`, y, X, Xone, Gnorm, G0obs, prior, ListIndex, M, N, kbeta, kgamma, theta0, invsigmatheta, zeta0, invsigma2zeta, a, b, weight, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, parms0, iteration, target, jumpmin, jumpmax, c, progress, nupmax, type)
 }
 
 sartpoint <- function(Gnorm, M, N, kbeta, kgamma, y, X, Xone) {
@@ -109,228 +109,228 @@ sartpointnoc <- function(Gnorm, M, N, kbeta, y, Xone) {
     .Call(`_PartialNetwork_sartpointnoc`, Gnorm, M, N, kbeta, y, Xone)
 }
 
-falbeta0 <- function(R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta0`, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+falbeta0 <- function(R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta0`, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta0 <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta0`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta0 <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta0`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH0 <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH0`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH0 <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH0`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta0nc <- function(R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta0nc`, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum)
+falbeta0nc <- function(R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta0nc`, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta0nc <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta0nc`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta0nc <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta0nc`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH0nc <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH0nc`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH0nc <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH0nc`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta0fe <- function(R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta0fe`, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+falbeta0fe <- function(R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta0fe`, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta0fe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta0fe`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta0fe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta0fe`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH0fe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH0fe`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH0fe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH0fe`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta0ncfe <- function(R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta0ncfe`, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum)
+falbeta0ncfe <- function(R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta0ncfe`, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta0ncfe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta0ncfe`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta0ncfe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta0ncfe`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH0ncfe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH0ncfe`, alpha, beta, R, distr, y, Gy, GX2, V, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH0ncfe <- function(alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH0ncfe`, alpha, beta, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta1 <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta1`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, M, N, Pm, Ncum)
+fbeta1 <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta1`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum)
 }
 
-fgmm1 <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm1`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fgmm1 <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm1`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta1 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta1`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta1 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta1`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH1 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH1`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH1 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH1`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta1nc <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta1nc`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, M, N, Pm, Ncum)
+fbeta1nc <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta1nc`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum)
 }
 
-fgmm1nc <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm1nc`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fgmm1nc <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm1nc`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta1nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta1nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta1nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta1nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH1nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH1nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH1nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH1nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta1fe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta1fe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, M, N, Pm, Ncum)
+fbeta1fe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta1fe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum)
 }
 
-fgmm1fe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm1fe`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fgmm1fe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm1fe`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta1fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta1fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta1fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta1fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH1fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH1fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH1fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH1fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta1ncfe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta1ncfe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, M, N, Pm, Ncum)
+fbeta1ncfe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta1ncfe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum)
 }
 
-fgmm1ncfe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm1ncfe`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fgmm1ncfe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm1ncfe`, alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta1ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta1ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta1ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta1ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH1ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH1ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH1ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH1ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta2 <- function(R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta2`, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+falbeta2 <- function(R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta2`, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta2 <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta2`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta2 <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta2`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH2 <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH2`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH2 <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH2`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta2nc <- function(R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta2nc`, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum)
+falbeta2nc <- function(R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta2nc`, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta2nc <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta2nc`, alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta2nc <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta2nc`, alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH2nc <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH2nc`, alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH2nc <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH2nc`, alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta2fe <- function(R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta2fe`, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+falbeta2fe <- function(R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta2fe`, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta2fe <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta2fe`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta2fe <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta2fe`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH2fe <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH2fe`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH2fe <- function(alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH2fe`, alpha, beta, R, S, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-falbeta2ncfe <- function(R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_falbeta2ncfe`, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum)
+falbeta2ncfe <- function(R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_falbeta2ncfe`, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta2ncfe <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta2ncfe`, alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta2ncfe <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta2ncfe`, alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH2ncfe <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH2ncfe`, alpha, beta, R, distr, y, X1, X2, Gy, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH2ncfe <- function(alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH2ncfe`, alpha, beta, R, distr, y, X1, X2, Gy, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta3 <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta3`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, M, N, Pm, Ncum)
+fbeta3 <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta3`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum)
 }
 
-fgmm3 <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm3`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fgmm3 <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm3`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta3 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta3`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta3 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta3`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH3 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH3`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH3 <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH3`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta3nc <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta3nc`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, M, N, Pm, Ncum)
+fbeta3nc <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta3nc`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum)
 }
 
-fgmm3nc <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm3nc`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fgmm3nc <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm3nc`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta3nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta3nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta3nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta3nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH3nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH3nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH3nc <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH3nc`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta3fe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta3fe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, M, N, Pm, Ncum)
+fbeta3fe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta3fe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum)
 }
 
-fgmm3fe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm3fe`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fgmm3fe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm3fe`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta3fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta3fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzeta3fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta3fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH3fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH3fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+fmvzetaH3fe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH3fe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-fbeta3ncfe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fbeta3ncfe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, M, N, Pm, Ncum)
+fbeta3ncfe <- function(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fbeta3ncfe`, alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum)
 }
 
-fgmm3ncfe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fgmm3ncfe`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fgmm3ncfe <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fgmm3ncfe`, alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzeta3ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzeta3ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzeta3ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzeta3ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-fmvzetaH3ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum) {
-    .Call(`_PartialNetwork_fmvzetaH3ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+fmvzetaH3ncfe <- function(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum) {
+    .Call(`_PartialNetwork_fmvzetaH3ncfe`, alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
 fListIndex <- function(prior, G0obs, M, N) {

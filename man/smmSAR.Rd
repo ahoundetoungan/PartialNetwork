@@ -9,9 +9,9 @@ smmSAR(
   contextual = FALSE,
   fixed.effects = FALSE,
   dnetwork,
-  iv.power = 2L,
   W = "identity",
-  smm.ctr = list(R = 30, opt.tol = .Machine$double.eps^0.25, print = FALSE),
+  smm.ctr = list(R = 30L, iv.power = 2L, opt.tol = 1e-04, smoother = FALSE, print =
+    FALSE),
   cond.var = TRUE,
   data
 )
@@ -31,12 +31,9 @@ are not observed and \code{contextual = TRUE} means that the estimated model inc
 
 \item{dnetwork}{a list, where the m-th elements is the matrix of link probability in the m-th sub-network.}
 
-\item{iv.power}{is the number of powers of the network matrix \code{G} to be used to construct instruments.}
-
 \item{W}{is the weighted-matrix in the objective function of the SMM.}
 
-\item{smm.ctr}{is the list of some control parameters such as the number of draws \code{R}, the optimization tolerance \code{opt.tol} which will be
-used in \link[stats]{optimize}, and \code{print} which indicates if the optimization process should be printed step by step.}
+\item{smm.ctr}{is the list of some control parameters (see details).}
 
 \item{cond.var}{logical; if true the estimator variance conditional on \code{dnetwork} will be computed.}
 
@@ -47,7 +44,7 @@ in the model. If missing, the variables are taken from \code{environment(formula
 A list consisting of:
 \item{n.group}{number of groups.}
 \item{N}{vector of each group size.}
-\item{time}{elapsed time to run the MCMC in second.}
+\item{time}{elapsed time to run the SMM in second.}
 \item{estimates}{vector of estimated parameters.}
 \item{formula}{input value of \code{formula}.}
 \item{contextual}{input value of \code{contextual}.}
@@ -57,6 +54,17 @@ A list consisting of:
 }
 \description{
 \code{smmSAR} implements the Simulated Method of Moments (SMM) estimator of the linear-in-mean SAR model when only the linking probabilities are available or can be estimated.
+}
+\details{
+The parameter \code{smm.ctr} is the list of some control parameters such as:
+\itemize{
+\item \code{R} numbers of draws R (in the package, we assume S = 1 and T = 1);
+\item \code{iv.power} number of powers of the network matrix \code{G} to be used to construct instruments;
+\item \code{opt.tol} optimization tolerance that will be used in \link[stats]{optimize};
+\item \code{smoother} (logical) which indicates if draws should be performed using the smoother simulator;
+\item \code{h} bandwith of the smoother (required if \code{smoother = TRUE});
+\item \code{print} (logical) indicates if the optimization process should be printed step by step.
+}
 }
 \examples{
 \donttest{

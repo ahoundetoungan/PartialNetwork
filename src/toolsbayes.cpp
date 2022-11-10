@@ -391,7 +391,7 @@ void fsetjump_d(double& jump, const double& jumpmin,
 // after we can build the index and the weights matrix to compute nu and  
 // z for people without ARD. The matrix dimension is N2*m
 // The entry [m,i] is m-th neighbor for i in index matrix (col(i) are the m neighbors of i)
-// and its weight in weight matrix defined by 1/(1+d[j,i]), where row(i) are the weight of i
+// and its weights in weight matrix defined by 1/(1+d[j,i]), where row(i) are the weight of i
 
 void cneighbor(const double& N1, const double& N2, const double& N,
                const arma::mat& Xard, const arma::mat& Xnonard, 
@@ -528,7 +528,7 @@ List flspacerho2(const double& T, const double& P, const arma::cube& z, const ar
   return List::create(Named("rho")      = znu,
                       Named("degree")   = ds,
                       Named("neighbor") = neighbor,
-                      Named("weight")   = weight);
+                      Named("weights")   = weight);
 }
 
 // Given ZNU this function compute the probability of Gij = 1 using the latent space model

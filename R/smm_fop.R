@@ -7,100 +7,100 @@
 
 
 # GX observed, Gy not observed
-optim1       <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1       <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-optim1pr     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1pr     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim1nc     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1nc     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-optim1ncpr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1ncpr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim1fe     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1fe     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-optim1fepr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1fepr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim1ncfe   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1ncfe   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-optim1ncfepr <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1ncfepr <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
 
 # GX not observed, Gy not observed
-optim3   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim3   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm3(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  fgmm3(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-optim3pr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim3pr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out      <- fgmm3(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  out      <- fgmm3(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim3nc   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim3nc   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm3nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  fgmm3nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-optim3ncpr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim3ncpr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm3nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm3nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim3fe     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim3fe     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm3fe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  fgmm3fe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-optim3fepr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim3fepr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm3fe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm3fe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim3ncfe   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim3ncfe   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  fgmm3ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  fgmm3ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-optim3ncfepr <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim3ncfepr <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)
-  out        <- fgmm3ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, Kx1, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm3ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }

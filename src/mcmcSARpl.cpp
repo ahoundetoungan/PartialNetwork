@@ -34,6 +34,7 @@ List peerMCMCnoc_pl(const List& y,
                     const double& invsigma2zeta,
                     const double& a, 
                     const double& b,
+                    const Rcpp::NumericVector weight,
                     const arma::mat& dZ,
                     const arma::vec& murho,
                     const arma::mat& Vrho,
@@ -112,7 +113,7 @@ List peerMCMCnoc_pl(const List& y,
     
     for(int t(0); t<iteration; ++t){
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -147,7 +148,7 @@ List peerMCMCnoc_pl(const List& y,
       Rprintf("Iteration %d/%d \n", t+1, iteration);
       
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -183,7 +184,7 @@ List peerMCMCnoc_pl(const List& y,
     for(int t(0); t<iteration; ++t){
       prgcpp.increment();
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -240,6 +241,7 @@ List peerMCMCblocknoc_pl(const List& y,
                          const double& invsigma2zeta,
                          const double& a, 
                          const double& b,
+                         const Rcpp::NumericVector weight,
                          const arma::mat& dZ,
                          const arma::vec& murho,
                          const arma::mat& Vrho,
@@ -319,7 +321,7 @@ List peerMCMCblocknoc_pl(const List& y,
     
     for(int t(0); t<iteration; ++t){
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -351,7 +353,7 @@ List peerMCMCblocknoc_pl(const List& y,
       //std::cout<<"Iteration "<<t+1<<"/"<<iteration<<std::endl;
       Rprintf("Iteration %d/%d \n", t+1, iteration);
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -388,7 +390,7 @@ List peerMCMCblocknoc_pl(const List& y,
     for(int t(0); t<iteration; ++t){
       prgcpp.increment();
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -447,6 +449,7 @@ List peerMCMC_pl(const List& y,
                  const double& a, 
                  const double& b,
                  const arma::mat& dZ,
+                 const Rcpp::NumericVector weight,
                  const arma::vec& murho,
                  const arma::mat& Vrho,
                  const int& Krho,
@@ -537,7 +540,7 @@ List peerMCMC_pl(const List& y,
     
     for(int t(0); t<iteration; ++t){
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -582,7 +585,7 @@ List peerMCMC_pl(const List& y,
       Rprintf("Iteration %d/%d \n", t+1, iteration);
       
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -630,7 +633,7 @@ List peerMCMC_pl(const List& y,
     for(int t(0); t<iteration; ++t){
       prgcpp.increment();
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -700,6 +703,7 @@ List peerMCMCblock_pl(const List& y,
                       const double& invsigma2zeta,
                       const double& a, 
                       const double& b,
+                      const Rcpp::NumericVector weight,
                       const arma::mat& dZ,
                       const arma::vec murho,
                       const arma::mat& Vrho,
@@ -792,7 +796,7 @@ List peerMCMCblock_pl(const List& y,
     
     for(int t(0); t<iteration; ++t){
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -836,7 +840,7 @@ List peerMCMCblock_pl(const List& y,
       //std::cout<<"Iteration "<<t+1<<"/"<<iteration<<std::endl;
       Rprintf("Iteration %d/%d \n", t+1, iteration);
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);
@@ -885,7 +889,7 @@ List peerMCMCblock_pl(const List& y,
     for(int t(0); t<iteration; ++t){
       prgcpp.increment();
       //Update prior
-      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, dZ, murho, iVrho, jumprho,
+      updrhopl(Gnorm, prior, G0obs, ListIndex, rho, lFdZrhoE1, lFdZrhoE0, weight, dZ, murho, iVrho, jumprho,
                Krho,  N,  M,  rhoaccept,  type);
       djumprho += (rhoaccept/(t + 1) - target(1))/pow(t + 1,c);
       fsetjump_dm(djumprho, jumpmin(1), jumpmax(1), jumprho, Vrho);

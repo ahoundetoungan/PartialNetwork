@@ -232,6 +232,38 @@ List frVtoM(const Eigen::VectorXd& u,
   return out;
 }
 
+// does the same thing but the entry matrix is armadillo
+List frVtoMarma(const arma::vec& u,
+                const Rcpp::IntegerVector& N,
+                const double& M) {
+  List out(M);
+  
+  int r                              = 0;
+  int n;
+  
+  for(int m(0); m < M; ++m) {
+    int Nm                           = N(m);
+    
+    n                                = Nm - 1;
+    
+    arma::mat outm(Nm, Nm, arma::fill::zeros);
+    outm.submat(1, 0, n, 0)          = u.subvec(r, n + r - 1);
+    
+    r                               += n;
+    for(int i(1); i < n; ++i) {
+      outm.submat(0, i, i - 1, i)    = u.subvec(r, r + i - 1);
+      outm.submat(i + 1, i, n, i)    = u.subvec(r + i, n + r - 1);
+      r                             += n;
+    }
+    
+    outm.submat(0, n, n - 1, n)      = u.subvec(r, r + n - 1);
+    r                               += n;
+    
+    out[m]                           = outm;
+  }
+  return out;
+}
+
 // Same function but the returned matrix are normalized
 // [[Rcpp::export]]
 List frVtoMnorm(const arma::vec& u,

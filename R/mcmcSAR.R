@@ -61,12 +61,19 @@
 #' where `N` is a vector of the number of individual in each sub-network. Indeed, `x` will be associated with the entries
 #' \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability and 
 #' as so, in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of dyadic variable as in matrix form to a format that suits `mlinks.formula`.
-#' \item `mlinks.data` optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
-#' If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which `mcmcARD` is called.
-#' \item `weights` is a vector of weights of observed entries. This is important to address the selection problem of observed entries. Detaulf is a vector of ones.
+#' \item `weights` (optional) is a vector of weights of observed entries. This is important to address the selection problem of observed entries. Default is a vector of ones.
 #' \item `estimates` (optional when a part of the network is observed) is a list containing `rho`, a vector of the estimates of the Probit or Logit
 #' parameters, and `var.rho` the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
+#' In this case, `rho` and the unobserved part of the network are updated without using the observed part of the network. The latter is assumed non-stochastic in the MCMC. 
 #' In addition, if `G0.obs = "none"`, `estimates` should also include `N`, a vector of the number of individuals in each sub-network.
+#' \item `prior` (optional) is a list containing `rho`, a vector of the prior beliefs on `rho`, and `var.rho` the prior covariance matrix of `rho`. This input 
+#' is relevant only when the observed part of the network is used to update `rho`, i.e. only when `estimates = NULL` (so, either `estimates` or `prior` should be `NULL`). \cr
+#' To understand the difference between 
+#' `estimates` and `prior`, note that `estimates` includes initial estimates of `rho` and `var.rho`, meaning that the observed part of the network is not used in the MCMC 
+#' to update `rho`. In contrast, `prior` contains the prior beliefs of the user, and therefore, `rho` is updated using this prior and information from the observed part of the network.
+#' In addition, if `G0.obs = "none"`, `prior` should also include `N`, a vector of the number of individuals in each sub-network.
+#' \item `mlinks.data` optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
+#' If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which `mcmcARD` is called.
 #' }
 #' ### Latent space models
 #' The following element could be declared in `mlinks`.
@@ -104,7 +111,7 @@
 #'  If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
 #'  the simulations from the posterior distribution are printed.
 #' \item{`block.max`}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It might be 
-#' more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2020). 
+#' more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2022). 
 #' }
 #' If `block.max` > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly 
 #' chosen between 1 and `block.max`. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,
@@ -184,6 +191,7 @@ mcmcSAR <- function(formula,
                     data){
   
   t1                <- Sys.time()
+  stopifnot(is.null(mlinks$estimates) | is.null(mlinks$prior))
   # data
   if (missing(contextual)) {
     contextual <- FALSE
@@ -213,7 +221,9 @@ mcmcSAR <- function(formula,
   
   ### model of links
   lmodel       <- toupper(mlinks$model)
+  name.mlinks  <- names(mlinks)
   estimates    <- mlinks$estimates
+  prior        <- mlinks$prior
   dZ           <- mlinks$mlinks.data
   Zformula     <- mlinks$mlinks.formula
   mARD         <- mlinks$mARD
@@ -236,8 +246,9 @@ mcmcSAR <- function(formula,
   iARD         <- NULL
   inonARD      <- NULL
   propARD      <- NULL
+  Gobsvec      <- numeric()
   
-  tmodel       <- f.tmodel(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD)
+  tmodel       <- f.tmodel(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD, name.mlinks)
   dZ           <- tmodel$dZ
   Zformula     <- tmodel$Zformula
   M            <- tmodel$M
@@ -322,7 +333,7 @@ mcmcSAR <- function(formula,
   # model NONE
   cl.G0.obs   <- class(G0.obs)
   if(lmodel == "NONE") {
-    if(tmodel == "NONE") {
+    if(tmodel == "NONE") {#tmodel indicated the type of partial information available
       if(!any(cl.G0.obs == "list")) {
         G0.obs <- lapply(N, function(x) matrix(0, x, x))
       }
@@ -338,22 +349,37 @@ mcmcSAR <- function(formula,
   
   # model Probit and logit
   if(lmodel %in% c("PROBIT", "LOGIT")) {
+    if(tmodel == "NONE") {#tmodel indicated the type of partial information available
+      if(!any(cl.G0.obs == "list")) {
+        G0.obs <- lapply(N, function(x) matrix(0, x, x))
+      }
+    }
     typeprob   <- ifelse(lmodel == "PROBIT", 1, 2)
     if (!is.null(dZ)) {
       dZ       <- as.matrix(dZ)
     }
     Krho       <- ncol(dZ)
     cn.rho     <- colnames(dZ)
+    murho      <- NULL
+    Vrho       <- NULL
+    Afix       <- FALSE
+    if(!is.null(estimates$rho) & !is.null(estimates$var.rho)){
+      stopifnot(all(names(estimates) %in% c("rho", "var.rho", "N")))
+      murho    <- estimates$rho
+      Vrho     <- estimates$var.rho
+      Afix     <- TRUE
+    }
+    if(!is.null(prior$rho) & !is.null(prior$var.rho)){
+      stopifnot(all(names(prior) %in% c("rho", "var.rho", "N")))
+      murho    <- prior$rho
+      Vrho     <- prior$var.rho
+    }
     
-    murho      <- estimates$rho
-    Vrho       <- estimates$var.rho
     weights    <- c(mlinks$weights)
-    
-    Gobsvec    <- NULL
+    Gobsvec    <- as.logical(frMceiltoV(G0.obs, N, M))
     
     if (is.null(murho) | is.null(Vrho)) {
       G0vec    <- frMceiltoV(G0, N, M)
-      Gobsvec  <- as.logical(frMceiltoV(G0.obs, N, M))
       G0vec    <- c(G0vec[Gobsvec])
       if(is.null(weights)){
         weights<- rep(1, length(G0vec))
@@ -382,10 +408,11 @@ mcmcSAR <- function(formula,
     
     if(tmodel == "NONE") { #else is necessary partial
       if(!any(cl.G0.obs == "list")) {
-        G0.obs    <- lapply(N, function(x) matrix(0, x, x))
+        G0.obs <- lapply(N, function(x) matrix(0, x, x))
       }
     }
     ListIndex  <- fListIndex(dnetwork, G0.obs, M, N)
+    Gobsvec    <- as.numeric(Gobsvec)
   }  
   
   # latent space model
@@ -563,7 +590,7 @@ mcmcSAR <- function(formula,
   if(lmodel %in% c("PROBIT", "LOGIT")) {
     out        <- SARMCMCpl(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                             muzeta, invszeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, iteration,
-                            target, jumpmin, jumpmax, cpar, print.level, typeprob, block.max)
+                            target, jumpmin, jumpmax, cpar, print.level, typeprob, block.max, Afix, Gobsvec)
     colnames(out$posterior$theta) <- col.post
     colnames(out$posterior$rho)   <- cn.rho
   }
@@ -756,7 +783,7 @@ SARMCMCnone    <- function(y, X, Xone, G0, start, M, N, kbeta, kgamma, dnetwork,
 SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                            muzeta, invszeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, iteration,
                            target, jumpmin, jumpmax, cpar, print.level,
-                           typeprob, block.max) {
+                           typeprob, block.max, Afix, Gobsvec) {
   out          <- NULL
   if (is.null(X)) {
     if (block.max == 1) {
@@ -789,7 +816,9 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, 
                                  jumpmax       = jumpmax, 
                                  c             = cpar, 
                                  progress      = print.level,
-                                 type          = typeprob)
+                                 type          = typeprob,
+                                 Afixed        = Afix,
+                                 G0obsvec      = Gobsvec)
     } else {
       out      <- peerMCMCblocknoc_pl(y             = y, 
                                       V             = Xone, 
@@ -821,7 +850,9 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, 
                                       c             = cpar, 
                                       progress      = print.level,
                                       nupmax        = block.max,
-                                      type          = typeprob)
+                                      type          = typeprob,
+                                      Afixed        = Afix,
+                                      G0obsvec      = Gobsvec)
     }
   } else {
     if (block.max == 1) {
@@ -856,7 +887,9 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, 
                               jumpmax       = jumpmax, 
                               c             = cpar,  
                               progress      = print.level,
-                              type          = typeprob)
+                              type          = typeprob,
+                              Afixed        = Afix,
+                              G0obsvec      = Gobsvec)
     } else {
       out      <- peerMCMCblock_pl(y             = y,
                                    X             = X,
@@ -890,7 +923,9 @@ SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, 
                                    c             = cpar, 
                                    progress      = print.level,
                                    nupmax        = block.max,
-                                   type          = typeprob)
+                                   type          = typeprob,
+                                   Afixed        = Afix,
+                                   G0obsvec      = Gobsvec)
     }
   }
   return(out)
@@ -1057,7 +1092,7 @@ SARMCMCard    <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma
 
 
 # This function compute the type of the model and also return N, M
-f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD) {
+f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD, name.mlinks) {
   # Object's class
   if(!is.null(G0)) {
     if (!is.list(G0)) {
@@ -1081,7 +1116,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
   
   if(any(cl.G0.obs == "character")){
     G0.obs       <- toupper(G0.obs)
-    if(length(G0.obs) != 1 & !all(G0.obs %in% c("ALL", "NONE"))){
+    if(length(G0.obs) != 1 | !all(G0.obs %in% c("ALL", "NONE"))){
       stop("G0.obs should be 'none', 'all', a matrix, or list of matrices")
     }
   }
@@ -1129,16 +1164,19 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
     }
     M          <- length(G0)
     N          <- unlist(lapply(G0, nrow))
+    if(lmodel != "NONE") warning("network fully observed whereas mlinks$model is not 'none'")
     lmodel     <- "NONE"
     sumG0.obs  <- N*(N-1)
   } else{
     # none
     if (lmodel == "NONE") {
+      if(any(!(name.mlinks %in% c("dnetwork", "model")))) 
+        stop("At least one input in mlink is not expected if mlinks$model == 'none'")
       if(class(dnetwork) != "list") {
         if (is.matrix(dnetwork)) {
           dnetwork  <- list(dnetwork)
         } else {
-          stop("dnetwork in mlinks should be a matrix or list of matrices if lmodel = none")
+          stop("dnetwork in mlinks should be a matrix or list of matrices if mlinks$model == 'none'")
         }
       }
       M        <- length(dnetwork)
@@ -1147,6 +1185,8 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
     
     # latent space
     if (lmodel == "LATENT SPACE") { 
+      if(any(!(name.mlinks %in% c("model", "estimates", "mlinks.data", "obsARD", "mARD", "burninARD"))))
+        stop("At least one input in mlink is not expected if mlinks$model = 'latent space'")
       if(!is.list(estimates)) {
         stop("For the latent space model, estimates in mlinks should be a list of objects returned by the function mcmcARD")
       }
@@ -1184,6 +1224,8 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
     
     # probit and logit
     if (lmodel %in% c("PROBIT", "LOGIT")) { 
+      if(any(!(name.mlinks %in% c("model", "mlinks.formula", "weights", "estimates", "prior", "mlinks.data"))))
+        stop("At least one input in mlink is not expected if mlinks$model %in% c('probit', 'logit')")
       murho    <- estimates$rho
       Vrho     <- estimates$var.rho
       

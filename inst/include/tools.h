@@ -49,6 +49,10 @@ Rcpp::List frVtoM(const Eigen::VectorXd& u,
                   const Rcpp::IntegerVector& N,
                   const double& M);
 
+Rcpp::List frVtoMarma(const arma::vec& u,
+                const Rcpp::IntegerVector& N,
+                const double& M);
+
 Eigen::VectorXd frMtoV(Rcpp::List& u,
                        const Rcpp::IntegerVector& N,
                        const double& M);

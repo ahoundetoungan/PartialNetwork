@@ -117,12 +117,19 @@ the variables \code{x1} and \code{x2} are the dyadic observable characteristics.
 where \code{N} is a vector of the number of individual in each sub-network. Indeed, \code{x} will be associated with the entries
 \eqn{(1, 2)}; \eqn{(1, 3)}; \eqn{(1, 4)}; ...; \eqn{(2, 1)}; \eqn{(2, 3)}; \eqn{(2, 4)}; ... of the linking probability and
 as so, in all the sub-networks. Functions \code{\link{mat.to.vec}} and \code{\link{vec.to.mat}} can be used to convert a list of dyadic variable as in matrix form to a format that suits \code{mlinks.formula}.
-\item \code{mlinks.data} optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
-If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which \code{mcmcARD} is called.
-\item \code{weights} is a vector of weights of observed entries. This is important to address the selection problem of observed entries. Detaulf is a vector of ones.
+\item \code{weights} (optional) is a vector of weights of observed entries. This is important to address the selection problem of observed entries. Default is a vector of ones.
 \item \code{estimates} (optional when a part of the network is observed) is a list containing \code{rho}, a vector of the estimates of the Probit or Logit
 parameters, and \code{var.rho} the covariance matrix of the estimator. These estimates can be automatically computed when a part of the network data is available.
+In this case, \code{rho} and the unobserved part of the network are updated without using the observed part of the network. The latter is assumed non-stochastic in the MCMC.
 In addition, if \code{G0.obs = "none"}, \code{estimates} should also include \code{N}, a vector of the number of individuals in each sub-network.
+\item \code{prior} (optional) is a list containing \code{rho}, a vector of the prior beliefs on \code{rho}, and \code{var.rho} the prior covariance matrix of \code{rho}. This input
+is relevant only when the observed part of the network is used to update \code{rho}, i.e. only when \code{estimates = NULL} (so, either \code{estimates} or \code{prior} should be \code{NULL}). \cr
+To understand the difference between
+\code{estimates} and \code{prior}, note that \code{estimates} includes initial estimates of \code{rho} and \code{var.rho}, meaning that the observed part of the network is not used in the MCMC
+to update \code{rho}. In contrast, \code{prior} contains the prior beliefs of the user, and therefore, \code{rho} is updated using this prior and information from the observed part of the network.
+In addition, if \code{G0.obs = "none"}, \code{prior} should also include \code{N}, a vector of the number of individuals in each sub-network.
+\item \code{mlinks.data} optional data frame, list or environment (or object coercible by \link[base]{as.data.frame} to a data frame) containing the dyadic observable characteristics
+If missing, the variables will be taken from \code{environment(mlinks.formula)}, typically the environment from which \code{mcmcARD} is called.
 }
 }
 
@@ -171,7 +178,7 @@ requires to set a minimal and a maximal jumping scales through the parameter \co
 If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
 the simulations from the posterior distribution are printed.
 \item{\code{block.max}}: The maximal number of entries that can be updated simultaneously in \eqn{\mathbf{A}}{A}. It might be
-more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2020).
+more efficient to update simultaneously 2 or 3 entries (see Boucher and Houndetoungan, 2022).
 }
 If \code{block.max} > 1, several entries are randomly chosen from the same row and updated simultaneously. The number of entries chosen is randomly
 chosen between 1 and \code{block.max}. In addition, the entries are not chosen in order. For example, on the row i, the entries (i, 5) and (i, 9) can be updated simultaneously,

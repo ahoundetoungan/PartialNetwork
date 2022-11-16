@@ -491,7 +491,9 @@ void updrhopl(List& Gnorm,
               const Rcpp::IntegerVector& N,
               const int& M,
               double& rhoaccept,
-              const int& type) {
+              const int& type,
+              const bool& Afixed,
+              const Eigen::ArrayXd& G0obsvec) {
   Eigen::VectorXd netA           = frMtoV(Gnorm,  N, M);
   arma::vec rhost                = Fmvnorm(Krho, rho, jumprho);
   arma::vec dZrhost              = dZ*rhost;
@@ -509,9 +511,13 @@ void updrhopl(List& Gnorm,
   lFdZrhostR0                    = lFdZrhostR0*weight;
   Eigen::VectorXd lFdZrhostE1    = as<Eigen::VectorXd>(lFdZrhostR1);
   Eigen::VectorXd lFdZrhostE0    = as<Eigen::VectorXd>(lFdZrhostR0);
-  
+  // cout<<weight(1)<<endl;
   // acceptance rate
-  double lalpharho1   = (netA.array() > 0).select(lFdZrhostE1 - lFdZrhoE1, lFdZrhostE0 - lFdZrhoE0).sum();
+  Eigen::VectorXd tmp = (netA.array() > 0).select(lFdZrhostE1 - lFdZrhoE1, lFdZrhostE0 - lFdZrhoE0);
+  if(Afixed){
+    tmp               = (G0obsvec > 0).select(tmp, 0);
+  }
+  double lalpharho1   = tmp.sum();
   double lalpharho2   = 0.5*(arma::dot(rho - murho, iVrho*(rho - murho)) - arma::dot(rhost - murho, iVrho*(rhost - murho)));
   double logalpharho  = lalpharho1 + lalpharho2;
   
@@ -564,6 +570,7 @@ void updrhoARD(List& Gnorm,
     arma::mat priorm     = prior[m];
     arma::mat Gm         = Gnorm[m];
     Gm                   = arma::ceil(Gm);
+    arma::mat G0obsm     = G0obs[m];
     arma::vec murhom     = murho[m];
     arma::mat iVrhom     = iVrho[m];
     
@@ -622,7 +629,7 @@ void updrhoARD(List& Gnorm,
       priorstm          =  fdnetARD(zm, num, dm, N1m, N2m, Nm, P(m), zetam, logCpzetam, neighborm, weightm, iARDm, inonARDm);
     }
     
-    double lalpharho1   = arma::accu(log(priorstm%(2*Gm - 1) + 1 - Gm) - log(priorm%(2*Gm - 1) + 1 - Gm));
+    double lalpharho1   = arma::accu((log(priorstm%(2*Gm - 1) + 1 - Gm) - log(priorm%(2*Gm - 1) + 1 - Gm))%(1 - G0obsm));
     double lalpharho2   = 0.5*(arma::dot(rhom - murhom, iVrhom*(rhom - murhom)) - arma::dot(rhomst - murhom, iVrhom*(rhomst - murhom)));
     
     double logalpharho  = lalpharho1 + lalpharho2;

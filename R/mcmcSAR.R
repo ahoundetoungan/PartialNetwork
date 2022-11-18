@@ -396,7 +396,7 @@ mcmcSAR <- function(formula,
       Vrho     <- smyp$cov.unscaled
     } 
     
-    tmpwei     <- rep(1, length(Gobsvec)); tmpwei[Gobsvec] <- weights
+    tmpwei     <- rep(1, length(Gobsvec)); if(!is.null(weights)) tmpwei[Gobsvec] <- weights
     weights    <- tmpwei
     
     pfit       <- ifelse(typeprob == 1, pnorm, plogis)(c(dZ%*%murho))

@@ -515,7 +515,7 @@ void updrhopl(List& Gnorm,
   // acceptance rate
   Eigen::VectorXd tmp = (netA.array() > 0).select(lFdZrhostE1 - lFdZrhoE1, lFdZrhostE0 - lFdZrhoE0);
   if(Afixed){
-    tmp               = (G0obsvec > 0).select(tmp, 0);
+    tmp               = (G0obsvec == 0).select(tmp, 0);
   }
   double lalpharho1   = tmp.sum();
   double lalpharho2   = 0.5*(arma::dot(rho - murho, iVrho*(rho - murho)) - arma::dot(rhost - murho, iVrho*(rhost - murho)));

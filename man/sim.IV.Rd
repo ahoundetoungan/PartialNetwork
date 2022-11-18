@@ -42,7 +42,7 @@ is given by \code{G2X[,,p]}.}
 \code{sim.IV} generates Instrument Variables (IV) for linear-in-mean SAR models using only the distribution of the network. See Propositions 1 and 2 of Boucher and Houndetoungan (2020).
 }
 \details{
-Bramoullé et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} as instruments for \eqn{Gy}, where \eqn{P} is the maximal power desired.
+Bramoulle et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^P X} as instruments for \eqn{Gy}, where \eqn{P} is the maximal power desired.
 \code{sim.IV} generate approximation of those instruments, based on Propositions 1 and 2 in Boucher and Houndetoungan (2020) (see also below).
 The argument \code{power} is the maximal power desired.\cr
 When \eqn{Gy} and the instruments \eqn{GX}, \eqn{G^2X}{GGX}, ..., \eqn{G^P X}{GG...GX} are not observed,

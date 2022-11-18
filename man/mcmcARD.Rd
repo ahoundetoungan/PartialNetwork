@@ -88,7 +88,7 @@ to set the desired value for \eqn{\mathbf{v}_k}{vk} while \code{fixb} can be use
 
 \subsection{MCMC control}{
 
-During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the \code{target} values. This
+During the MCMC, the jumping scales are updated following Atchade and Rosenthal (2005) in order to target the acceptance rate of each parameter to the \code{target} values. This
 requires to set minimal and maximal jumping scales through the parameter \code{ctrl.mcmc}. The parameter \code{ctrl.mcmc} is a list which can contain the following named components.
 \itemize{
 \item{\code{target}}: The default value is \code{rep(0.44, 5)}.

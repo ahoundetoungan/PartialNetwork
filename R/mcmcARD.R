@@ -37,7 +37,7 @@
 #' (see McCormick and Zheng, 2015 for more details). The parameter `fixv` can be used
 #' to set the desired value for \eqn{\mathbf{v}_k}{vk} while `fixb` can be used to set the desired values for \eqn{b_k}{bk}.\cr
 #' ## MCMC control
-#' During the MCMC, the jumping scales are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
+#' During the MCMC, the jumping scales are updated following Atchade and Rosenthal (2005) in order to target the acceptance rate of each parameter to the `target` values. This
 #' requires to set minimal and maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 #' \itemize{
 #' \item{`target`}: The default value is \code{rep(0.44, 5)}. 

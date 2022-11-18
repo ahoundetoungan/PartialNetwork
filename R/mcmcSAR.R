@@ -101,7 +101,7 @@
 #' Inverses are used for the prior variance through the argument `hyperparms`  in order to allow non informative prior. Set the inverse of the prior
 #' variance to 0 is equivalent to assume a non informative prior.
 #' ## MCMC control
-#' During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchadé and Rosenthal (2005) in order to target the acceptance rate to the `target` value. This
+#' During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchade and Rosenthal (2005) in order to target the acceptance rate to the `target` value. This
 #' requires to set a minimal and a maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 #' \itemize{
 #' \item{`target`}: the default value is \code{c("alpha" = 0.44, "rho" = 0.27)}.

@@ -142,10 +142,8 @@
 
 fit.dnetwork   <- function(object, X = NULL, obsARD = NULL,
                            m = NULL, burnin = NULL, print = TRUE){
-  t1           <- Sys.time()
-  if (class(object) != "estim.ARD") {
-    stop("object class is not estim.ARD")
-  }
+  t1         <- Sys.time()
+  stopifnot(inherits(object, "estim.ARD"))
   T          <- object$iteration
   P          <- object$p
   simu       <- object$simulations

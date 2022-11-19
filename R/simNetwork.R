@@ -50,9 +50,8 @@ norm.network <- function(W) {
       stop("W is neither a matrix nor a list of matrices")
     }
   }
-  if (class(W) != "list") {
-    stop("W is not a list of matrices. Even in the case of one sub-network, put the network matrix in a list.")
-  }
+  stopifnot(inherits(W, "list"))
+
   M        <- length(W)
   out      <- fGnormalise(W, M)
   if (trsf) {

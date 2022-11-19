@@ -331,15 +331,14 @@ mcmcSAR <- function(formula,
   )
   
   # model NONE
-  cl.G0.obs   <- class(G0.obs)
   if(lmodel == "NONE") {
     if(tmodel == "NONE") {#tmodel indicated the type of partial information available
-      if(!any(cl.G0.obs == "list")) {
+      if(!inherits(G0.obs, "list")) {
         G0.obs <- lapply(N, function(x) matrix(0, x, x))
       }
     }
     if(tmodel == "ALL") {
-      if(!any(cl.G0.obs == "list")) {
+      if(!inherits(G0.obs, "list")) {
         G0.obs <- lapply(N, function(x) matrix(1, x, x))
       }
       dnetwork <- G0.obs
@@ -350,7 +349,7 @@ mcmcSAR <- function(formula,
   # model Probit and logit
   if(lmodel %in% c("PROBIT", "LOGIT")) {
     if(tmodel == "NONE") {#tmodel indicated the type of partial information available
-      if(!any(cl.G0.obs == "list")) {
+      if(!inherits(G0.obs, "list")) {
         G0.obs <- lapply(N, function(x) matrix(0, x, x))
       }
     }
@@ -407,7 +406,7 @@ mcmcSAR <- function(formula,
     dnetwork   <- frVtoM(pfit, N, M)
     
     if(tmodel == "NONE") { #else is necessary partial
-      if(!any(cl.G0.obs == "list")) {
+      if(!inherits(G0.obs, "list")) {
         G0.obs <- lapply(N, function(x) matrix(0, x, x))
       }
     }
@@ -526,7 +525,7 @@ mcmcSAR <- function(formula,
     }
     
     if(tmodel == "NONE") { #else is necessary partial
-      if(!any(cl.G0.obs == "list")) {
+      if(!inherits(G0.obs, "list")) {
         G0.obs    <- lapply(N, function(x) matrix(0, x, x))
       }
     }
@@ -1104,17 +1103,14 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
     }
   }
   
-  cl.G0.obs   <- class(G0.obs)
-  
-  if(!any(cl.G0.obs %in% c("list", "character"))){
+  if(!inherits(G0.obs, c("list", "character"))){
     if (is.matrix(G0.obs)) {
       G0.obs  <- list(G0.obs)
     } else {
       stop("G0.obs should be 'none', 'all', a matrix, or list of matrices")
     }
   }
-  
-  if(any(cl.G0.obs == "character")){
+  if(inherits(G0.obs, "character")){
     G0.obs       <- toupper(G0.obs)
     if(length(G0.obs) != 1 | !all(G0.obs %in% c("ALL", "NONE"))){
       stop("G0.obs should be 'none', 'all', a matrix, or list of matrices")
@@ -1136,7 +1132,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
   sumG0.obs      <- NULL
   
   # Redefine G0.obs if needed
-  if (cl.G0.obs != "character") {
+  if(!inherits(G0.obs, "character")){
     tmp          <- do.call(rbind, lapply(G0.obs, function(x) c(sum(x > 0) - sum(diag(x) > 0), nrow(x)))) 
     sumG0.obs    <- tmp[,1]   
     N            <- tmp[,2]
@@ -1172,7 +1168,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
     if (lmodel == "NONE") {
       if(any(!(name.mlinks %in% c("dnetwork", "model")))) 
         stop("At least one input in mlink is not expected if mlinks$model == 'none'")
-      if(class(dnetwork) != "list") {
+      if(!inherits(dnetwork, "list")) {
         if (is.matrix(dnetwork)) {
           dnetwork  <- list(dnetwork)
         } else {
@@ -1190,7 +1186,7 @@ f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwo
       if(!is.list(estimates)) {
         stop("For the latent space model, estimates in mlinks should be a list of objects returned by the function mcmcARD")
       }
-      if(!all(unlist(lapply(estimates, class)) == "estim.ARD")) {
+      if(!all(sapply(estimates, function(x_) inherits(x_, "estim.ARD")))) {
         stop("for the latent space model, estimates in mlinks should be a list of objects returned by the function mcmcARD")
       }
       

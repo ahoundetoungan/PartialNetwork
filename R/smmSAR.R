@@ -106,8 +106,8 @@ smmSAR <- function(formula,
   
   t1           <- Sys.time()
   seed         <- .Random.seed 
-  if(class(W)[1] != "character") W <- as.matrix(W)
-  stopifnot(class(W) %in% c("character", "matrix", "array"))
+  if(!inherits(W, "character")) W <- as.matrix(W)
+  stopifnot(inherits(W, c("character", "matrix", "array")))
   
   # controls
   nR           <- smm.ctr$R; if(is.null(nR)) nR <- 30L
@@ -125,7 +125,7 @@ smmSAR <- function(formula,
   if(contextual){
     if(iv.power < 2) stop("iv.power should be at least 2 if the model includes contextual effects")
   }
-  stopifnot(class(smoother) == "logical")
+  stopifnot(inherits(smoother, "logical"))
   if(smoother){
     if(is.null(hN)) stop("h is required for the smoother simulator")
   } else{
@@ -162,7 +162,7 @@ smmSAR <- function(formula,
   ninstr       <- Kx1 + iv.power*Kx2
   
   # weight matrix
-  if(class(W)[1] == "character"){
+  if(inherits(W, "character")){
     W          <- diag(Kx1 + iv.power*Kx2)
   }
   
@@ -425,6 +425,7 @@ smmSAR <- function(formula,
 #' @importFrom foreach foreach "%dopar%"
 #' @importFrom doRNG "%dorng%"
 #' @importFrom stats var
+#' @importFrom base inherits
 #' @export
 "summary.smmSAR" <- function(object, 
                              .fun, 
@@ -434,9 +435,7 @@ smmSAR <- function(formula,
                              dnetwork, 
                              data,
                              ...){
-  if (!(class(object) == "smmSAR")) {
-    stop("object is not an smmSAR class object")
-  }
+  stopifnot(inherits(object, "smmSAR"))
   details       <- object$details
   derM          <- details$av.grad.m
   aveMM         <- details$`av.m%*%t(m)`
@@ -689,7 +688,7 @@ fSIGMA <- function(.fun, .args, fmvzeta, Afmvzeta, M) {
 #' @rdname summary.smmSAR
 #' @export
 "print.summary.smmSAR"  <- function(x, ...) {
-  stopifnot(class(x) == "summary.smmSAR")
+  stopifnot(inherits(x, "summary.smmSAR"))
   
   M          <- x$n.group
   N          <- x$N
@@ -750,7 +749,7 @@ fSIGMA <- function(.fun, .args, fmvzeta, Afmvzeta, M) {
                             ncores = 1,
                             data, 
                             ...) {
-  stopifnot(class(x) == "smmSAR")
+  stopifnot(inherits(x, "smmSAR"))
   print(summary(object   = x,
                 dnetwork = dnetwork, 
                 .fun     = .fun, 

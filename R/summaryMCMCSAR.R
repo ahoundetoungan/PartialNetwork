@@ -31,9 +31,7 @@
 #' @export
 
 "summary.mcmcSAR" <- function(object, alpha = 0.95, plot.type = NULL, burnin = NULL, ...) {
-  if (!(class(object) == "mcmcSAR")) {
-    stop("object is not an mcmcSAR class object")
-  }
+  stopifnot(inherits(object, "mcmcSAR"))
   pos.theta   <- object$posterior
   pos.rho     <- NULL
   if (object$method.net != "none"){
@@ -100,7 +98,7 @@
 #' @rdname summary.mcmcSAR
 #' @export
 "print.summary.mcmcSAR"  <- function(x, ...) {
-  stopifnot(class(x) == "summary.mcmcSAR")
+  stopifnot(inherits(x, "summary.mcmcSAR"))
   
   M          <- x$n.group
   N          <- x$N
@@ -168,7 +166,7 @@
 #' @rdname summary.mcmcSAR
 #' @export
 "print.mcmcSAR" <- function(x, ...) {
-  stopifnot(class(x) == "mcmcSAR")
+  stopifnot(inherits(x, "mcmcSAR"))
   print(summary(x, ...))
 }
 
@@ -203,7 +201,7 @@
 #' @importFrom stats density
 #' @export
 "plot.mcmcSAR" <- function(x, plot.type = "sim", burnin = NULL, which.parms = "theta", ...) {
-  stopifnot(class(x) == "mcmcSAR")
+  stopifnot(inherits(x, "mcmcSAR"))
   stopifnot(plot.type %in% c("sim", "dens"))
   stopifnot(which.parms %in% c("theta", "rho"))
   if(x$method.net %in% c("none", "latent space") & which.parms == "rho") {

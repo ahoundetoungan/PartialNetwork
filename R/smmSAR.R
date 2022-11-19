@@ -425,7 +425,6 @@ smmSAR <- function(formula,
 #' @importFrom foreach foreach "%dopar%"
 #' @importFrom doRNG "%dorng%"
 #' @importFrom stats var
-#' @importFrom base inherits
 #' @export
 "summary.smmSAR" <- function(object, 
                              .fun, 

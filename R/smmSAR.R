@@ -91,7 +91,7 @@
 #'   diag(out) <- 0
 #'   out})
 #' smm.logit   <- smmSAR(y ~ X1 + X2, dnetwork = d.logit, contextual = TRUE,
-#'                       smm.ctr  = list(S = 10, T = 10, print = FALSE), data = dataset)
+#'                       smm.ctr  = list(R = 100L, print = TRUE), data = dataset)
 #' summary(smm.logit, dnetwork = d.logit, data = dataset)
 #' }
 #' @export

@@ -7,7 +7,8 @@
 #' @param power (optional, default = 1) is the number of powers of the interaction matrix used to generate the instruments (see details).
 #' @param exp.network (optional, default = FALSE) indicates if simulated network should be exported.
 #' 
-#' @return list of `replication` components. Each component is a list containing `G1y` (if the argument `y` was provided), `G1X` and `G2X` where `G1` and `G2` are independent draws of network from the distribution (see details).
+#' @return list of `replication` components. Each component is a list containing `G1y` (if the argument `y` was provided), `G1` (if `exp.network = TRUE`), `G2` (if `exp.network = TRUE`) , `G1X`, and 
+#' `G2X` where `G1` and `G2` are independent draws of network from the distribution (see details).
 #' \item{G1y}{is an approximation of \eqn{Gy}.}
 #' \item{G1X}{is an approximation of \eqn{G^pX}{GG ... GX}
 #' with the same network draw as that used in `G1y`. `G1X` is an array of dimension \eqn{N \times K \times power}{N * K * power}, where \eqn{K}{K} is the number of column in 
@@ -23,7 +24,7 @@
 #' \code{sim.IV} generate approximation of those instruments, based on Propositions 1 and 2 in Boucher and Houndetoungan (2020) (see also below).
 #' The argument `power` is the maximal power desired.\cr
 #' When \eqn{Gy} and the instruments \eqn{GX}, \eqn{G^2X}{GGX}, ..., \eqn{G^P X}{GG...GX} are not observed, 
-#' Boucher and Houndetoungan (2019) show that we can use one drawn from the distribution of the network in order to approximate \eqn{Gy}, but that
+#' Boucher and Houndetoungan (2022) show that we can use one drawn from the distribution of the network in order to approximate \eqn{Gy}, but that
 #' the same draw should not be used to approximate the instruments. Thus, each component in the function's output gives
 #' `G1y` and `G1X` computed with the same network and `G2X` computed with another network, which can be used in order to approximate the instruments.
 #' This process can be replicated several times and the argument `replication` can be used to set the number of replications desired.

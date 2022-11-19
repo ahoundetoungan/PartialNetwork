@@ -27,7 +27,8 @@ sim.IV(
 \item{exp.network}{(optional, default = FALSE) indicates if simulated network should be exported.}
 }
 \value{
-list of \code{replication} components. Each component is a list containing \code{G1y} (if the argument \code{y} was provided), \code{G1X} and \code{G2X} where \code{G1} and \code{G2} are independent draws of network from the distribution (see details).
+list of \code{replication} components. Each component is a list containing \code{G1y} (if the argument \code{y} was provided), \code{G1} (if \code{exp.network = TRUE}), \code{G2} (if \code{exp.network = TRUE}) , \code{G1X}, and
+\code{G2X} where \code{G1} and \code{G2} are independent draws of network from the distribution (see details).
 \item{G1y}{is an approximation of \eqn{Gy}.}
 \item{G1X}{is an approximation of \eqn{G^pX}{GG ... GX}
 with the same network draw as that used in \code{G1y}. \code{G1X} is an array of dimension \eqn{N \times K \times power}{N * K * power}, where \eqn{K}{K} is the number of column in
@@ -46,7 +47,7 @@ Bramoulle et al. (2009) show that one can use \eqn{GX}, \eqn{G^2X}, ..., \eqn{G^
 \code{sim.IV} generate approximation of those instruments, based on Propositions 1 and 2 in Boucher and Houndetoungan (2020) (see also below).
 The argument \code{power} is the maximal power desired.\cr
 When \eqn{Gy} and the instruments \eqn{GX}, \eqn{G^2X}{GGX}, ..., \eqn{G^P X}{GG...GX} are not observed,
-Boucher and Houndetoungan (2019) show that we can use one drawn from the distribution of the network in order to approximate \eqn{Gy}, but that
+Boucher and Houndetoungan (2022) show that we can use one drawn from the distribution of the network in order to approximate \eqn{Gy}, but that
 the same draw should not be used to approximate the instruments. Thus, each component in the function's output gives
 \code{G1y} and \code{G1X} computed with the same network and \code{G2X} computed with another network, which can be used in order to approximate the instruments.
 This process can be replicated several times and the argument \code{replication} can be used to set the number of replications desired.

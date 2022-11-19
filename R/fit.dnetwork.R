@@ -71,7 +71,7 @@
 #'   trait[,k]       <- rbinom(N, 1, NK[k]*densityatz[,k]/sum(densityatz[,k]))
 #' }
 #' 
-#' # print a percentage of peaople having a trait
+#' # print a percentage of people having a trait
 #' colSums(trait)*100/N
 #' 
 #' # Build ARD
@@ -134,7 +134,7 @@
 #' library(ggplot2)
 #' ggplot(data.frame("etimated.degree" = dist$degree,
 #'                   "true.degree"     = gend,
-#'                   "observed"            = ifelse(logicalARD, TRUE, FALSE)),
+#'                   "observed"        = ifelse(logicalARD, TRUE, FALSE)),
 #'        aes(x = etimated.degree, y = true.degree, colour = observed)) +
 #'   geom_point()
 #' }

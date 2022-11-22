@@ -191,7 +191,6 @@ mcmcSAR <- function(formula,
                     data){
   
   t1                <- Sys.time()
-  G                 <- G0
   stopifnot(is.null(mlinks$estimates) | is.null(mlinks$prior))
   # data
   if (missing(contextual)) {
@@ -249,7 +248,7 @@ mcmcSAR <- function(formula,
   propARD      <- NULL
   Gobsvec      <- numeric()
   
-  tmodel       <- f.tmodel(lmodel, G0.obs, G, dZ, Zformula, estimates, dnetwork, obsARD, name.mlinks)
+  tmodel       <- f.tmodel(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD, name.mlinks)
   dZ           <- tmodel$dZ
   Zformula     <- tmodel$Zformula
   M            <- tmodel$M
@@ -379,7 +378,7 @@ mcmcSAR <- function(formula,
     Gobsvec    <- as.logical(frMceiltoV(G0.obs, N, M))
     
     if (is.null(murho) | is.null(Vrho)) {
-      G0vec    <- frMceiltoV(G, N, M)
+      G0vec    <- frMceiltoV(G0, N, M)
       G0vec    <- c(G0vec[Gobsvec])
       if(is.null(weights)){
         weights<- rep(1, length(G0vec))
@@ -544,36 +543,36 @@ mcmcSAR <- function(formula,
   
   # Network and starting values
   if (is.null(X)) {
-    if (is.null(G)) {
+    if (is.null(G0)) {
       tmp      <- flistGnorm1nc(dnetwork, y, Xone, M)
-      G        <- tmp$G
+      G0       <- tmp$G
       y        <- tmp$ly
       Xone     <- tmp$lXone
     } else {
-      tmp      <- flistGnorm2nc(G, y, Xone, M)
-      G        <- tmp$G
+      tmp      <- flistGnorm2nc(G0, y, Xone, M)
+      G0       <- tmp$G
       y        <- tmp$ly
       Xone     <- tmp$lXone
     }
     if (missing(start)) {
-      start    <- sartpointnoc(G, M, N, kbeta, y, Xone);
+      start    <- sartpointnoc(G0, M, N, kbeta, y, Xone);
     }
   } else {
-    if (is.null(G)) {
+    if (is.null(G0)) {
       tmp      <- flistGnorm1(dnetwork, y, Xone, X, M)
-      G        <- tmp$G
+      G0       <- tmp$G
       y        <- tmp$ly
       Xone     <- tmp$lXone
       X        <- tmp$lX
     } else {
-      tmp      <- flistGnorm2(G, y, Xone, X, M)
-      G        <- tmp$G
+      tmp      <- flistGnorm2(G0, y, Xone, X, M)
+      G0       <- tmp$G
       y        <- tmp$ly
       Xone     <- tmp$lXone
       X        <- tmp$lX
     }
     if (missing(start)) {
-      start    <- sartpoint(G, M, N, kbeta, kgamma, y, X, Xone)
+      start    <- sartpoint(G0, M, N, kbeta, kgamma, y, X, Xone)
     }
   }
   
@@ -582,20 +581,20 @@ mcmcSAR <- function(formula,
   
   out          <- NULL
   if (lmodel == "NONE") {
-    out        <- SARMCMCnone(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+    out        <- SARMCMCnone(y, X, Xone, G0, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                               muzeta, invszeta, a, b, iteration, target, jumpmin, jumpmax,
                               cpar, print.level, block.max)
     colnames(out$posterior)      <- col.post
   }
   if(lmodel %in% c("PROBIT", "LOGIT")) {
-    out        <- SARMCMCpl(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+    out        <- SARMCMCpl(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                             muzeta, invszeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, iteration,
                             target, jumpmin, jumpmax, cpar, print.level, typeprob, block.max, Afix, Gobsvec)
     colnames(out$posterior$theta) <- col.post
     colnames(out$posterior$rho)   <- cn.rho
   }
   if(lmodel == "LATENT SPACE") {
-    out        <- SARMCMCard(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+    out        <- SARMCMCard(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                              muzeta, invszeta, a, b, dest, zetaest, murho, Vrho, Krho, neighbor, weights, iARD, inonARD, P, iteration,
                              target, jumpmin, jumpmax, cpar, typeprob, print.level, block.max)
     
@@ -673,7 +672,7 @@ mcmcSAR <- function(formula,
 
 
 # MCMC for the model none
-SARMCMCnone    <- function(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+SARMCMCnone    <- function(y, X, Xone, G0, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                            muzeta, invszeta, a, b, iteration, target, jumpmin, jumpmax,
                            cpar, print.level, block.max) {
   out          <- NULL
@@ -681,7 +680,7 @@ SARMCMCnone    <- function(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, 
     if (block.max == 1) {
       out      <- peerMCMCnoc_none(y             = y, 
                                    V             = Xone, 
-                                   Gnorm         = G,
+                                   Gnorm         = G0,
                                    prior         = dnetwork, 
                                    ListIndex     = ListIndex, 
                                    M             = M, 
@@ -703,7 +702,7 @@ SARMCMCnone    <- function(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, 
     } else {
       out      <- peerMCMCblocknoc_none(y             = y, 
                                         V             = Xone, 
-                                        Gnorm         = G,
+                                        Gnorm         = G0,
                                         prior         = dnetwork, 
                                         ListIndex     = ListIndex, 
                                         M             = M, 
@@ -729,7 +728,7 @@ SARMCMCnone    <- function(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, 
       out      <- peerMCMC_none(y             = y,
                                 X             = X,
                                 Xone          = Xone,
-                                Gnorm         = G,
+                                Gnorm         = G0,
                                 prior         = dnetwork, 
                                 ListIndex     = ListIndex, 
                                 M             = M, 
@@ -753,7 +752,7 @@ SARMCMCnone    <- function(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, 
       out      <- peerMCMCblock_none(y             = y,
                                      X             = X,
                                      Xone          = Xone,
-                                     Gnorm         = G,
+                                     Gnorm         = G0,
                                      prior         = dnetwork, 
                                      ListIndex     = ListIndex, 
                                      M             = M, 
@@ -780,7 +779,7 @@ SARMCMCnone    <- function(y, X, Xone, G, start, M, N, kbeta, kgamma, dnetwork, 
 }
 
 # MCMC for the models PL
-SARMCMCpl      <- function(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+SARMCMCpl      <- function(y, X, Xone, G0, G0.obs, weights, start, M, N, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                            muzeta, invszeta, a, b, dZ, murho, Vrho, Krho, lFdZrho1, lFdZrho0, iteration,
                            target, jumpmin, jumpmax, cpar, print.level,
                            typeprob, block.max, Afix, Gobsvec) {
@@ -789,7 +788,7 @@ SARMCMCpl      <- function(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, k
     if (block.max == 1) {
       out      <- peerMCMCnoc_pl(y             = y, 
                                  V             = Xone, 
-                                 Gnorm         = G,
+                                 Gnorm         = G0,
                                  G0obs         = G0.obs,
                                  prior         = dnetwork, 
                                  ListIndex     = ListIndex, 
@@ -822,7 +821,7 @@ SARMCMCpl      <- function(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, k
     } else {
       out      <- peerMCMCblocknoc_pl(y             = y, 
                                       V             = Xone, 
-                                      Gnorm         = G,
+                                      Gnorm         = G0,
                                       G0obs         = G0.obs,
                                       prior         = dnetwork, 
                                       ListIndex     = ListIndex, 
@@ -859,7 +858,7 @@ SARMCMCpl      <- function(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, k
       out      <- peerMCMC_pl(y             = y,
                               X             = X,
                               Xone          = Xone,
-                              Gnorm         = G,
+                              Gnorm         = G0,
                               G0obs         = G0.obs,
                               prior         = dnetwork, 
                               ListIndex     = ListIndex, 
@@ -894,7 +893,7 @@ SARMCMCpl      <- function(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, k
       out      <- peerMCMCblock_pl(y             = y,
                                    X             = X,
                                    Xone          = Xone,
-                                   Gnorm         = G,
+                                   Gnorm         = G0,
                                    G0obs         = G0.obs,
                                    prior         = dnetwork, 
                                    ListIndex     = ListIndex, 
@@ -932,7 +931,7 @@ SARMCMCpl      <- function(y, X, Xone, G, G0.obs, weights, start, M, N, kbeta, k
 }
 
 # MCMC for the latent space model
-SARMCMCard     <- function(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
+SARMCMCard     <- function(y, X, Xone, G0, G0.obs, start, M, N, N1, kbeta, kgamma, dnetwork, ListIndex, mutheta, invstheta, 
                           muzeta, invszeta, a, b,  dest, zetaest, murho, Vrho, Krho, neighbor, weights, iARD, inonARD, P,
                           iteration, target, jumpmin, jumpmax, cpar,  typeprob, print.level, block.max) {
   out          <- NULL
@@ -940,7 +939,7 @@ SARMCMCard     <- function(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma
     if (block.max == 1) {
       out      <- peerMCMCnoc_ard(y             = y, 
                                   V             = Xone, 
-                                  Gnorm         = G,
+                                  Gnorm         = G0,
                                   G0obs         = G0.obs,
                                   prior         = dnetwork, 
                                   ListIndex     = ListIndex, 
@@ -975,7 +974,7 @@ SARMCMCard     <- function(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma
     } else {
       out      <- peerMCMCblocknoc_ard(y             = y, 
                                        V             = Xone, 
-                                       Gnorm         = G,
+                                       Gnorm         = G0,
                                        G0obs         = G0.obs,
                                        prior         = dnetwork, 
                                        ListIndex     = ListIndex, 
@@ -1014,7 +1013,7 @@ SARMCMCard     <- function(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma
       out      <- peerMCMC_ard(y             = y,
                                X             = X,
                                Xone          = Xone,
-                               Gnorm         = G,
+                               Gnorm         = G0,
                                G0obs         = G0.obs,
                                prior         = dnetwork, 
                                ListIndex     = ListIndex, 
@@ -1051,7 +1050,7 @@ SARMCMCard     <- function(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma
       out      <- peerMCMCblock_ard(y             = y,
                                     X             = X,
                                     Xone          = Xone,
-                                    Gnorm         = G,
+                                    Gnorm         = G0,
                                     G0obs         = G0.obs,
                                     prior         = dnetwork, 
                                     ListIndex     = ListIndex, 
@@ -1092,12 +1091,12 @@ SARMCMCard     <- function(y, X, Xone, G, G0.obs, start, M, N, N1, kbeta, kgamma
 
 
 # This function compute the type of the model and also return N, M
-f.tmodel         <- function(lmodel, G0.obs, G, dZ, Zformula, estimates, dnetwork, obsARD, name.mlinks) {
+f.tmodel         <- function(lmodel, G0.obs, G0, dZ, Zformula, estimates, dnetwork, obsARD, name.mlinks) {
   # Object's class
-  if(!is.null(G)) {
-    if (!is.list(G)) {
-      if (is.matrix(G)) {
-        G        <- list(G)
+  if(!is.null(G0)) {
+    if (!is.list(G0)) {
+      if (is.matrix(G0)) {
+        G0        <- list(G0)
       } else {
         stop("G0 is neither null, nor a matrix nor a list")
       }
@@ -1156,11 +1155,11 @@ f.tmodel         <- function(lmodel, G0.obs, G, dZ, Zformula, estimates, dnetwor
   
   # type of models
   if (tmodel == "ALL") {
-    if(is.null(G)) {
+    if(is.null(G0)) {
       stop("G0 should be a network matrix or list of sub-network matrices if G0.obs != none")
     }
-    M          <- length(G)
-    N          <- unlist(lapply(G, nrow))
+    M          <- length(G0)
+    N          <- unlist(lapply(G0, nrow))
     if(lmodel != "NONE") warning("network fully observed whereas mlinks$model is not 'none'")
     lmodel     <- "NONE"
     sumG0.obs  <- N*(N-1)

@@ -33,16 +33,16 @@ flistGnorm1 <- function(dnetwork, y, Xone, X, M) {
     .Call(`_PartialNetwork_flistGnorm1`, dnetwork, y, Xone, X, M)
 }
 
-flistGnorm2 <- function(Gnorm, y, Xone, X, M) {
-    .Call(`_PartialNetwork_flistGnorm2`, Gnorm, y, Xone, X, M)
+flistGnorm2 <- function(G, y, Xone, X, M) {
+    .Call(`_PartialNetwork_flistGnorm2`, G, y, Xone, X, M)
 }
 
 flistGnorm1nc <- function(dnetwork, y, Xone, M) {
     .Call(`_PartialNetwork_flistGnorm1nc`, dnetwork, y, Xone, M)
 }
 
-flistGnorm2nc <- function(Gnorm, y, Xone, M) {
-    .Call(`_PartialNetwork_flistGnorm2nc`, Gnorm, y, Xone, M)
+flistGnorm2nc <- function(G, y, Xone, M) {
+    .Call(`_PartialNetwork_flistGnorm2nc`, G, y, Xone, M)
 }
 
 simG <- function(dnetwork, N, M) {

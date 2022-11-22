@@ -659,12 +659,12 @@ smmSAR <- function(formula,
       EZ    <- t(sapply(1:sim, function(x) tmp[[x]]$EZ))
       SIGMA <- VZ + var(EZ)/Nsum
     } 
-    varcov  <- H0 %*% SIGMA %*% t(H0)/Nsum
+    varcov  <- H0 %*% W %*% SIGMA %*% t(W) %*% t(H0)/Nsum
   } else {
     tderM   <- t(derM)
     H0      <- solve(tderM %*% W %*% derM, tderM)
     SIGMA   <- aveMM - Nsum*aveM %*% t(aveM)/M
-    varcov  <- H0 %*% SIGMA %*% t(H0)/Nsum
+    varcov  <- H0 %*% W %*% SIGMA %*% t(W) %*% t(H0)/Nsum
   }
   
   

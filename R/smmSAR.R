@@ -105,6 +105,7 @@ smmSAR <- function(formula,
                    data){
   
   t1           <- Sys.time()
+  if(!exists(".Random.seed")) set.seed(0)
   seed         <- .Random.seed 
   if(!inherits(W, "character")) W <- as.matrix(W)
   stopifnot(inherits(W, c("character", "matrix", "array")))
@@ -454,9 +455,15 @@ smmSAR <- function(formula,
   M             <- object$n.group
   if(M < 2) stop("Inference is not possible with one group")
   Nsum          <- sum(N)
-  
+
   old_seed      <- details$seed
-  new_seed      <- .Random.seed 
+  new_seed      <- NULL
+  if(exists(".Random.seed")){
+    new_seed    <- .Random.seed 
+  } else {
+    new_seed    <- old_seed
+  }
+  
   lmethod       <- !cond.var | !missing(.fun)
   varcov        <- NULL
   if(!cond.var | !missing(.fun)) {

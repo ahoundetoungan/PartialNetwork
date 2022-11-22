@@ -153,17 +153,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // flistGnorm2
-List flistGnorm2(List& Gnorm, arma::vec& y, arma::mat& Xone, arma::mat& X, const int& M);
-RcppExport SEXP _PartialNetwork_flistGnorm2(SEXP GnormSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP XSEXP, SEXP MSEXP) {
+List flistGnorm2(List& G, arma::vec& y, arma::mat& Xone, arma::mat& X, const int& M);
+RcppExport SEXP _PartialNetwork_flistGnorm2(SEXP GSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP XSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G(GSEXP);
     Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type Xone(XoneSEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(flistGnorm2(Gnorm, y, Xone, X, M));
+    rcpp_result_gen = Rcpp::wrap(flistGnorm2(G, y, Xone, X, M));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -182,16 +182,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // flistGnorm2nc
-List flistGnorm2nc(List& Gnorm, arma::vec& y, arma::mat& Xone, const int& M);
-RcppExport SEXP _PartialNetwork_flistGnorm2nc(SEXP GnormSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP MSEXP) {
+List flistGnorm2nc(List& G, arma::vec& y, arma::mat& Xone, const int& M);
+RcppExport SEXP _PartialNetwork_flistGnorm2nc(SEXP GSEXP, SEXP ySEXP, SEXP XoneSEXP, SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List& >::type Gnorm(GnormSEXP);
+    Rcpp::traits::input_parameter< List& >::type G(GSEXP);
     Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type Xone(XoneSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(flistGnorm2nc(Gnorm, y, Xone, M));
+    rcpp_result_gen = Rcpp::wrap(flistGnorm2nc(G, y, Xone, M));
     return rcpp_result_gen;
 END_RCPP
 }

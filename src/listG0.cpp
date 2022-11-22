@@ -44,17 +44,17 @@ List flistGnorm1 (List& dnetwork,
 
 ////G will not be computed because was given
 //[[Rcpp::export]]
-List flistGnorm2 (List& Gnorm,
+List flistGnorm2 (List& G,
                   arma::vec& y, 
                   arma::mat& Xone,
                   arma::mat& X,
                   const int& M) {
   arma::vec N(M);
-  List ly(M), lXone(M), lX(M);
+  List Gnorm(M), ly(M), lXone(M), lX(M);
   int r2          = -1;
   int r1;
   for (int m(0); m < M; ++ m) {
-    arma::mat Gnm = Gnorm(m);
+    arma::mat Gnm = G(m);
     int Nm        = Gnm.n_rows;
     r2           += Nm;
     r1            = r2 - Nm + 1;
@@ -105,16 +105,16 @@ List flistGnorm1nc (List& dnetwork,
 
 ////G will not be computed because was given
 //[[Rcpp::export]]
-List flistGnorm2nc (List& Gnorm,
+List flistGnorm2nc (List& G,
                     arma::vec& y, 
                     arma::mat& Xone,
                     const int& M) {
   arma::vec N(M);
-  List ly(M), lXone(M), lX(M);
+  List Gnorm(M), ly(M), lXone(M), lX(M);
   int r2          = -1;
   int r1;
   for (int m(0); m < M; ++ m) {
-    arma::mat Gnm = Gnorm(m);
+    arma::mat Gnm = G(m);
     int Nm        = Gnm.n_rows;
     r2           += Nm;
     r1            = r2 - Nm + 1;

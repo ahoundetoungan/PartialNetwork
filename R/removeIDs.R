@@ -32,7 +32,7 @@ remove.ids <- function(network, ncores = 1L){
   # Register parallel backend
   registerDoParallel(cl)
   M    <- length(network)
-  out  <- foreach(m = 1:M, .packages  = ".PartialNetwork") %dorng% {rem_non_fin(network[[m]])}
+  out  <- foreach(m = 1:M, .packages  = ".PartialNetwork") %dorng% {rem_non_fin(as.matrix(network[[m]]))}
   network <- lapply(1:M, function(m) out[[m]]$net)
   id      <- lapply(1:M, function(m) c(out[[m]]$id))
   list(network = network, id = id)

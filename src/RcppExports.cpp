@@ -741,6 +741,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rem_non_fin
+List rem_non_fin(const arma::mat& net);
+RcppExport SEXP _PartialNetwork_rem_non_fin(SEXP netSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type net(netSEXP);
+    rcpp_result_gen = Rcpp::wrap(rem_non_fin(net));
+    return rcpp_result_gen;
+END_RCPP
+}
 // falbeta0
 arma::vec falbeta0(const int& R, List& distr, const arma::vec& y, const arma::vec& Gy, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
 RcppExport SEXP _PartialNetwork_falbeta0(SEXP RSEXP, SEXP distrSEXP, SEXP ySEXP, SEXP GySEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
@@ -2556,6 +2567,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PartialNetwork_peerMCMCblock_pl", (DL_FUNC) &_PartialNetwork_peerMCMCblock_pl, 35},
     {"_PartialNetwork_sartpoint", (DL_FUNC) &_PartialNetwork_sartpoint, 8},
     {"_PartialNetwork_sartpointnoc", (DL_FUNC) &_PartialNetwork_sartpointnoc, 6},
+    {"_PartialNetwork_rem_non_fin", (DL_FUNC) &_PartialNetwork_rem_non_fin, 1},
     {"_PartialNetwork_falbeta0", (DL_FUNC) &_PartialNetwork_falbeta0, 16},
     {"_PartialNetwork_fmvzeta0", (DL_FUNC) &_PartialNetwork_fmvzeta0, 18},
     {"_PartialNetwork_fmvzetaH0", (DL_FUNC) &_PartialNetwork_fmvzetaH0, 18},

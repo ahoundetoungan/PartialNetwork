@@ -109,6 +109,10 @@ sartpointnoc <- function(Gnorm, M, N, kbeta, y, Xone) {
     .Call(`_PartialNetwork_sartpointnoc`, Gnorm, M, N, kbeta, y, Xone)
 }
 
+rem_non_fin <- function(net) {
+    .Call(`_PartialNetwork_rem_non_fin`, net)
+}
+
 falbeta0 <- function(R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
     .Call(`_PartialNetwork_falbeta0`, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }

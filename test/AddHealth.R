@@ -112,7 +112,7 @@ if (file.exists(filname)) {
     friendf <- vector("list", nsch)
     gendf   <- vector("list", nsch)
     X       <- as.matrix(db[, va.names[-length(va.names)]])    
-    Y       <- db$y
+    Y       <- db[,"y", drop = TRUE]
     
     
     # output for this loop
@@ -250,18 +250,18 @@ if (file.exists(filname)) {
   # for va.log1
   X1tmp         <- do.call("cbind", lapply(va.log1, function(z) {
     mat.to.vec(lapply(1:nsch, function(x) {
-      va.zx       <- mydata[c(tmp[x] + 1):tmp[x+1],z]   
+      va.zx       <- mydata[c(tmp[x] + 1):tmp[x+1], z, drop = TRUE]   
       matrix(kronecker(va.zx, va.zx, FUN = dist1), sch.size[x])}))
   }))
   # for va.log2
   X2tmp         <- do.call("cbind", lapply(va.log2, function(z) {
     mat.to.vec(lapply(1:nsch, function(x) {
-      va.zx     <- mydata[c(tmp[x] + 1):tmp[x+1],z]   
+      va.zx     <- mydata[c(tmp[x] + 1):tmp[x+1], z, drop = TRUE]   
       matrix(kronecker(va.zx, va.zx, FUN = dist2), sch.size[x])}))
   }))
   Xlogit            <- as.data.frame(cbind(X1tmp, X2tmp)) 
   colnames(Xlogit)  <- c("same.sex", va.log1[-1], "diff.age")
-
+  
   save(list = ls(all = TRUE), file = filname)
 }
 ############################ Descriptive stat ##################################
@@ -276,6 +276,7 @@ my.stat.des <- function(x) {
 va.all.names   <- c("female", "hispanic", "racewhite", "raceblack",   "raceasian",   "raceother", "mehigh",
                     "melhigh", "memhigh", "memiss", "mjhome",  "mjprof", "mjother",  "mjmiss", "age", "gpa")
 # all the variables 
+
 allVar        <- mydata[,va.all.names]
 
 # Descriptive stat
@@ -285,11 +286,10 @@ sdes
 print(sdes)
 
 # convert result into latex
-
 c1.names   <- c("Female", "Hispanic", "Race", "", "", "" , "", "Mother Education", "", "", "", "",
-               "Mother Job", "", "", "", "", "Age", "GPA")
+                "Mother Job", "", "", "", "", "Age", "GPA")
 c2.names   <- c("", "", "", "White", "Black", "Asian", "Other", "", "high", "< high", "> high",
-               "Missing", "", "Stay home",  "Professional", "Other", "Missing", "", "")
+                "Missing", "", "Stay home",  "Professional", "Other", "Missing", "", "")
 
 sdes       <- as.data.frame(cbind(format(round(sdes[,c(1,2)],3), 3), sdes[,-c(1,2)]))
 
@@ -342,7 +342,9 @@ ggplot(data = data.frame(mm = nmatchall), aes(x = mm)) +
 ######## dataset and model settings
 dataset    <- data.frame(GPA = Y, X)
 Xlogit     <- as.data.frame(Xlogit)
-Model      <- GPA ~ female + hispanic + raceblack + raceasian + raceother + melhigh + memhigh + memiss + mjprof + mjother + mjmiss + age
+exp.var    <- c("female", "hispanic", "raceblack", "raceasian", "raceother", "melhigh", "memhigh", 
+                "memiss", "mjprof", "mjother", "mjmiss", "age")
+Model      <- as.formula(paste0("GPA ~ ", paste0(exp.var, collapse = "+")))
 Kv         <- 2*ncol(X) + 1  # Number of exogenous explanatory variables
 
 # Hyperparameters
@@ -356,26 +358,47 @@ hyperp     <- list("mutheta"       = rep(0,Kv),
 # Beyesian estimator
 set.seed(123)
 obs.bayes.est    <- mcmcSAR(formula    = Model,
-                      contextual = TRUE,
-                      G0.obs     = "all",
-                      G0         = G,
-                      hyperparms = hyperp,
-                      data       = dataset,
-                      iteration  = 2e4)
+                            contextual = TRUE,
+                            G0.obs     = "all",
+                            G0         = G,
+                            hyperparms = hyperp,
+                            data       = dataset,
+                            iteration  = 2e4)
 saveRDS(obs.bayes.est, file = "obs.bayes.est.RDS")
 summary(obs.bayes.est)
 plot(obs.bayes.est, mar = c(2, 2, 1, 1))
 plot(obs.bayes.est, plot.type = "dens", mar = c(2, 2, 1, 1))
 
+# write.csv(summary(obs.bayes.est)$posterior$theta, file = "tmp.csv")
+
 # SGMM estimator
+# W = I
 set.seed(123)
-obs.sgmm.est     <- smmSAR(formula    = Model,
+obs.sgmm.est1    <- smmSAR(formula    = Model,
                            contextual = TRUE,
-                           dnetwork   = lapply(G, function(x) 1*(x > 0)), # there is no missing link 
+                           dnetwork   = G, # there is no missing link 
                            smm.ctr    = list(R = 1L, iv.power = 2L, opt.tol = 1e-7, print = TRUE),
                            data       = dataset)
-saveRDS(obs.sgmm.est, file = "obs.sgmm.est.RDS")
-summary(obs.sgmm.est)
+summary(obs.sgmm.est1)
+saveRDS(obs.sgmm.est1, file = "obs.sgmm.est1.RDS")
+
+# write.csv(print(summary(obs.sgmm.est1))$coefficients, file = "tmp.csv")
+
+# W = (Z'Z)^{-1}
+Gsimnorm         <- norm.network(G)
+GXsim            <- peer.avg(Gsimnorm, dataset[,exp.var])
+GGXsim           <- peer.avg(Gsimnorm, GXsim)
+W                <- solve(crossprod(as.matrix(cbind(1, dataset[,exp.var], GXsim, GGXsim))))
+set.seed(123)
+obs.sgmm.est2    <- smmSAR(formula    = Model,
+                           contextual = TRUE,
+                           dnetwork   = G, # there is no missing link 
+                           W          = W,
+                           smm.ctr    = list(R = 1L, iv.power = 2L, opt.tol = 1e-7, print = TRUE),
+                           data       = dataset)
+summary(obs.sgmm.est2)
+saveRDS(obs.sgmm.est2, file = "obs.sgmm.est2.RDS")
+# write.csv(print(summary(obs.sgmm.est2))$coefficients, file = "tmp.csv")
 
 ####################################  Reconstructed network
 ######################### only missing links, we ignore top coding here
@@ -418,27 +441,32 @@ saveRDS(miss.bayes.est, file = "miss.bayes.est.RDS")
 summary(miss.bayes.est)
 plot(miss.bayes.est, mar = c(2, 2, 1, 1))
 
+# write.csv(rbind(summary(miss.bayes.est)$posterior$theta, summary(miss.bayes.est)$posterior$rho), file = "tmp.csv")
 # SGMM estimator
 # We first estimate the distribution of the network using a logit regression on the observed network
 Aobs.mis          <- as.logical(mat.to.vec(lapply(G, function(x) 1*(x > 0))))[as.logical(mat.to.vec(Gobmis))]
 Xlogit.mis        <- as.matrix(Xlogit[as.logical(mat.to.vec(Gobmis)),])
 miss.logit        <- glm(Aobs.mis ~ Xlogit.mis, family = binomial(link = "logit"), weights = weights)
+
 summary(miss.logit)
 rho.mis           <- miss.logit$coefficients
 var.rho           <- summary(miss.logit)$cov.unscaled
+saveRDS(miss.logit, file = "miss.logit.RDS")
+# write.csv(summary(miss.logit)$coefficients, file = "tmp.csv")
 
 # estimated distribution for unobserved links
 dnetwork.miss     <- vec.to.mat(plogis(c(cbind(1, as.matrix(Xlogit))%*%rho.mis)), N = sch.size)
 dnetwork.miss     <- lapply(1:nsch, function(x) (G[[x]] > 0)*Gobmis[[x]] + dnetwork.miss[[x]]*(1 - Gobmis[[x]]))
-  
+
+# W = I
 set.seed(123)
-miss.sgmm.est     <- smmSAR(formula    = Model,
-                            contextual = TRUE,
-                            dnetwork   = dnetwork.miss, # there is no missing link 
-                            smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
-                            data       = dataset)
-saveRDS(miss.sgmm.est, file = "miss.sgmm.est.RDS")
-summary(miss.sgmm.est)
+miss.sgmm.est1     <- smmSAR(formula    = Model,
+                             contextual = TRUE,
+                             dnetwork   = dnetwork.miss, 
+                             smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
+                             data       = dataset)
+summary(miss.sgmm.est1)
+saveRDS(miss.sgmm.est1, file = "miss.sgmm.est1.RDS")
 
 # variance computation
 fdist.miss        <- function(rho.mis, var.rho, Xlogit, G, Gobmis){
@@ -449,17 +477,40 @@ fdist.miss        <- function(rho.mis, var.rho, Xlogit, G, Gobmis){
   lapply(1:M, function(x) (G[[x]] > 0)*Gobmis[[x]] + dsim[[x]]*(1 - Gobmis[[x]]))
 }
 fdist_args        <- list(rho.mis = rho.mis, var.rho = var.rho, Xlogit = Xlogit, G = G, Gobmis = Gobmis)
+smiss.sgmm.est1    <- summary(miss.sgmm.est1, dnetwork = dnetwork.miss, data = dataset, 
+                              .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 15L)
+print(smiss.sgmm.est1)
+saveRDS(smiss.sgmm.est1, file = "smiss.sgmm.est1.RDS")
 
-smiss.sgmm.est     <- summary(miss.sgmm.est, dnetwork = dnetwork.miss, data = dataset, 
-                             .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 4L)
-saveRDS(smiss.sgmm.est, file = "smiss.sgmm.est.RDS")
+# write.csv(print(smiss.sgmm.est1)$coefficients, file = "tmp.csv")
+
+# W = (Z'Z)^{-1}
+Gsimnorm         <- norm.network(sim.network(dnetwork.miss))
+GXsim            <- peer.avg(Gsimnorm, dataset[,exp.var])
+GGXsim           <- peer.avg(Gsimnorm, GXsim)
+W                <- solve(crossprod(as.matrix(cbind(1, dataset[,exp.var], GXsim, GGXsim))))
+set.seed(123)
+miss.sgmm.est2     <- smmSAR(formula    = Model,
+                             contextual = TRUE,
+                             dnetwork   = dnetwork.miss, 
+                             W          = W,
+                             smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
+                             data       = dataset)
+saveRDS(miss.sgmm.est2, file = "miss.sgmm.est2.RDS")
+summary(miss.sgmm.est2)
+smiss.sgmm.est2    <- summary(miss.sgmm.est2, dnetwork = dnetwork.miss, data = dataset, 
+                              .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 15L)
+print(smiss.sgmm.est2)
+saveRDS(smiss.sgmm.est2, file = "smiss.sgmm.est2.RDS")
+
+# write.csv(print(smiss.sgmm.est2)$coefficients, file = "tmp.csv")
 
 ######################### Missing links and top coding
 # We first fit the number of friends
 censure           <- (friendmall >= 5) | (friendfall >= 5)
 Xpoisson          <- as.matrix(cbind(fastDummies::dummy_cols(mydata$sschlcde)[,-1], 
-                           mydata[,c("female", "hispanic", "racewhite", "raceblack", "raceasian", 
-                                     "melhigh", "memhigh", "mjprof", "age")]))
+                                     mydata[,c("female", "hispanic", "racewhite", "raceblack", "raceasian", 
+                                               "melhigh", "memhigh", "mjprof", "age")]))
 lcensure          <- friendall
 rcensure          <- ifelse(friendmall >= 5, unlist(lapply(gendf, function(x) rowSums(x == 0))), friendmall)
 rcensure          <- rcensure + ifelse(friendfall >= 5, unlist(lapply(gendf, function(x) rowSums(x == 1))), friendfall)
@@ -521,10 +572,12 @@ weights <- mat.to.vec(weights)[as.logical(mat.to.vec(Gobtmis))]
 Aobs.tmis         <- as.logical(mat.to.vec(lapply(G, function(x) 1*(x > 0))))[as.logical(mat.to.vec(Gobtmis))]
 Xlogit.tmis       <- as.matrix(Xlogit[as.logical(mat.to.vec(Gobtmis)),])
 tmiss.logit       <- glm(Aobs.tmis ~ Xlogit.tmis, family = binomial(link = "logit"), weights = weights)
+
 summary(tmiss.logit)
 rho.tmis          <- tmiss.logit$coefficients
 var.rho           <- summary(tmiss.logit)$cov.unscaled
-
+saveRDS(tmiss.logit, file = "tmiss.logit.RDS")
+# write.csv(summary(tmiss.logit)$coefficients, file = "tmp.csv")
 
 # Beyesian estimator
 set.seed(123)
@@ -546,18 +599,21 @@ saveRDS(tmiss.bayes.est, file = "tmiss.bayes.est.RDS")
 summary(tmiss.bayes.est)
 plot(tmiss.bayes.est, mar = c(2, 2, 1, 1))
 
+# write.csv(rbind(summary(tmiss.bayes.est)$posterior$theta, summary(tmiss.bayes.est)$posterior$rho), file = "tmp.csv")
+
 # SGMM estimator
 dnetwork.tmiss    <- vec.to.mat(plogis(c(cbind(1, as.matrix(Xlogit))%*%rho.tmis)), N = sch.size)
 dnetwork.tmiss    <- lapply(1:nsch, function(x) (G[[x]] > 0)*Gobtmis[[x]] + dnetwork.tmiss[[x]]*(1 - Gobtmis[[x]]))
 
+# W = I
 set.seed(123)
-tmiss.sgmm.est    <- smmSAR(formula    = Model,
+tmiss.sgmm.est1   <- smmSAR(formula    = Model,
                             contextual = TRUE,
-                            dnetwork   = dnetwork.tmiss, # there is no missing link 
+                            dnetwork   = dnetwork.tmiss, 
                             smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
                             data       = dataset)
-saveRDS(tmiss.sgmm.est, file = "tmiss.sgmm.est.RDS")
-summary(tmiss.sgmm.est)
+saveRDS(tmiss.sgmm.est1, file = "tmiss.sgmm.est1.RDS")
+summary(tmiss.sgmm.est1)
 
 # variance computation
 fdist.tmiss       <- function(rho.tmis, var.rho, Xlogit, G, Gobtmis){
@@ -569,202 +625,87 @@ fdist.tmiss       <- function(rho.tmis, var.rho, Xlogit, G, Gobtmis){
 }
 fdist_args        <- list(rho.tmis = rho.tmis, var.rho = var.rho, Xlogit = Xlogit, G = G, Gobtmis = Gobtmis)
 
-stmiss.sgmm.est   <- summary(tmiss.sgmm.est, dnetwork = dnetwork.tmiss, data = dataset, 
-                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 4L)
-saveRDS(stmiss.sgmm.est, file = "stmiss.sgmm.est.RDS")
-print(stmiss.sgmm.est)
+stmiss.sgmm.est1  <- summary(tmiss.sgmm.est1, dnetwork = dnetwork.tmiss, data = dataset, 
+                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 15L)
+saveRDS(stmiss.sgmm.est1, file = "stmiss.sgmm.est1.RDS")
+print(stmiss.sgmm.est1)
 
+# write.csv(print(stmiss.sgmm.est1)$coefficients, file = "tmp.csv")
 
-####### Plot simulations
-obs.ntw           <- obs.bayes.est$posterior
-recons.ntw        <- miss.bayes.est$posterior$theta
-form.ntw          <- miss.bayes.est$posterior$rho
-Xnames            <- c("Female", "Hispanic", paste("Race =", c("Black", "Asian", "Other")),
-                       paste0("Mother Edu ", c("< High", "> High", "= Missing")), 
-                       paste("Mother Job =", c("Professional", "Other", "Missing")), "Age")
+# W = (Z'Z)^{-1}
+Gsimnorm          <- norm.network(sim.network(dnetwork.tmiss))
+GXsim             <- peer.avg(Gsimnorm, dataset[,exp.var])
+GGXsim            <- peer.avg(Gsimnorm, GXsim)
+W                 <- solve(crossprod(as.matrix(cbind(1, dataset[,exp.var], GXsim, GGXsim))))
+set.seed(123)
+tmiss.sgmm.est2   <- smmSAR(formula    = Model,
+                           contextual = TRUE,
+                           dnetwork   = dnetwork.tmiss, 
+                           W          = W,
+                           smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
+                           data       = dataset)
+saveRDS(tmiss.sgmm.est2, file = "tmiss.sgmm.est2.RDS")
+summary(tmiss.sgmm.est2)
 
-XnamesRho         <- c("Intercept", "Same sex", "Both Hispanic", "Both White", "Both Black",
-                       "Both Asian", "Mums Educ < high", "Mums Educ > high",
-                       "Mums Job Professional", "Age absolute diff")
+stmiss.sgmm.est2  <- summary(tmiss.sgmm.est2, dnetwork = dnetwork.tmiss, data = dataset, 
+                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 15L)
+saveRDS(stmiss.sgmm.est2, file = "stmiss.sgmm.est2.RDS")
+print(stmiss.sgmm.est2)
 
-# simulations
-library(scales)
-c1 = alpha("red", .8)
-c2 = alpha("blue", .6)
-par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
-plot(obs.ntw[,26], type = "l", main = "Peer Effects", col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,26], recons.ntw[,26]), max(obs.ntw[,26], recons.ntw[,26])))
-lines(recons.ntw[,26], type = "l", main = "Peer Effects", col = c2, xlab = "", ylab = "")
+# write.csv(print(stmiss.sgmm.est2)$coefficients, file = "tmp.csv")
 
-par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
-plot(obs.ntw[,1], type = "l", main = "Intercept", col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,1], recons.ntw[,1]), max(obs.ntw[,1], recons.ntw[,1])))
-lines(recons.ntw[,1], type = "l", main = "Intercept", col = c2, xlab = "", ylab = "")
-
-par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
-plot(obs.ntw[,27], type = "l", main = expression(sigma^2), col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,27], recons.ntw[,27]), max(obs.ntw[,27], recons.ntw[,27])))
-lines(recons.ntw[,27], type = "l", main = expression(sigma^2), col = c2, xlab = "", ylab = "")
-
-for (i in 1: 12) {
-  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
-              1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
-      new = TRUE)
-  plot(obs.ntw[,i + 1], type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,i + 1], recons.ntw[,i + 1]), max(obs.ntw[,i + 1], recons.ntw[,i + 1])))
-  lines(recons.ntw[,i + 1], type = "l", main = Xnames[i], col = c2, xlab = "", ylab = "")
-}
-
-for (i in 1: 12) {
-  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
-              1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
-      new = TRUE)
-  plot(obs.ntw[,i + 13], type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,i + 13], recons.ntw[,i + 13]), max(obs.ntw[,i + 13], recons.ntw[,i + 13])))
-  lines(recons.ntw[,i + 13], type = "l", main = Xnames[i], col = c2, xlab = "", ylab = "")
-}
-
-par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
-plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-
-par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
-plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-
-par(fig = c(0.5, 1, 0.75, 1), new = TRUE)
-plot(x = 0, y = 0, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-legend(0, 1.2, legend=c("Observed Network", "Reconstructed Network"),
-       col=c(c1, c2), lty = c(1,1), cex=1, box.lty=0)
-
-# densities
-c1 = alpha("red", 1)
-c2 = alpha("blue", 1)
-
-par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
-tmpo <- density(obs.ntw[2001:20000,26])
-tmpr <- density(recons.ntw[2001:20000,26])
-plot(tmpo, type = "l", main = "Peer Effects",
-     col = c1, xlab = "", ylab = "", xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))))
-lines(tmpr, col = c2, lty=2)
-
-par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
-tmpo <- density(obs.ntw[2001:20000,1])
-tmpr <- density(recons.ntw[2001:20000,1])
-plot(tmpo, type = "l", main = "Intercept", col = c1, xlab = "", ylab = "",
-     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-lines(tmpr, col = c2, lty=2)
-
-par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
-tmpo <- density(obs.ntw[2001:20000,27])
-tmpr <- density(recons.ntw[2001:20000,27])
-plot(tmpo, type = "l", main = expression(sigma^2), col = c1, xlab = "", ylab = "",
-     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-lines(tmpr, col = c2, lty=2)
-
-for (i in 1: 12) {
-  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
-              1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
-      new = TRUE)
-  tmpo <- density(obs.ntw[2001:20000, i + 1])
-  tmpr <- density(recons.ntw[2001:20000, i + 1])
-  plot(tmpo, type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "",
-       xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-       ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-  lines(tmpr, col = c2, lty=2)
-}
-
-
-for (i in 1: 12) {
-  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
-              1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
-      new = TRUE)
-  tmpo <- density(obs.ntw[2001:20000, i + 13])
-  tmpr <- density(recons.ntw[2001:20000, i + 13])
-  plot(tmpo, type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "",
-       xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
-       ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
-  lines(tmpr, col = c2, lty=2)
-}
-
-par(fig = c(0.5, 1, 0.75, 1), new = TRUE)
-plot(x = 0, y = 0, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-legend(0, 1.2, legend=c("Observed Network", "Reconstructed Network"),
-       col=c(c1, c2), lty=1:2, cex=1, box.lty=0)
-
-par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
-plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-
-par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
-plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
-
-# Network formation model
-c1 = "blue"
-par(mfrow = c(2, 5), mar = c(2, 2, 2, 2.1))
-for (i in 1:10) {
-  plot(form.ntw[,i], type = "l", main = XnamesRho[i], col = c1, xlab = "", ylab = "")
-}
-
-##################### Policy simulation
-# Centrality
-library(doParallel)
-# observed network
-cent.obs    <- unlist(lapply(norm.network(G), function(x) solve(diag(nrow(x)) - colMeans(tail(obs.est$posterior, 1e4))["Gy"]*x, rep(1, nrow(x)))))
-
-# reconstructed network
-f.cent.rec  <- function(p.log, alpha){
-  network   <- 1*(as.matrix(cbind(1, Xlogit[,c("same.sex", va.log1[-1], "diff.age")])) %*% p.log + rlogis(nrow(Xlogit)) > 0)
+###################### Average number of friends
+fnfriends   <- function(p.log, Gobs){
+  network   <- 1*((as.matrix(cbind(1, Xlogit)) %*% p.log + rlogis(nrow(Xlogit))) > 0)
   network.n <- vec.to.mat(network, sch.size)
   network.n <- lapply(1:nsch, function(x) Gobs[[x]]*G[[x]] + (1 - Gobs[[x]])*network.n[[x]])
-  network.n <- norm.network(network.n)
-  unlist(lapply(network.n, function(x) solve(diag(nrow(x)) - alpha*x, rep(1, nrow(x)))))
-}
-cent.tmiss  <- mclapply(19900:20000, function(x) f.cent.rec(miss.est$posterior$rho[x,], miss.est$posterior$theta[x, "Gy"]), mc.cores = 3)
-cent.tmiss  <- apply(as.data.frame(cent.tmiss), 1, mean) 
-
-centdata    <- data.frame(observed = cent.obs, reconstructed = cent.tmiss)
-
-save(cent.tmiss, file = "~/Dropbox/Papers - In progress/Partial Network/AddHealth/centrality.rda")
-ggplot(data = centdata, aes(x = observed, y = reconstructed)) + geom_point()
-
-# # Simulate the impact of shock on the network
-# # estimate logit on the observed network
-nFobs       <- unlist(lapply(G, function(x) rowSums(x > 0)))
-nFmis       <- unlist(nmatch)
-nFr         <- nFobs + nFmis
-mean(nFobs); mean(nFr)
-sd(nFobs); sd(nFr)
-Xlogit$link <- mat.to.vec(G)
-
-logit0      <- glm(paste0("link ~ ", paste0(c("same.sex", va.log1[-1], "diff.age"), collapse = "+")), family = "binomial", data = Xlogit)
-summary(logit0)
-# 
-# This function simulate impact of policy on the network and y
-conterfact  <- function(p.log, p.sar, impact){
-  print(impact)
-  p.log[1]  <- p.log[1] + impact
-  network   <- 1*(as.matrix(cbind(1, Xlogit[,c("same.sex", va.log1[-1], "diff.age")])) %*% p.log + rlogis(nrow(Xlogit)) > 0)
-  network.n <- vec.to.mat(network, sch.size, normalise = TRUE)
-  ysim      <- CDatanet::simsar(formula    = ~ female + hispanic + raceblack + raceasian + raceother + melhigh + memhigh + memiss + mjprof + mjother + mjmiss + age,
-                                contextual = TRUE,
-                                Glist      = network.n,
-                                theta      = p.sar,
-                                data       = mydata)$y
-  nfriends  <- unlist(lapply(network.n, function(x) rowSums(x > 0)))
-  out       <- c(mean(nfriends), sd(nfriends), mean(ysim), sd(ysim))
-  names(out)<- c("mean.nfriends", "sd.nfriends", "mean.y", "sd.y")
-  out
+  unlist(lapply(network.n, rowSums))
 }
 
-# application using the observed network
-impact      <- c(sort(seq(-3, -0, 0.05), decreasing = TRUE), seq(0.05, 0.5, 0.05))
-p.sar.obs   <- apply(tail(obs.est$posterior, 1e4), 2, mean)
-p.sar.obs   <- c(p.sar.obs["Gy"], p.sar.obs[names(p.sar.obs) != "Gy"])
-p.log.obs   <- logit0$coefficients
-policy.obs  <- sapply(impact, function(x) conterfact(p.log.obs, p.sar.obs, x))
+library(doParallel)
+summary(unlist(lapply(G, rowSums)))
 
-# application using the reconstructed network
-p.sar.nobs  <- apply(tail(miss.est$posterior$theta, 1e4), 2, mean)
-p.sar.nobs  <- c(p.sar.nobs["Gy"], p.sar.nobs[names(p.sar.nobs) != "Gy"])
-p.log.nobs  <- apply(tail(miss.est$posterior$rho, 1e4), 2, mean)
-policy.nobs <- sapply(impact, function(x) conterfact(p.log.nobs, p.sar.nobs, x))
+# Missing
+set.seed(123)
+summary(apply(do.call(cbind, mclapply(10001:20000, function(x) fnfriends(miss.bayes.est$posterior$rho[x,], Gobmis), mc.cores = 20L)), 1, mean))
+summary(fnfriends(miss.logit$coefficients, Gobmis))
 
+# Missing and top coding
+set.seed(123)
+summary(apply(do.call(cbind, mclapply(10001:20000, function(x) fnfriends(tmiss.bayes.est$posterior$rho[x,], Gobtmis), mc.cores = 20L)), 1, mean))
+summary(fnfriends(tmiss.logit$coefficients, Gobtmis))
 
-policy      <- cbind(impact = impact, t(policy.obs), t(policy.nobs))
-write.csv(policy, row.names = FALSE, file = "~/Dropbox/Papers - In progress/Partial Network/AddHealth/policy.csv")
+###################### Centrality
+library(doParallel)
+library(ggplot2)
+# observed network
+fcent.obs   <- function(alpha){
+  unlist(lapply(norm.network(G), function(x) solve(diag(nrow(x)) - alpha*x, rep(1, nrow(x)))))
+}
+set.seed(123)
+cent.obs    <- mclapply(10001:20000, function(x) fcent.obs(obs.bayes.est$posterior[x, "Gy"]), mc.cores = 20L)
+scent.obs   <- apply(as.data.frame(cent.obs), 1, mean)
+
+# reconstructed network
+fcent.rec   <- function(p.log, alpha, Gobs){
+  network   <- 1*((as.matrix(cbind(1, Xlogit)) %*% p.log + rlogis(nrow(Xlogit))) > 0)
+  network.n <- vec.to.mat(network, sch.size)
+  network.n <- lapply(1:nsch, function(x) Gobs[[x]]*G[[x]] + (1 - Gobs[[x]])*network.n[[x]])
+  unlist(lapply(norm.network(network.n), function(x) solve(diag(nrow(x)) - alpha*x, rep(1, nrow(x)))))
+}
+set.seed(123)
+cent.miss   <- mclapply(10001:20000, function(x) fcent.rec(miss.bayes.est$posterior$rho[x,], miss.bayes.est$posterior$theta[x, "Gy"], Gobmis), mc.cores = 20L)
+set.seed(123)
+cent.tmiss  <- mclapply(10001:20000, function(x) fcent.rec(tmiss.bayes.est$posterior$rho[x,], tmiss.bayes.est$posterior$theta[x, "Gy"], Gobtmis), mc.cores = 20L)
+scent.miss  <- apply(as.data.frame(cent.miss), 1, mean)
+scent.tmiss <- apply(as.data.frame(cent.tmiss), 1, mean)
+
+centrality <- data.frame(observed = scent.obs, missing = scent.miss, top.missing = scent.tmiss)
+
+saveRDS(centrality, file = "centrality.RDS")
+
+ggplot(data = centrality, aes(x = observed, y = top.missing)) + geom_point()
+
+ggplot(data = centrality %>% filter(observed < 1.36), aes(y = factor(observed, labels = c("1.00", "1.35")), x = top.missing)) + 
+  geom_boxplot() + ylab("Centrality: observed network") + xlab("Centrality: reconstructed network") + theme_bw()
+#7*3

@@ -14,7 +14,7 @@ output:
     toc: true
 bibliography: ["References.bib", "Packages.bib"]
 biblio-style: "apalike"
-abstract: \noindent This vignette makes it easier to get started with the package **PartialNetwork**. We illustrate the estimators presented in @boucher2020estimating with examples of simulated data. Section [1]{#IV} illustrates the instrumental variable (IV) estimator, which is biased when the network is sampled. We calculate the bias and propose a general consistent estimator using a simulated general method of moments (SGMM) in section [2]{#SGMM}. We discuss in Section [3]{#SELECT} how to address the selection bias issue caused by missing links in the network formation model. Sections [4]{#BAYES}--[6]{#BAYESARD} present the Bayesian estimator that jointly estimates the spatial autoregressive (SAR) model and the network formation model.
+abstract: \noindent This vignette makes it easier to get started with the package **PartialNetwork**. We illustrate the estimators presented in @boucher2020estimating with examples of simulated data. Section [1]{#IV} illustrates the instrumental variable (IV) estimator, which is biased when the network is sampled. We calculate the bias and propose a general consistent estimator using a simulated general method of moments (SGMM) in Section [2]{#SGMM}. Sections [3]{#BAYES}--[5]{#BAYESARD} present the Bayesian estimator that jointly estimates the spatial autoregressive (SAR) model and the network formation model. Finally, we discuss in Section [6]{#SELECT} how to address the problem of selection bias that can arise when missing links are not completely random.
 link-citations: true
 urlcolor: blue
 vignette: >
@@ -746,7 +746,7 @@ For this example, we assume that links are generated using a simple logit model.
 
 ```{r BayesLog0, echo=FALSE}
 load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.logi.rda?raw=true'))
-# save(out.logi2.2, out.logi3.2, slogestim, out.logi4.1, out.logi4.2, out.selb1, out.selb2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.logi.rda")
+# save(out.logi2.2, out.logi3.2, slogestim, sout.logi4.1, sout.logi4.2, sout.logi4.3, sout.selb1, sout.selb2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.logi.rda")
 ```
 ```{r BayesLog1as, eval=FALSE}
 # EXAMPLE II: NETWORK FORMATION MODEL: LOGIT 
@@ -896,7 +896,7 @@ out.logi4.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.ob
 summary(out.logi4.1) 
 ```
 ```{r BayesLog21ae4, eval=TRUE, echo=FALSE}
-summary(out.logi4.1)
+print(sout.logi4.1)
 ```
 One can notice that the network formation model estimate is not too different from the initial estimate of `rho`.
 ```{r BayesLog21ae1, eval=TRUE}
@@ -917,132 +917,25 @@ out.logi4.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.ob
 summary(out.logi4.2) 
 ```
 ```{r BayesLog21ae6, echo=FALSE}
-summary(out.logi4.2)
+print(sout.logi4.2)
 ```
 
-The MCMC performs well although the distribution of `rho` defined in `prior` is not true. This is because the observed part of the network is used to update `rho`. In contrast, the MCMC would be inconsistent if one defines `estimates` as `prior` because `rho` will not be updated using the observed entries in the adjacency matrix.
+The MCMC performs well although the distribution of `rho` defined in `prior` is not true. This is because the observed part of the network is used to update `rho`. In contrast, the MCMC could be inconsistent if one defines `estimates` as `prior` because `rho` will not be updated using the observed entries in the adjacency matrix, but only using information from the outcome `y`.
 
-# The selection bias issue {#SELECT}
-In many applications, missing links are not completely random. For example, an individual who has no friends is less likely to have missing value on their row in the adjacency matrix than someone who has a lot of links. Even regressing a logit/probit network formation model using the entries of the adjacency matrix that are correctly measured will not yield a consistent estimator due to the selection bias issue.
-
-Consider the case of missing links due to unmatched declared friends. This is for example the case of the network data collected by the National Longitudinal Study of Adolescent to Adult Health (Add Health). We know the *true* number of links for each individual. This information is crucial to address the selection bias issue. When an individual has missing links, we could doubt all the "zeros" on their row in the adjacency matrix. To consistently estimate the SAR model, we can simply assume that information from this row is not true, i.e, the row has "zeros" everywhere in the object `G0.obs`. Information from individuals without missing links can be used to estimate `rho` and doubtful rows in the adjacency matrix will be inferred. However, there is a selection bias issue because we do not use rows with missing links to estimate `rho`. These rows are likely to have a lot of `ones`. As a consequence, the network formation model estimating using rows with no unmatched friends will simulate fewer links than the true data-generating process (DGP). 
-
-A straightforward approach to address the issue is to weight the selected rows that are used to estimate `rho` (see @manski1977estimation). Every selected row must be weighted by the inverse of the probability of having no unmatched links. To do so, the practitioner can include an input `weights` in the list `mlinks` which is an argument of the function `mcmcsar`. The input `weights` must be a vector of dimension the number of "ones" in `G0.obs`.
-
-We consider the following example where the number of missing links is randomly chosen between zero and the true number of links.
-```{r selb1, echo = TRUE, eval=FALSE}
-rm(list = ls())
-library(PartialNetwork)
-library(dplyr)
-set.seed(123)
-# Number of groups
-M             <- 50
-# size of each group
-N             <- rep(30,M)
-# individual effects
-beta          <- c(2, 1, 1.5)
-# contextual effects
-gamma         <- c(5,-3)
-# endogenous effects
-alpha         <- 0.4
-# std-dev errors
-se            <- 2
-# parameters of the network formation model
-rho           <- c(-0.5, -.5, .4)
-# covariates
-X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
-# compute distance between individuals
-tmp           <- c(0, cumsum(N))
-X1l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],1])
-X2l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],2])
-dist.net      <- function(x, y) abs(x - y)
-X1.mat        <- lapply(1:M, function(m) {
-  matrix(kronecker(X1l[[m]], X1l[[m]], FUN = dist.net), N[m])})
-X2.mat        <- lapply(1:M, function(m) {
-  matrix(kronecker(X2l[[m]], X2l[[m]], FUN = dist.net), N[m])})
-# true network
-Xnet          <- as.matrix(cbind("Const" = 1,
-                                 "dX1"   = mat.to.vec(X1.mat),
-                                 "dX2"   = mat.to.vec(X2.mat)))
-ynet          <- Xnet %*% rho
-ynet          <- c(1*((ynet + rlogis(length(ynet))) > 0))
-G0            <- vec.to.mat(ynet, N, normalise = FALSE)
-# number of friends
-nfriends      <- unlist(lapply(G0, function(x) rowSums(x)))
-# number of missing links
-nmislink      <- sapply(nfriends, function(x) sample(0:x, 1))
+<!--```{r BayesLog21ae7, eval=FALSE}
+estimates    <- list("rho"     = c(0, 0, 0), 
+                     "var.rho" = diag(3)) 
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+                     mlinks.data = as.data.frame(Xnet), estimates = estimates)
+out.logi4.3  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
+                        G0 = G0.start, data = dataset, mlinks = mlinks, 
+                        iteration = 2e4)
+summary(out.logi4.3) 
 ```
-
-We now simulate the observed network by removing links from `G0` depending on the number of unmatched links. We also simulate the outcome `y` using the true network.
-```{r selb2, echo = TRUE, eval=FALSE}
-Gobs          <- list(M)  # The observed network
-G0.obs        <- list(M)  # Which information is true and doubtful
-for(x in 1:M){
-  Gx          <- G0[[x]]
-  G0.obsx     <- matrix(1, N[x], N[x]); diag(G0.obsx) <- 0
-  csum        <- cumsum(c(0, N))
-  nmis        <- nmislink[(csum[x] + 1):csum[x + 1]]
-  for (i in 1:N[x]) {
-    if(nmis[i] > 0){
-      tmp     <- which(c(Gx[i,]) == 1)
-      if(length(which(c(Gx[i,]) == 1)) > 1) {
-        tmp   <- sample(which(c(Gx[i,]) == 1), nmis[i])
-      }
-      Gx[i,tmp]   <- 0
-      G0.obsx[i,] <- 0
-    }
-  }
-  Gobs[[x]]   <- Gx
-  G0.obs[[x]] <- G0.obsx
-}
-G0norm        <- norm.network(G0)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X, contextual = TRUE, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
-y             <- y$y
-# data set
-dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
+```{r BayesLog21ae8, echo=FALSE}
+print(sout.logi4.3)
 ```
-
-Assume that we estimate the network formation by selecting the individual with no unmatched links.
-
-```{r, selb3a, eval=FALSE, echo=TRUE}
-mlinks        <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
-                      mlinks.data = as.data.frame(Xnet))
-out.selb1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0 = Gobs,
-                         G0.obs = G0.obs, data = dataset, mlinks = mlinks,
-                         iteration = 2e4)
-summary(out.selb1)
-```
-```{r, selb3b, echo=FALSE}
-summary(out.selb1)
-```
-Although the peer effect estimate appears to be correct, the network formation estimator is likely biased. Indeed the estimator of the intercept is $-2.26$ and is significantly lower than its actual value of -$2$. As a result, the network formation model is likely to simulate fewer links than the true DGP. This is an issue if the practitioner uses the model to simulate policy impact on the network feature such as centrality and also on the `y` outcome.
-
-
-To control for the selection issue, we can weight selected individuals. The weight depends on the framework, especially how missing links occur. In our example, the number of missing links is  chosen randomly between zero and the number of declared links. If the individual has $n_i$ declared friends, the probability of having no unmatched links can be estimated by the proportion of the number of individuals who has no unmatched links in the subset of individuals who declare $n_i$.
-
-```{r, selb3c, eval=FALSE, echo=TRUE}
-G0.obsvec     <- as.logical(mat.to.vec(G0.obs))
-Gvec          <- mat.to.vec(Gobs, ceiled = TRUE)[G0.obsvec]
-W             <- unlist(data.frame(nfriends = nfriends, nmislink = nmislink) %>%
-                       group_by(nfriends) %>% 
-                       summarise(w = length(nmislink)/sum(nmislink == 0)) %>% 
-                       select(w))
-W             <- lapply(1:M, function(x){
-  matrix(rep(W[rowSums(G0[[x]]) + 1], each = N[x]), N[x], byrow = TRUE)})
-weights       <- mat.to.vec(W)[G0.obsvec]
-mlinks        <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
-                      mlinks.data = as.data.frame(Xnet), weights = weights)
-out.selb2     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0 = Gobs, 
-                         G0.obs = G0.obs, data = dataset, mlinks = mlinks,
-                         iteration = 2e4)
-summary(out.selb2)
-```
-```{r, selb3d, echo=FALSE}
-summary(out.selb2)
-```
-It is also possible to use selected sample and the weight to estimate `rho` and `var.rho` using the function `glm`. These estimates can be provided to `mlinks` in `estimates`. In this case `rho` will not be updated using the observed part of the network.
+-->
 
 # Bayesian estimator with latent space model as network formation model {#BAYESARD}
 ## ARD, @breza2020using
@@ -1545,3 +1438,125 @@ summary(out.lspa2)
 ```{r Bayesard4c, fig.height = 3, fig.align = "center"}
 plot(out.lspa2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
+
+# The selection bias issue {#SELECT}
+In many applications, missing links are not completely random. For example, an individual who has no friends is less likely to have missing value on their row in the adjacency matrix than someone who has a lot of links. Even regressing a logit/probit network formation model using the entries of the adjacency matrix that are correctly measured will not yield a consistent estimator due to the selection bias issue.
+
+Consider the case of missing links due to unmatched declared friends. This is for example the case of the network data collected by the National Longitudinal Study of Adolescent to Adult Health (Add Health). We know the *true* number of links for each individual. This information is crucial to address the selection bias issue. When an individual has missing links, we could doubt all the "zeros" on their row in the adjacency matrix. To consistently estimate the SAR model, we can simply assume that information from this row is not true, i.e, the row has "zeros" everywhere in the object `G0.obs`. Information from individuals without missing links can be used to estimate `rho` and doubtful rows in the adjacency matrix will be inferred. However, there is a selection bias issue because we do not use rows with missing links to estimate `rho`. These rows are likely to have a lot of `ones`. As a consequence, the network formation model estimating using rows with no unmatched friends will simulate fewer links than the true data-generating process (DGP). 
+
+A straightforward approach to address the issue is to weight the selected rows that are used to estimate `rho` (see @manski1977estimation). Every selected row must be weighted by the inverse of the probability of having no unmatched links. To do so, the practitioner can include an input `weights` in the list `mlinks` which is an argument of the function `mcmcsar`. The input `weights` must be a vector of dimension the number of "ones" in `G0.obs`.
+
+We consider the following example where the number of missing links is randomly chosen between zero and the true number of links.
+```{r selb1, echo = TRUE, eval=FALSE}
+rm(list = ls())
+library(PartialNetwork)
+library(dplyr)
+set.seed(123)
+# Number of groups
+M             <- 50
+# size of each group
+N             <- rep(30,M)
+# individual effects
+beta          <- c(2, 1, 1.5)
+# contextual effects
+gamma         <- c(5,-3)
+# endogenous effects
+alpha         <- 0.4
+# std-dev errors
+se            <- 2
+# parameters of the network formation model
+rho           <- c(-0.5, -.5, .4)
+# covariates
+X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
+# compute distance between individuals
+tmp           <- c(0, cumsum(N))
+X1l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],1])
+X2l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],2])
+dist.net      <- function(x, y) abs(x - y)
+X1.mat        <- lapply(1:M, function(m) {
+  matrix(kronecker(X1l[[m]], X1l[[m]], FUN = dist.net), N[m])})
+X2.mat        <- lapply(1:M, function(m) {
+  matrix(kronecker(X2l[[m]], X2l[[m]], FUN = dist.net), N[m])})
+# true network
+Xnet          <- as.matrix(cbind("Const" = 1,
+                                 "dX1"   = mat.to.vec(X1.mat),
+                                 "dX2"   = mat.to.vec(X2.mat)))
+ynet          <- Xnet %*% rho
+ynet          <- c(1*((ynet + rlogis(length(ynet))) > 0))
+G0            <- vec.to.mat(ynet, N, normalise = FALSE)
+# number of friends
+nfriends      <- unlist(lapply(G0, function(x) rowSums(x)))
+# number of missing links
+nmislink      <- sapply(nfriends, function(x) sample(0:x, 1))
+```
+
+We now simulate the observed network by removing links from `G0` depending on the number of unmatched links. We also simulate the outcome `y` using the true network.
+```{r selb2, echo = TRUE, eval=FALSE}
+Gobs          <- list(M)  # The observed network
+G0.obs        <- list(M)  # Which information is true and doubtful
+for(x in 1:M){
+  Gx          <- G0[[x]]
+  G0.obsx     <- matrix(1, N[x], N[x]); diag(G0.obsx) <- 0
+  csum        <- cumsum(c(0, N))
+  nmis        <- nmislink[(csum[x] + 1):csum[x + 1]]
+  for (i in 1:N[x]) {
+    if(nmis[i] > 0){
+      tmp     <- which(c(Gx[i,]) == 1)
+      if(length(which(c(Gx[i,]) == 1)) > 1) {
+        tmp   <- sample(which(c(Gx[i,]) == 1), nmis[i])
+      }
+      Gx[i,tmp]   <- 0
+      G0.obsx[i,] <- 0
+    }
+  }
+  Gobs[[x]]   <- Gx
+  G0.obs[[x]] <- G0.obsx
+}
+G0norm        <- norm.network(G0)
+# simulate dependent variable use an external package
+y             <- CDatanet::simsar(~ X, contextual = TRUE, Glist = G0norm,
+                                  theta = c(alpha, beta, gamma, se))
+y             <- y$y
+# data set
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
+```
+
+Assume that we estimate the network formation by selecting the individual with no unmatched links.
+
+```{r, selb3a, eval=FALSE, echo=TRUE}
+mlinks        <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
+                      mlinks.data = as.data.frame(Xnet))
+out.selb1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0 = Gobs,
+                         G0.obs = G0.obs, data = dataset, mlinks = mlinks,
+                         iteration = 2e4)
+summary(out.selb1)
+```
+```{r, selb3b, echo=FALSE}
+print(sout.selb1)
+```
+Although the peer effect estimate appears to be correct, the network formation estimator is likely biased. Indeed the estimator of the intercept is $-2.26$ and is significantly lower than its actual value of -$2$. As a result, the network formation model is likely to simulate fewer links than the true DGP. This is an issue if the practitioner uses the model to simulate policy impact on the outcome `y` or network features, such as centrality.
+
+
+To control for the selection issue, we can weight selected individuals. The weight depends on the framework, especially how missing links occur. In our example, the number of missing links is  chosen randomly between zero and the number of declared links. If the individual has $n_i$ declared friends, the probability of having no unmatched links can be estimated by the proportion of the number of individuals who has no unmatched links in the subset of individuals who declare $n_i$.
+
+```{r, selb3c, eval=FALSE, echo=TRUE}
+G0.obsvec     <- as.logical(mat.to.vec(G0.obs))
+Gvec          <- mat.to.vec(Gobs, ceiled = TRUE)[G0.obsvec]
+W             <- unlist(data.frame(nfriends = nfriends, nmislink = nmislink) %>%
+                       group_by(nfriends) %>% 
+                       summarise(w = length(nmislink)/sum(nmislink == 0)) %>% 
+                       select(w))
+W             <- lapply(1:M, function(x){
+  matrix(rep(W[rowSums(G0[[x]]) + 1], each = N[x]), N[x], byrow = TRUE)})
+weights       <- mat.to.vec(W)[G0.obsvec]
+mlinks        <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
+                      mlinks.data = as.data.frame(Xnet), weights = weights)
+out.selb2     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0 = Gobs, 
+                         G0.obs = G0.obs, data = dataset, mlinks = mlinks,
+                         iteration = 2e4)
+summary(out.selb2)
+```
+```{r, selb3d, echo=FALSE}
+print(sout.selb2)
+```
+It is also possible to use selected sample and the weight to estimate `rho` and `var.rho` using the function `glm`. These estimates can be provided to `mlinks` in `estimates`. In this case `rho` will not be updated using the observed part of the network.

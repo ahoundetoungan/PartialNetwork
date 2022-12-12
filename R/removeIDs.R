@@ -3,6 +3,7 @@
 #' @param ncores is the number of cores to be used to run the program in parallel
 #' @return List of adjacency matrices without missing values and a list of vectors of retained indeces
 #' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach "%dopar%" 
 #' @importFrom doRNG "%dorng%"
 #' @examples 
@@ -24,6 +25,7 @@ remove.ids <- function(network, ncores = 1L){
     
   # Construct cluster
   cl   <- makeCluster(ncores)
+  registerDoParallel(cl)
   M    <- length(network)
   out  <- foreach(m = 1:M, .packages  = "PartialNetwork") %dorng% {rem_non_fin(as.matrix(network[[m]]))}
   stopCluster(cl)

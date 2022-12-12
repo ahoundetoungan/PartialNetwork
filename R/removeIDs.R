@@ -3,8 +3,7 @@
 #' @param ncores is the number of cores to be used to run the program in parallel
 #' @return List of adjacency matrices without missing values and a list of vectors of retained indeces
 #' @importFrom parallel makeCluster stopCluster
-#' @importFrom doParallel registerDoParallel
-#' @importFrom foreach foreach "%dopar%"
+#' @importFrom foreach foreach "%dopar%" 
 #' @importFrom doRNG "%dorng%"
 #' @examples 
 #' A <- matrix(1:25, 5)
@@ -25,14 +24,9 @@ remove.ids <- function(network, ncores = 1L){
     
   # Construct cluster
   cl   <- makeCluster(ncores)
-  
-  # After the function is run, close the cluster.
-  on.exit(stopCluster(cl))
-  
-  # Register parallel backend
-  registerDoParallel(cl)
   M    <- length(network)
-  out  <- foreach(m = 1:M, .packages  = ".PartialNetwork") %dorng% {rem_non_fin(as.matrix(network[[m]]))}
+  out  <- foreach(m = 1:M, .packages  = "PartialNetwork") %dorng% {rem_non_fin(as.matrix(network[[m]]))}
+  stopCluster(cl)
   network <- lapply(1:M, function(m) out[[m]]$net)
   id      <- lapply(1:M, function(m) c(out[[m]]$id))
   list(network = network, id = id)

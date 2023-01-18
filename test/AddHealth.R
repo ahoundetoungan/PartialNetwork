@@ -50,21 +50,21 @@ if (file.exists(filname)) {
   nffr    <- rep(0,N)
   for (i in 1:N) {
     for (j in f_coln) {
-      k  <- which(mydata$aid == mydata[i, j])
+      k  <- which(mydata$aid == mydata[i, j, drop = TRUE])
       # remove if different school
       if (length(k) != 0) {
-        if(mydata[i, "sschlcde"] != mydata[k, "sschlcde"]) {
+        if(mydata[i, "sschlcde", drop = TRUE] != mydata[k, "sschlcde", drop = TRUE]) {
           mydata[i, j]   <- -1
           dscf[i]        <- dscf[i] + 1
         }
         # remove if self frienship
-        if(mydata[i, "aid"] == mydata[k, "aid"]) {
+        if(mydata[i, "aid", drop = TRUE] == mydata[k, "aid", drop = TRUE]) {
           mydata[i, j]   <- -2
           sfre[i]        <- sfre[i] + 1
         }
       }
       else {
-        if (!((mydata[i, j] %in% mislist) | is.na(mydata[i, j]))) {
+        if (!((mydata[i, j, drop = TRUE] %in% mislist) | is.na(mydata[i, j, drop = TRUE]))) {
           mydata[i, j]   <- -3
           nffr[i]        <- nffr[i] + 1
         }
@@ -78,22 +78,21 @@ if (file.exists(filname)) {
   rm(list = c("i", "j", "k"))
   
   # School size max
-  sch.size.max <- 200
+  sch.size.max  <- 200
   
   # Keep schools < School size max
-  
-  schtable     <- table(mydata$sschlcde)
-  school       <- as.numeric(names(schtable))
-  sch.size     <- as.numeric(schtable)
-  school       <- school[sch.size < sch.size.max]
-  sch.size     <- sch.size[sch.size < sch.size.max]
+  schtable      <- table(mydata$sschlcde)
+  school        <- as.numeric(names(schtable))
+  sch.size      <- as.numeric(schtable)
+  school        <- school[sch.size < sch.size.max]
+  sch.size      <- sch.size[sch.size < sch.size.max]
+  nsch          <- length(school)
   
   # Update data
-  mydata       <- mydata[mydata$sschlcde %in% school,]
-  nsch         <- length(school)
+  mydata        <- mydata[mydata$sschlcde %in% school,]
   
   # dependent variable
-  mydata$y     <- mydata[,tail(va.names,1)]
+  mydata$y     <- mydata[,tail(va.names,1), drop = TRUE]
   
   mislistmis   <- c(55555555, 99999999, 99959995)
   
@@ -123,7 +122,7 @@ if (file.exists(filname)) {
     for (i in 1:nsch) {
       cat("School :", i, "/", nsch, "\n")
       schi         <- school[i]
-      dbi          <- db[db$sschlcde == schi,]
+      dbi          <- db %>% filter(sschlcde == schi)
       Ni           <- nrow(dbi)
       Gi           <- matrix(0, Ni, Ni)
       Giom         <- matrix(1, Ni, Ni)
@@ -136,16 +135,16 @@ if (file.exists(filname)) {
       matchim      <- numeric() #will contain male links
       matchif      <- numeric() #will contain female links
       for (j in 1:Ni) {
-        idxm       <- which(dbi$aid %in% dbi[j, mf_coln])
-        idxf       <- which(dbi$aid %in% dbi[j, ff_coln])
+        idxm       <- which(dbi$aid %in% unlist(dbi[j, mf_coln]))
+        idxf       <- which(dbi$aid %in% unlist(dbi[j, ff_coln]))
         matchim[j] <- length(idxm) # observed male links
         matchif[j] <- length(idxf) # observed female links
         idx        <- c(idxm, idxf)
         Gi[j, idx] <- 1
         
         # missing links
-        idxm.miss  <- which(dbi[j, mf_coln] %in% c(mislistmis, -3))
-        idxf.miss  <- which(dbi[j, ff_coln] %in% c(mislistmis, -3))
+        idxm.miss  <- which(unlist(dbi[j, mf_coln]) %in% c(mislistmis, -3))
+        idxf.miss  <- which(unlist(dbi[j, ff_coln]) %in% c(mislistmis, -3))
         nmatchim[j]<- length(idxm.miss) # Number of missing male links
         nmatchif[j]<- length(idxf.miss) # Number of missing female links
         
@@ -338,6 +337,13 @@ ggplot(data = data.frame(mm = nmatchall), aes(x = mm)) +
   scale_x_discrete(limits = 0:10) 
 # size 7 × 4 inch
 
+# Proportion of observed 
+sum(sapply(Gobmis, function(x) sum(x == 1)))/sum(sch.size*(sch.size - 1))
+# proportion of missing to be inferred
+sum(sapply(Gobmis, function(x) sum(x == 0) - nrow(x)))/sum(sch.size*(sch.size - 1))
+# Proportion of missing to be inferred due to error code and top coding
+sum(sapply(Gobtmis, function(x) sum(x == 0) - nrow(x)))/sum(sch.size*(sch.size - 1))
+
 ################################ Estimation #############################
 ######## dataset and model settings
 dataset    <- data.frame(GPA = Y, X)
@@ -478,7 +484,7 @@ fdist.miss        <- function(rho.mis, var.rho, Xlogit, G, Gobmis){
 }
 fdist_args        <- list(rho.mis = rho.mis, var.rho = var.rho, Xlogit = Xlogit, G = G, Gobmis = Gobmis)
 smiss.sgmm.est1    <- summary(miss.sgmm.est1, dnetwork = dnetwork.miss, data = dataset, 
-                              .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 15L)
+                              .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 5L)
 print(smiss.sgmm.est1)
 saveRDS(smiss.sgmm.est1, file = "smiss.sgmm.est1.RDS")
 
@@ -499,7 +505,7 @@ miss.sgmm.est2     <- smmSAR(formula    = Model,
 saveRDS(miss.sgmm.est2, file = "miss.sgmm.est2.RDS")
 summary(miss.sgmm.est2)
 smiss.sgmm.est2    <- summary(miss.sgmm.est2, dnetwork = dnetwork.miss, data = dataset, 
-                              .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 15L)
+                              .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 5L)
 print(smiss.sgmm.est2)
 saveRDS(smiss.sgmm.est2, file = "smiss.sgmm.est2.RDS")
 
@@ -555,9 +561,9 @@ weights <- lapply(1:nsch, function(x) {
   csum  <- c(0, cumsum(sch.size))
   idx   <- (csum[x] + 1):csum[x + 1]
   tcm1  <- matrix(rep(est.nfriendm[idx]/friendm[[x]], each = sch.size[x]), sch.size[x], byrow = TRUE)
-  tcm0  <- matrix(rep((nmx - est.nfriendm[idx])/(nmx - friendm[[x]]), each = sch.size[x]), sch.size[x], byrow = TRUE)
+  tcm0  <- matrix(rep((nmx - 1 - est.nfriendm[idx])/(nmx - 1 - friendm[[x]]), each = sch.size[x]), sch.size[x], byrow = TRUE)
   tcf1  <- matrix(rep(est.nfriendf[idx]/friendf[[x]], each = sch.size[x]), sch.size[x], byrow = TRUE)
-  tcf0  <- matrix(rep((nfx - est.nfriendf[idx])/(nfx - friendf[[x]]), each = sch.size[x]), sch.size[x], byrow = TRUE)
+  tcf0  <- matrix(rep((nfx - 1 - est.nfriendf[idx])/(nfx - 1 - friendf[[x]]), each = sch.size[x]), sch.size[x], byrow = TRUE)
   tcm1[is.na(tcm1)] <- 0
   tcm0[is.na(tcm0)] <- 0
   tcf1[is.na(tcf1)] <- 0
@@ -566,11 +572,11 @@ weights <- lapply(1:nsch, function(x) {
   tcf   <- tcf1*G[[x]] + tcf0*(1 - G[[x]])
   tcf*wf*gendf[[x]] + tcm*wm*(1 - gendf[[x]])
 })
-weights <- mat.to.vec(weights)[as.logical(mat.to.vec(Gobtmis))]
+weights <- mat.to.vec(weights)[as.logical(mat.to.vec(Gobmis))]
 
 # Network distribution
-Aobs.tmis         <- as.logical(mat.to.vec(lapply(G, function(x) 1*(x > 0))))[as.logical(mat.to.vec(Gobtmis))]
-Xlogit.tmis       <- as.matrix(Xlogit[as.logical(mat.to.vec(Gobtmis)),])
+Aobs.tmis         <- as.logical(mat.to.vec(lapply(G, function(x) 1*(x > 0))))[as.logical(mat.to.vec(Gobmis))]
+Xlogit.tmis       <- as.matrix(Xlogit[as.logical(mat.to.vec(Gobmis)),])
 tmiss.logit       <- glm(Aobs.tmis ~ Xlogit.tmis, family = binomial(link = "logit"), weights = weights)
 
 summary(tmiss.logit)
@@ -612,8 +618,8 @@ tmiss.sgmm.est1   <- smmSAR(formula    = Model,
                             dnetwork   = dnetwork.tmiss, 
                             smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
                             data       = dataset)
-saveRDS(tmiss.sgmm.est1, file = "tmiss.sgmm.est1.RDS")
 summary(tmiss.sgmm.est1)
+saveRDS(tmiss.sgmm.est1, file = "tmiss.sgmm.est1.RDS")
 
 # variance computation
 fdist.tmiss       <- function(rho.tmis, var.rho, Xlogit, G, Gobtmis){
@@ -626,7 +632,7 @@ fdist.tmiss       <- function(rho.tmis, var.rho, Xlogit, G, Gobtmis){
 fdist_args        <- list(rho.tmis = rho.tmis, var.rho = var.rho, Xlogit = Xlogit, G = G, Gobtmis = Gobtmis)
 
 stmiss.sgmm.est1  <- summary(tmiss.sgmm.est1, dnetwork = dnetwork.tmiss, data = dataset, 
-                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 15L)
+                             .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 5L)
 saveRDS(stmiss.sgmm.est1, file = "stmiss.sgmm.est1.RDS")
 print(stmiss.sgmm.est1)
 
@@ -639,20 +645,146 @@ GGXsim            <- peer.avg(Gsimnorm, GXsim)
 W                 <- solve(crossprod(as.matrix(cbind(1, dataset[,exp.var], GXsim, GGXsim))))
 set.seed(123)
 tmiss.sgmm.est2   <- smmSAR(formula    = Model,
-                           contextual = TRUE,
-                           dnetwork   = dnetwork.tmiss, 
-                           W          = W,
-                           smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
-                           data       = dataset)
+                            contextual = TRUE,
+                            dnetwork   = dnetwork.tmiss, 
+                            W          = W,
+                            smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
+                            data       = dataset)
 saveRDS(tmiss.sgmm.est2, file = "tmiss.sgmm.est2.RDS")
 summary(tmiss.sgmm.est2)
 
 stmiss.sgmm.est2  <- summary(tmiss.sgmm.est2, dnetwork = dnetwork.tmiss, data = dataset, 
-                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 15L)
+                             .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 5L)
 saveRDS(stmiss.sgmm.est2, file = "stmiss.sgmm.est2.RDS")
 print(stmiss.sgmm.est2)
 
 # write.csv(print(stmiss.sgmm.est2)$coefficients, file = "tmp.csv")
+
+####### Plot simulations
+obs.ntw           <- obs.bayes.est$posterior
+recons.ntw        <- tmiss.bayes.est$posterior$theta
+form.ntw          <- tmiss.bayes.est$posterior$rho
+Xnames            <- c("Female", "Hispanic", paste("Race =", c("Black", "Asian", "Other")),
+                       paste0("Mother Edu ", c("< High", "> High", "= Missing")), 
+                       paste("Mother Job =", c("Professional", "Other", "Missing")), "Age")
+
+XnamesRho         <- c("Intercept", "Same sex", "Both Hispanic", "Both White", "Both Black",
+                       "Both Asian", "Mums Educ < high", "Mums Educ > high",
+                       "Mums Job Professional", "Age absolute diff")
+
+### peer effect model, simulations
+library(scales)
+c1 = alpha("red", .8)
+c2 = alpha("blue", .6)
+par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
+plot(obs.ntw[,26], type = "l", main = "Peer Effects", col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,26], recons.ntw[,26]), max(obs.ntw[,26], recons.ntw[,26])))
+lines(recons.ntw[,26], type = "l", main = "Peer Effects", col = c2, xlab = "", ylab = "")
+
+par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
+plot(obs.ntw[,1], type = "l", main = "Intercept", col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,1], recons.ntw[,1]), max(obs.ntw[,1], recons.ntw[,1])))
+lines(recons.ntw[,1], type = "l", main = "Intercept", col = c2, xlab = "", ylab = "")
+
+par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
+plot(obs.ntw[,27], type = "l", main = expression(sigma^2), col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,27], recons.ntw[,27]), max(obs.ntw[,27], recons.ntw[,27])))
+lines(recons.ntw[,27], type = "l", main = expression(sigma^2), col = c2, xlab = "", ylab = "")
+
+for (i in 1: 12) {
+  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
+              1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
+      new = TRUE)
+  plot(obs.ntw[,i + 1], type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,i + 1], recons.ntw[,i + 1]), max(obs.ntw[,i + 1], recons.ntw[,i + 1])))
+  lines(recons.ntw[,i + 1], type = "l", main = Xnames[i], col = c2, xlab = "", ylab = "")
+}
+
+for (i in 1: 12) {
+  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
+              1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
+      new = TRUE)
+  plot(obs.ntw[,i + 13], type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "", ylim = c(min(obs.ntw[,i + 13], recons.ntw[,i + 13]), max(obs.ntw[,i + 13], recons.ntw[,i + 13])))
+  lines(recons.ntw[,i + 13], type = "l", main = Xnames[i], col = c2, xlab = "", ylab = "")
+}
+
+par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
+plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+
+par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
+plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+
+par(fig = c(0.5, 1, 0.75, 1), new = TRUE)
+plot(x = 0, y = 0, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+legend(0, 1.2, legend=c("Observed Network", "Reconstructed Network"),
+       col=c(c1, c2), lty = c(1,1), cex=1, box.lty=0)
+ # 10x17
+
+# peer effect model, densities
+c1 = alpha("red", 1)
+c2 = alpha("blue", 1)
+
+par(fig = c(0, 1/6, 1 - 0.92/5, 1), mar = c(2, 2, 2, 2.1))
+tmpo <- density(obs.ntw[2001:20000,26])
+tmpr <- density(recons.ntw[2001:20000,26])
+plot(tmpo, type = "l", main = "Peer Effects",
+     col = c1, xlab = "", ylab = "", xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))))
+lines(tmpr, col = c2, lty=2)
+
+par(fig = c(1/6, 2/6, 1 - 0.92/5, 1), new = TRUE)
+tmpo <- density(obs.ntw[2001:20000,1])
+tmpr <- density(recons.ntw[2001:20000,1])
+plot(tmpo, type = "l", main = "Intercept", col = c1, xlab = "", ylab = "", 
+     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+lines(tmpr, col = c2, lty=2)
+
+par(fig = c(2/6, 3/6, 1 - 0.92/5, 1), new = TRUE)
+tmpo <- density(obs.ntw[2001:20000,27])
+tmpr <- density(recons.ntw[2001:20000,27])
+plot(tmpo, type = "l", main = expression(sigma^2), col = c1, xlab = "", ylab = "",
+     xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+     ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+lines(tmpr, col = c2, lty=2)
+
+for (i in 1: 12) {
+  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
+              1 - (1 + ceiling(i/6))*0.92/5 - 0.04, 1 - ceiling(i/6)*0.92/5 - 0.04),
+      new = TRUE)
+  tmpo <- density(obs.ntw[2001:20000, i + 1])
+  tmpr <- density(recons.ntw[2001:20000, i + 1])
+  plot(tmpo, type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "",
+       xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+       ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+  lines(tmpr, col = c2, lty=2)
+}
+
+for (i in 1: 12) {
+  par(fig = c(((i - 1) %% 6)/6, ((i - 1) %% 6 + 1)/6,
+              1 - (3 + ceiling(i/6))*0.92/5 - 0.07999999, 1 - (2 + ceiling(i/6))*0.92/5 - 0.08),
+      new = TRUE)
+  tmpo <- density(obs.ntw[2001:20000, i + 13])
+  tmpr <- density(recons.ntw[2001:20000, i + 13])
+  plot(tmpo, type = "l", main = Xnames[i], col = c1, xlab = "", ylab = "",
+       xlim = c(min(c(tmpo$x, tmpr$x)), max(c(tmpo$x, tmpr$x))),
+       ylim = c(min(c(tmpo$y, tmpr$y)), max(c(tmpo$y, tmpr$y))))
+  lines(tmpr, col = c2, lty=2)
+}
+par(fig = c(0.5, 1, 0.75, 1), new = TRUE)
+plot(x = 0, y = 0, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+legend(0, 1.2, legend=c("Observed Network", "Reconstructed Network"),
+       col=c(c1, c2), lty=1:2, cex=1, box.lty=0)
+
+par(fig = c(0, 1, 1 - 2*0.92/5 - 0.04, 1 - 0.92/5), new = TRUE)
+plot(x = 0, main = "Own Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+
+par(fig = c(0, 1, 1 - 4*0.92/5 - 0.08, 1 - 3*0.92/5 - 0.04), new = TRUE)
+plot(x = 0, main = "Contextual Effects", bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
+# 10x17
+### Network formation model
+c1 = "blue"
+par(mfrow = c(2, 5), mar = c(2, 2, 2, 2.1))
+for (i in 1:10) {
+  plot(form.ntw[,i], type = "l", main = XnamesRho[i], col = c1, xlab = "", ylab = "")
+}
+# 5x12
 
 ###################### Average number of friends
 fnfriends   <- function(p.log, Gobs){
@@ -675,6 +807,34 @@ set.seed(123)
 summary(apply(do.call(cbind, mclapply(10001:20000, function(x) fnfriends(tmiss.bayes.est$posterior$rho[x,], Gobtmis), mc.cores = 20L)), 1, mean))
 summary(fnfriends(tmiss.logit$coefficients, Gobtmis))
 
+# Peer effects
+sobs.sgmm.est1 <- summary(obs.sgmm.est1)
+dataint        <- data.frame(estimate = c(mean(obs.bayes.est$posterior[10001:20000, "Gy"]),
+                                          mean(miss.bayes.est$posterior$theta[10001:20000, "Gy"]),
+                                          mean(tmiss.bayes.est$posterior$theta[10001:20000, "Gy"]),
+                                          sobs.sgmm.est1$estimates["Gy"],
+                                          smiss.sgmm.est1$estimates["Gy"],
+                                          stmiss.sgmm.est1$estimates["Gy"]),
+                             LB       = c(quantile(obs.bayes.est$posterior[10001:20000, "Gy"], 0.025),
+                                          quantile(miss.bayes.est$posterior$theta[10001:20000, "Gy"], 0.025),
+                                          quantile(tmiss.bayes.est$posterior$theta[10001:20000, "Gy"], 0.025),
+                                          sobs.sgmm.est1$estimates["Gy"] - 1.96*sqrt(sobs.sgmm.est1$cov[1,1]),
+                                          smiss.sgmm.est1$estimates["Gy"] - 1.96*sqrt(smiss.sgmm.est1$cov[1,1]),
+                                          stmiss.sgmm.est1$estimates["Gy"] - 1.96*sqrt(stmiss.sgmm.est1$cov[1,1])),
+                             UB       = c(quantile(obs.bayes.est$posterior[10001:20000, "Gy"], 0.975),
+                                          quantile(miss.bayes.est$posterior$theta[10001:20000, "Gy"], 0.975),
+                                          quantile(tmiss.bayes.est$posterior$theta[10001:20000, "Gy"], 0.975),
+                                          sobs.sgmm.est1$estimates["Gy"] + 1.96*sqrt(sobs.sgmm.est1$cov[1,1]),
+                                          smiss.sgmm.est1$estimates["Gy"] + 1.96*sqrt(smiss.sgmm.est1$cov[1,1]),
+                                          stmiss.sgmm.est1$estimates["Gy"] + 1.96*sqrt(stmiss.sgmm.est1$cov[1,1])),
+                             Model    =  factor(c("Obsv.Bayes", "Miss.Bayes", "TopMiss.Bayes", "Obsv.SGMM", "Miss.SGMM", "TopMiss.SGMM"),
+                                                levels = c("TopMiss.SGMM", "TopMiss.Bayes", "Miss.SGMM", "Miss.Bayes", "Obsv.SGMM", "Obsv.Bayes")))
+
+
+ggplot(data = dataint, aes(y = Model, x = estimate)) + geom_errorbarh(aes(xmin = LB, xmax = UB, height = .3)) +
+  geom_point(shape = 21, size = 2, fill = "white") +
+  xlab("Peer effect estimate") + ylab("Model") + theme_bw()
+#3*7
 ###################### Centrality
 library(doParallel)
 library(ggplot2)
@@ -704,8 +864,11 @@ centrality <- data.frame(observed = scent.obs, missing = scent.miss, top.missing
 
 saveRDS(centrality, file = "centrality.RDS")
 
-ggplot(data = centrality, aes(x = observed, y = top.missing)) + geom_point()
+# scatter plot
+ggplot(data = centrality, aes(x = observed, y = top.missing)) + geom_point(colour = "#505050", size = 1) + theme_bw() + 
+  xlab("Centrality: observed network") + ylab("Centrality: reconstructed network")
 
+# boxplot
 ggplot(data = centrality %>% filter(observed < 1.36), aes(y = factor(observed, labels = c("1.00", "1.35")), x = top.missing)) + 
   geom_boxplot() + ylab("Centrality: observed network") + xlab("Centrality: reconstructed network") + theme_bw()
 #7*3

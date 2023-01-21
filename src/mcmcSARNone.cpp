@@ -50,7 +50,7 @@ List peerMCMCnoc_none(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   
   // Other parameters
   double jumpzeta = 1;
@@ -86,7 +86,7 @@ List peerMCMCnoc_none(const List& y,
   
   //Save 
   arma::mat saveparms(kv+2,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   
   if (progress == 0 ){
@@ -140,7 +140,9 @@ List peerMCMCnoc_none(const List& y,
       saveparms.col(t) = parms;
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- theta: %1.4f\n", zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }}
@@ -216,7 +218,7 @@ List peerMCMCblocknoc_none(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   
   // Other parameters
   double jumpzeta = 1;
@@ -251,7 +253,7 @@ List peerMCMCblocknoc_none(const List& y,
   
   //Save 
   arma::mat saveparms(kv+2,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   if (progress == 0 ){
     
@@ -304,7 +306,9 @@ List peerMCMCblocknoc_none(const List& y,
       saveparms.col(t) = parms;
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- theta: %1.4f\n", zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }
@@ -380,7 +384,7 @@ List peerMCMC_none(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   
   // Other parameters
   double jumpzeta = 1;
@@ -428,7 +432,7 @@ List peerMCMC_none(const List& y,
   
   //Save 
   arma::mat saveparms(kv+2,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   
   if (progress == 0 ){
@@ -505,7 +509,9 @@ List peerMCMC_none(const List& y,
       saveparms.col(t) = parms;
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- theta: %1.4f\n", zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }}
@@ -593,7 +599,7 @@ List peerMCMCblock_none(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   
   // Other parameters
   double jumpzeta = 1;
@@ -640,7 +646,7 @@ List peerMCMCblock_none(const List& y,
   
   //Save 
   arma::mat saveparms(kv+2,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   if (progress == 0 ){
     
@@ -715,7 +721,9 @@ List peerMCMCblock_none(const List& y,
       saveparms.col(t) = parms;
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- theta: %1.4f\n", zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }

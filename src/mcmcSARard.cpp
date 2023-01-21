@@ -64,7 +64,7 @@ List peerMCMCnoc_ard(const List& y,
   arma::vec theta   = parms0.head(kv);
   double sigma2     = parms0(kv+1);
   double alpha      = parms0(kv);
-  double zeta       = log(alpha/(1-alpha));
+  double zeta       = log((1.0 + alpha)/(1.0 - alpha));
   List rho(clone(murho)), jumprho(clone(Vrho)), iVrho(M);
   for(int m(0); m < M; ++m) {
     arma::mat Vrm   = Vrho[m];
@@ -176,7 +176,9 @@ List peerMCMCnoc_ard(const List& y,
       
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho (average): %1.4f -- theta: %1.4f\n", arma::mean(rhoaccept)/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }}
@@ -271,7 +273,7 @@ List peerMCMCblocknoc_ard(const List& y,
   arma::vec theta   = parms0.head(kv);
   double sigma2     = parms0(kv+1);
   double alpha      = parms0(kv);
-  double zeta       = log(alpha/(1-alpha));
+  double zeta       = log((1.0 + alpha)/(1.0 - alpha));
   List rho(clone(murho)), jumprho(clone(Vrho)), iVrho(M);
   for(int m(0); m < M; ++m) {
     arma::mat Vrm   = Vrho[m];
@@ -380,7 +382,9 @@ List peerMCMCblocknoc_ard(const List& y,
       
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho (average): %1.4f -- theta: %1.4f\n", arma::mean(rhoaccept)/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }
@@ -476,7 +480,7 @@ List peerMCMC_ard(const List& y,
   arma::vec theta   = parms0.head(kv);
   double sigma2     = parms0(kv+1);
   double alpha      = parms0(kv);
-  double zeta       = log(alpha/(1-alpha));
+  double zeta       = log((1.0 + alpha)/(1.0 - alpha));
   List rho(clone(murho)), jumprho(clone(Vrho)), iVrho(M);
   for(int m(0); m < M; ++m) {
     arma::mat Vrm   = Vrho[m];
@@ -623,7 +627,9 @@ List peerMCMC_ard(const List& y,
       
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho (average): %1.4f -- theta: %1.4f\n", arma::mean(rhoaccept)/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }}
@@ -729,7 +735,7 @@ List peerMCMCblock_ard(const List& y,
   arma::vec theta   = parms0.head(kv);
   double sigma2     = parms0(kv+1);
   double alpha      = parms0(kv);
-  double zeta       = log(alpha/(1-alpha));
+  double zeta       = log((1.0 + alpha)/(1.0 - alpha));
   List rho(clone(murho)), jumprho(clone(Vrho)), iVrho(M);
   for(int m(0); m < M; ++m) {
     arma::mat Vrm   = Vrho[m];
@@ -874,7 +880,9 @@ List peerMCMCblock_ard(const List& y,
       
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho (average): %1.4f -- theta: %1.4f\n", arma::mean(rhoaccept)/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }

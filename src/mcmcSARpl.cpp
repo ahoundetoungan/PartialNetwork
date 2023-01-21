@@ -61,7 +61,7 @@ List peerMCMCnoc_pl(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   arma::vec rho = murho;
   arma::mat jumprho = Vrho;
   arma::mat iVrho   = arma::inv(Vrho);
@@ -108,7 +108,7 @@ List peerMCMCnoc_pl(const List& y,
   //Save 
   arma::mat saveparms(kv+2,iteration);
   arma::mat saverho(Krho,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   
   if (progress == 0 ){
@@ -175,9 +175,15 @@ List peerMCMCnoc_pl(const List& y,
       
       saveparms.col(t) = parms;
       saverho.col(t)   = rho;
+      rhocpp               = wrap(rho);
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      rhocpp.attr("dim")   = R_NilValue;
+      Rprintf("rho:\n");
+      Rcpp::print(rhocpp);
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho: %1.4f -- theta: %1.4f\n", rhoaccept/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }}
@@ -273,7 +279,7 @@ List peerMCMCblocknoc_pl(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   arma::vec rho = murho;
   arma::mat jumprho = Vrho;
   arma::mat iVrho   = arma::inv(Vrho);
@@ -319,7 +325,7 @@ List peerMCMCblocknoc_pl(const List& y,
   //Save 
   arma::mat saveparms(kv+2,iteration);
   arma::mat saverho(Krho,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   if (progress == 0 ){
     
@@ -382,9 +388,15 @@ List peerMCMCblocknoc_pl(const List& y,
       // save output
       saveparms.col(t) = parms;
       saverho.col(t)   = rho;
+      rhocpp               = wrap(rho);
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      rhocpp.attr("dim")   = R_NilValue;
+      Rprintf("rho:\n");
+      Rcpp::print(rhocpp);
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho: %1.4f -- theta: %1.4f\n", rhoaccept/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }
@@ -479,7 +491,7 @@ List peerMCMC_pl(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   arma::vec rho = murho;
   arma::mat jumprho = Vrho;
   arma::mat iVrho   = arma::inv(Vrho);
@@ -539,7 +551,7 @@ List peerMCMC_pl(const List& y,
   //Save 
   arma::mat saveparms(kv+2,iteration);
   arma::mat saverho(Krho,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   
   if (progress == 0 ){
@@ -628,9 +640,15 @@ List peerMCMC_pl(const List& y,
       
       saveparms.col(t) = parms;
       saverho.col(t)   = rho;
+      rhocpp               = wrap(rho);
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      rhocpp.attr("dim")   = R_NilValue;
+      Rprintf("rho:\n");
+      Rcpp::print(rhocpp);
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho: %1.4f -- theta: %1.4f\n", rhoaccept/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }}
@@ -739,7 +757,7 @@ List peerMCMCblock_pl(const List& y,
   arma::vec theta = parms0.head(kv);
   double sigma2 = parms0(kv+1);
   double alpha = parms0(kv);
-  double zeta = log(alpha/(1-alpha));
+  double zeta  = log((1.0 + alpha)/(1.0 - alpha));
   arma::vec rho = murho;
   arma::mat jumprho = Vrho;
   arma::mat iVrho   = arma::inv(Vrho);
@@ -798,7 +816,7 @@ List peerMCMCblock_pl(const List& y,
   //Save 
   arma::mat saveparms(kv+2,iteration);
   arma::mat saverho(Krho,iteration);
-  NumericVector parmscpp;
+  NumericVector parmscpp, rhocpp;
   // loop
   if (progress == 0 ){
     
@@ -885,9 +903,15 @@ List peerMCMCblock_pl(const List& y,
       
       saveparms.col(t) = parms;
       saverho.col(t)   = rho;
+      rhocpp               = wrap(rho);
       parmscpp             = wrap(parms);
       parmscpp.attr("dim") = R_NilValue;
+      rhocpp.attr("dim")   = R_NilValue;
+      Rprintf("rho:\n");
+      Rcpp::print(rhocpp);
+      Rprintf("theta:\n");
       Rcpp::print(parmscpp);
+      Rprintf("acceptance rates -- rho: %1.4f -- theta: %1.4f\n", rhoaccept/(t + 1), zetaaccept/(t + 1));
       //Rcpp::Rcout<<"************************"<<std::endl;
       Rprintf("************************ \n");
     }

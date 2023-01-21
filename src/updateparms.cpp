@@ -148,8 +148,7 @@ void updzeta (double& zeta,
               const double M) {
   
   double zetastart =  R::rnorm(zeta, jumpzeta);
-  double expzetastart = exp(zetastart);
-  double alphastart = expzetastart/(1+expzetastart);
+  double alphastart = (exp(zetastart) - 1.0)/(exp(zetastart) + 1);
   
   // Declaration of some variable 
   double logalphazeta, logalpha2zeta;

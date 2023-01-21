@@ -104,8 +104,8 @@
 #' During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchade and Rosenthal (2005) in order to target the acceptance rate to the `target` value. This
 #' requires to set a minimal and a maximal jumping scales through the parameter `ctrl.mcmc`. The parameter `ctrl.mcmc` is a list which can contain the following named components.
 #' \itemize{
-#' \item{`target`}: the default value is \code{c("alpha" = 0.44, "rho" = 0.27)}.
-#' \item{`jumpmin`}: the default value is \code{c("alpha" = 1e-12, "rho" = 1e-12)}. 
+#' \item{`target`}: the default value is \code{c("alpha" = 0.44, "rho" = 0.234)}.
+#' \item{`jumpmin`}: the default value is \code{c("alpha" = 1e-5, "rho" = 1e-5)}. 
 #' \item{`jumpmax`}: the default value is \code{c("alpha" = 10, "rho" = 10)}. 
 #' \item{`print.level`}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
 #'  If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,
@@ -261,8 +261,8 @@ mcmcSAR <- function(formula,
   tmodel       <- tmodel$tmodel  #NONE PARTIAL ALL
   
   # target, jumping
-  target        <- f.targ.jump(x = ctrl.mcmc$target, sval = c(0.44, 0.27), lmodel) 
-  jumpmin       <- f.targ.jump(x = ctrl.mcmc$jumpmin, sval = rep(1e-12, 2), lmodel) 
+  target        <- f.targ.jump(x = ctrl.mcmc$target, sval = c(0.44, 0.234), lmodel) 
+  jumpmin       <- f.targ.jump(x = ctrl.mcmc$jumpmin, sval = rep(1e-5, 2), lmodel) 
   jumpmax       <- f.targ.jump(x = ctrl.mcmc$jumpmax, sval = rep(10, 2), lmodel) 
   print.level   <- ctrl.mcmc$print.level
   block.max     <- ctrl.mcmc$block.max

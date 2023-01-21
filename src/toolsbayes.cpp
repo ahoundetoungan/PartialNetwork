@@ -380,7 +380,7 @@ void fsetjump_vl(arma::vec& jump, const double& jumpmin,
   jump.rows(acc_updmax) = arma::ones(acc_updmax.n_elem)*jumpmax;
   for(int m(0); m < M; ++ m) {
     const arma::mat Vrhom    = Vparms[m];
-    jumpl[m]                 = jump(m)*Vrhom;
+    jumpl[m]                 = jump(m)*jump(m)*Vrhom;
   }
 }
 // double matrix version
@@ -388,7 +388,7 @@ void fsetjump_dm(double& jump, const double& jumpmin,
                 const double& jumpmax, arma::mat& jumpl, const arma::mat& Vparms) {
   if(jump < jumpmin) jump = jumpmin;
   if(jump > jumpmax) jump = jumpmax;
-  jumpl                   = jump*Vparms;
+  jumpl                   = jump*jump*Vparms;
 }
 // vec version
 void fsetjump_v(arma::vec& jump, const double& jumpmin,
@@ -410,7 +410,7 @@ void fsetjump_r(arma::rowvec& jump, const double& jumpmin,
 void fsetjump_d(double& jump, const double& jumpmin,
                 const double& jumpmax) {
   if(jump < jumpmin) jump = jumpmin;
-  if(jump > jumpmax) jump= jumpmax;
+  if(jump > jumpmax) jump = jumpmax;
 }
 
 ////// Estimate graph Breza et al. 

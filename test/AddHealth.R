@@ -5,7 +5,6 @@ library(PartialNetwork)
 library(Matrix)
 library(DataCombine)
 library(stargazer)
-library(dplyr)
 setwd("PartialNetwork")
 
 # the finale data set is save in the 'filname' path and can be loaded if saved before
@@ -86,10 +85,10 @@ if (file.exists(filname)) {
   sch.size      <- as.numeric(schtable)
   school        <- school[sch.size < sch.size.max]
   sch.size      <- sch.size[sch.size < sch.size.max]
-  nsch          <- length(school)
   
   # Update data
-  mydata        <- mydata[mydata$sschlcde %in% school,]
+  mydata       <- mydata[mydata$sschlcde %in% school,]
+  nsch         <- length(school)
   
   # dependent variable
   mydata$y     <- mydata[,tail(va.names,1), drop = TRUE]
@@ -116,13 +115,13 @@ if (file.exists(filname)) {
     
     # output for this loop
     # G, 
-    # Gob (the observed part of G)
+    # Gobs1 and Gobs2 (the observed part of G)
     # X containing also number of missing links
     # ni is number of students in all schools
     for (i in 1:nsch) {
       cat("School :", i, "/", nsch, "\n")
       schi         <- school[i]
-      dbi          <- db %>% filter(sschlcde == schi)
+      dbi          <- db[db$sschlcde == schi,]
       Ni           <- nrow(dbi)
       Gi           <- matrix(0, Ni, Ni)
       Giom         <- matrix(1, Ni, Ni)
@@ -135,18 +134,19 @@ if (file.exists(filname)) {
       matchim      <- numeric() #will contain male links
       matchif      <- numeric() #will contain female links
       for (j in 1:Ni) {
-        idxm       <- which(dbi$aid %in% unlist(dbi[j, mf_coln]))
-        idxf       <- which(dbi$aid %in% unlist(dbi[j, ff_coln]))
+        idxm       <- which(dbi$aid %in% dbi[j, mf_coln])
+        idxf       <- which(dbi$aid %in% dbi[j, ff_coln])
+        idx        <- c(idxm, idxf)
         matchim[j] <- length(idxm) # observed male links
         matchif[j] <- length(idxf) # observed female links
-        idx        <- c(idxm, idxf)
-        Gi[j, idx] <- 1
+        Gi[j,idx]  <- 1
         
         # missing links
-        idxm.miss  <- which(unlist(dbi[j, mf_coln]) %in% c(mislistmis, -3))
-        idxf.miss  <- which(unlist(dbi[j, ff_coln]) %in% c(mislistmis, -3))
+        idxm.miss  <- which(dbi[j, mf_coln] %in% c(mislistmis, -3))
+        idxf.miss  <- which(dbi[j, ff_coln] %in% c(mislistmis, -3))
         nmatchim[j]<- length(idxm.miss) # Number of missing male links
         nmatchif[j]<- length(idxf.miss) # Number of missing female links
+        
         
         # If there are messing links, then we doubt the values
         if(nmatchim[j] > 0) {
@@ -186,7 +186,7 @@ if (file.exists(filname)) {
       Gobtop[[i]]  <- Giot
       Gobtmis[[i]] <- Giotm
       
-      # matched
+      # unmatched
       matchm[[i]]  <- matchim
       matchf[[i]]  <- matchif
       
@@ -202,6 +202,7 @@ if (file.exists(filname)) {
       gendf[[i]]   <- gendfi
     }
     
+    
     list(G       = G,
          Gobmis  = Gobmis,
          Gobtop  = Gobtop,
@@ -215,7 +216,6 @@ if (file.exists(filname)) {
          friendf = friendf,
          Y       = Y,
          gendf   = gendf)
-    
   }
   
   # Use the function to prepare the data
@@ -235,6 +235,7 @@ if (file.exists(filname)) {
   gendf   <- tmp$gendf
   
   
+  
   # dataset for the logistic model
   # variable to include 1 (indicator == 1 if same value)
   va.log1       <- c("female", "hispanic", "racewhite", "raceblack", "raceasian", "melhigh", "memhigh",
@@ -249,19 +250,19 @@ if (file.exists(filname)) {
   # for va.log1
   X1tmp         <- do.call("cbind", lapply(va.log1, function(z) {
     mat.to.vec(lapply(1:nsch, function(x) {
-      va.zx       <- mydata[c(tmp[x] + 1):tmp[x+1], z, drop = TRUE]   
+      va.zx       <- mydata[c(tmp[x] + 1):tmp[x+1],z]   
       matrix(kronecker(va.zx, va.zx, FUN = dist1), sch.size[x])}))
   }))
   # for va.log2
   X2tmp         <- do.call("cbind", lapply(va.log2, function(z) {
     mat.to.vec(lapply(1:nsch, function(x) {
-      va.zx     <- mydata[c(tmp[x] + 1):tmp[x+1], z, drop = TRUE]   
+      va.zx     <- mydata[c(tmp[x] + 1):tmp[x+1],z]   
       matrix(kronecker(va.zx, va.zx, FUN = dist2), sch.size[x])}))
   }))
-  Xlogit            <- as.data.frame(cbind(X1tmp, X2tmp)) 
+  Xlogit        <- cbind(X1tmp, X2tmp)  
   colnames(Xlogit)  <- c("same.sex", va.log1[-1], "diff.age")
   
-  save(list = ls(all = TRUE), file = filname)
+  save(list = ls(all=TRUE), file = filname)
 }
 ############################ Descriptive stat ##################################
 # Descriptive statistic function 
@@ -346,6 +347,8 @@ sum(sapply(Gobtmis, function(x) sum(x == 0) - nrow(x)))/sum(sch.size*(sch.size -
 
 ################################ Estimation #############################
 ######## dataset and model settings
+library(dplyr)
+
 dataset    <- data.frame(GPA = Y, X)
 Xlogit     <- as.data.frame(Xlogit)
 exp.var    <- c("female", "hispanic", "raceblack", "raceasian", "raceother", "melhigh", "memhigh", 

@@ -42,7 +42,7 @@ peer.avg    <- function(Glist, V, export.as.list = FALSE) {
   }
   
   M         <- length(Glist)
-  N         <- unlist(lapply(Glist, nrow))
+  N         <- unlist(lapply(Glist, ncol))
   
   if (sum(N) != nrow(V)) {
     stop("Glist and V do not match")

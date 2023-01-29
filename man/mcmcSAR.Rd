@@ -171,8 +171,8 @@ variance to 0 is equivalent to assume a non informative prior.
 During the MCMC, the jumping scales of \eqn{\alpha} and \eqn{\rho} are updated following Atchade and Rosenthal (2005) in order to target the acceptance rate to the \code{target} value. This
 requires to set a minimal and a maximal jumping scales through the parameter \code{ctrl.mcmc}. The parameter \code{ctrl.mcmc} is a list which can contain the following named components.
 \itemize{
-\item{\code{target}}: the default value is \code{c("alpha" = 0.44, "rho" = 0.27)}.
-\item{\code{jumpmin}}: the default value is \code{c("alpha" = 1e-12, "rho" = 1e-12)}.
+\item{\code{target}}: the default value is \code{c("alpha" = 0.44, "rho" = 0.234)}.
+\item{\code{jumpmin}}: the default value is \code{c("alpha" = 1e-5, "rho" = 1e-5)}.
 \item{\code{jumpmax}}: the default value is \code{c("alpha" = 10, "rho" = 10)}.
 \item{\code{print.level}}: an integer in \{0, 1, 2\} that indicates if the MCMC progression should be printed in the console.
 If 0, the MCMC progression is not be printed. If 1 (default value), the progression is printed and if 2,

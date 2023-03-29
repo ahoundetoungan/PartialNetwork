@@ -62,7 +62,7 @@ mat.to.vec <- function(W, ceiled = FALSE, byrow = FALSE) {
   M        <- length(W)
   N        <- unlist(lapply(W, nrow))
 
-  out      <- NULL
+  out      <- W
   if(byrow) {
     out    <- lapply(W, t)
   }

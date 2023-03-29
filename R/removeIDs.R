@@ -27,6 +27,7 @@ remove.ids <- function(network, ncores = 1L){
   cl   <- makeCluster(ncores)
   registerDoParallel(cl)
   M    <- length(network)
+  m    <- NULL
   out  <- foreach(m = 1:M, .packages  = "PartialNetwork") %dorng% {rem_non_fin(as.matrix(network[[m]]))}
   stopCluster(cl)
   network <- lapply(1:M, function(m) out[[m]]$net)

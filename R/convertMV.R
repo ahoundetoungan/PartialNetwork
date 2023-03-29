@@ -8,8 +8,9 @@
 #' @param u numeric vector to convert.
 #' @param W matrix or list of matrixes to convert. 
 #' @param N vector of sub-network sizes  such that `length(u) == sum(N*(N - 1))`.
-#' @param normalise boolean takes `TRUE` if the returned matrices should be row-normalized and `FALSE` otherwise.
-#' @param ceiled boolean takes `TRUE` if the given matrices should be ceiled before conversion and `FALSE` otherwise.
+#' @param normalise Boolean takes `TRUE` if the returned matrices should be row-normalized and `FALSE` otherwise.
+#' @param ceiled Boolean takes `TRUE` if the given matrices should be ceiled before conversion and `FALSE` otherwise.
+#' @param byrow Boolean takes `TRUE` is entries in the matrices should be taken by row and `FALSE` if they should be taken by column.
 #' @examples 
 #' # Generate a list of adjacency matrices
 #' ## sub-network size
@@ -29,7 +30,7 @@
 #' @seealso 
 #' \code{\link{sim.network}}, \code{\link{sim.dnetwork}}, \code{\link{peer.avg}}.
 #' @export
-vec.to.mat <- function(u, N, normalise = FALSE) {
+vec.to.mat <- function(u, N, normalise = FALSE, byrow = FALSE) {
   M        <- length(N)
   stopifnot(length(u) == sum(N*(N - 1)))
   out      <- NULL
@@ -39,13 +40,17 @@ vec.to.mat <- function(u, N, normalise = FALSE) {
     out    <- frVtoM(u, N, M)
   }
   
+  if(byrow) {
+    out    <- lapply(out, t)
+  }
+  
   out
 }
 
 
 #' @rdname vec.to.mat
 #' @export
-mat.to.vec <- function(W, ceiled = FALSE) {
+mat.to.vec <- function(W, ceiled = FALSE, byrow = FALSE) {
   if (!is.list(W)) {
     if (is.matrix(W)) {
       W    <- list(W)
@@ -58,10 +63,13 @@ mat.to.vec <- function(W, ceiled = FALSE) {
   N        <- unlist(lapply(W, nrow))
 
   out      <- NULL
+  if(byrow) {
+    out    <- lapply(W, t)
+  }
   if (ceiled) {
-    out    <- frMceiltoV(W, N, M)
+    out    <- frMceiltoV(out, N, M)
   } else {
-    out    <- frMtoV(W, N, M)
+    out    <- frMtoV(out, N, M)
   }
   
   out

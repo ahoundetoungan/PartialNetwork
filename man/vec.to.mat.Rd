@@ -6,9 +6,9 @@
 \alias{norm.network}
 \title{Creating objects for network models}
 \usage{
-vec.to.mat(u, N, normalise = FALSE)
+vec.to.mat(u, N, normalise = FALSE, byrow = FALSE)
 
-mat.to.vec(W, ceiled = FALSE)
+mat.to.vec(W, ceiled = FALSE, byrow = FALSE)
 
 norm.network(W)
 }
@@ -17,11 +17,13 @@ norm.network(W)
 
 \item{N}{vector of sub-network sizes  such that \code{length(u) == sum(N*(N - 1))}.}
 
-\item{normalise}{boolean takes \code{TRUE} if the returned matrices should be row-normalized and \code{FALSE} otherwise.}
+\item{normalise}{Boolean takes \code{TRUE} if the returned matrices should be row-normalized and \code{FALSE} otherwise.}
+
+\item{byrow}{Boolean takes \code{TRUE} is entries in the matrices should be taken by row and \code{FALSE} if they should be taken by column.}
 
 \item{W}{matrix or list of matrixes to convert.}
 
-\item{ceiled}{boolean takes \code{TRUE} if the given matrices should be ceiled before conversion and \code{FALSE} otherwise.}
+\item{ceiled}{Boolean takes \code{TRUE} if the given matrices should be ceiled before conversion and \code{FALSE} otherwise.}
 }
 \description{
 \code{vec.to.mat} creates a list of square matrices from a given vector.

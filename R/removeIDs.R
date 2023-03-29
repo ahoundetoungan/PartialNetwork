@@ -17,7 +17,7 @@
 #' B[4, 2] <- NA
 #' B[2, 4] <- NA
 #' B[,8]   <-NA
-#' remove.ids(A, B)
+#' remove.ids(B)
 #' @export
 remove.ids <- function(network, ncores = 1L){
   stopifnot(inherits(network, c("matrix", "data.frame", "list")))

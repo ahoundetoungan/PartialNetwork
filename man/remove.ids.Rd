@@ -28,5 +28,5 @@ B[1, 1] <- NA
 B[4, 2] <- NA
 B[2, 4] <- NA
 B[,8]   <-NA
-remove.ids(A, B)
+remove.ids(B)
 }

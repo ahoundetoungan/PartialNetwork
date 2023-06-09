@@ -292,7 +292,7 @@ smmSAR <- function(formula,
         fbeta  <- fbeta3fe
         fmvzH  <- fmvzetaH3fe
       } else{
-        fopt   <-ifelse(wprint, optim3ncpr, optim3nc)
+        fopt   <-ifelse(wprint, optim3ncfepr, optim3ncfe)
         ctr.b  <- ctr.b[!(names(ctr.b) %in% c("Kx2"))]
         ctr    <- ctr[!(names(ctr) %in% c("Kx2"))]
         ctr    <- c(list(f = fopt), ctr)
@@ -306,7 +306,7 @@ smmSAR <- function(formula,
         fbeta  <- fbeta3
         fmvzH  <- fmvzetaH3
       } else{
-        fopt   <-ifelse(wprint, optim3ncpr, optim3nc)
+        fopt   <- ifelse(wprint, optim3ncpr, optim3nc)
         ctr.b  <- ctr.b[!(names(ctr.b) %in% c("Kx2"))]
         ctr    <- ctr[!(names(ctr) %in% c("Kx2"))]
         ctr    <- c(list(f = fopt), ctr)

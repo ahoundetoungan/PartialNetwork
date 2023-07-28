@@ -1,6 +1,6 @@
 ##################################################################################
 # This code replicates the Monte Carlo simulations when GX is not observed and   #
-# the network is estimated using latent  space model with ARD (section 3.1).     #
+# the true network distribution is directly used                                 #
 #####################################Headline#####################################
 rm(list = ls())
 library(doParallel)                   # To run the Monte Carlo in parallel

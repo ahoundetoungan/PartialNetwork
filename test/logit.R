@@ -4,7 +4,7 @@ library(doParallel)
 
 rm(list = ls())
 
-M        <- 200           # Number of groups
+M        <- 100           # Number of groups
 N        <- rep(30,M)   # Group size
 CUMN     <- c(0, cumsum(N))
 
@@ -147,3 +147,72 @@ fsimu(0.10, 8)
 fsimu(0.25, 8)
 fsimu(0.50, 8)
 fsimu(0.75, 8)
+
+out <- cbind(t(apply(`logit.pobs=0.05`, 2, function(x) c(mean(x), sd(x)))),
+             t(apply(`logit.pobs=0.1`, 2, function(x) c(mean(x), sd(x)))),
+             t(apply(`logit.pobs=0.25`, 2, function(x) c(mean(x), sd(x)))),
+             t(apply(`logit.pobs=0.5`, 2, function(x) c(mean(x), sd(x)))),
+             t(apply(`logit.pobs=0.75`, 2, function(x) c(mean(x), sd(x)))))
+
+colnames(out) <- paste0(rep(c("mean.pobs=", "sd.pobs="), 5),
+                        rep(c("5%", "10%", "25%", "50%", "75%"), each = 2))
+
+write.csv(out, file = "../../../Simulations/Monte Carlo/Results/logit.csv")
+
+# Graph
+library(ggplot2)
+library(dplyr)
+est  <- apply(readRDS("../../../Simulations/Monte Carlo/logit.pobs=0.1.RDS"), 2, 
+              function(x) c(mean(x), quantile(x, prob = c(0.025, 0.975))))
+data <- data.frame(pmix  = rep("0%", 2),
+                   spec  = rep(0, 2),
+                   model = rep("Classical IV", 2),
+                   FE    = c(FALSE, TRUE),
+                   coef  = est[1, c("gmmGy", "gmmfGy")],
+                   IC1   = est[2, c("gmmGy", "gmmfGy")],
+                   IC2   = est[3, c("gmmGy", "gmmfGy")])
+mobs <- c(0.75, 0.5, 0.25, 0.1, 0.05)
+vmis <- c("25%", "50%", "75%", "90%", "95%")
+for (k in 1:length(mobs)) {
+  est  <- apply(readRDS(paste0("../../../Simulations/Monte Carlo/logit.pobs=", mobs[k], ".RDS")), 
+                2, function(x) c(mean(x), quantile(x, prob = c(0.025, 0.975))))
+  data  <- data %>% 
+    bind_rows(data.frame(pmix  = rep(vmis[k], 4),
+                         spec  = rep(c(1, 3, 2, 4), each = 2),
+                         model = c(rep("SGMM: Gy, GX observed", 2),
+                                   rep("SGMM: Gy observed, GX unobserved", 2),
+                                   rep("SGMM: Gy unobserved, GX observed", 2),
+                                   rep("SGMM: Gy, GX unobserved", 2)),
+                         FE    = rep(c(FALSE, TRUE),  4),
+                         coef  = est[1, c("smm1Gy", "smm1fGy", "smm2Gy", "smm2fGy",
+                                          "smm3Gy", "smm3fGy", "smm4Gy", "smm4fGy")],
+                         IC1   = est[2, c("smm1Gy", "smm1fGy", "smm2Gy", "smm2fGy",
+                                          "smm3Gy", "smm3fGy", "smm4Gy", "smm4fGy")],
+                         IC2   = est[3, c("smm1Gy", "smm1fGy", "smm2Gy", "smm2fGy",
+                                          "smm3Gy", "smm3fGy", "smm4Gy", "smm4fGy")]))
+}
+
+data   <- data %>% mutate(Model = factor(spec, labels = unique(model)))
+
+ggplot(data %>% filter(pmix %in% c("0%", "25%", "50%", "75%"), 
+                       FE == FALSE, spec %in% c(0:4)), aes(x = pmix, colour = Model)) + 
+  geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
+                position = position_dodge(width = 0.3)) +
+  geom_point(aes(y = coef, shape = Model), position = position_dodge(width = 0.3)) + 
+  theme_bw() +
+  xlab("Proportion of missing links") + ylab("Peer effect estimate") + 
+  theme(legend.title = element_blank(), legend.position = "bottom") + 
+  guides(colour = guide_legend(nrow = 2, byrow = FALSE))
+
+ggplot(data %>% filter(pmix %in% c("0%", "25%", "50%", "75%"), 
+                       FE == TRUE, spec %in% c(0:4)), aes(x = pmix, colour = Model)) + 
+  geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
+                position = position_dodge(width = 0.3)) +
+  geom_point(aes(y = coef, shape = Model), position = position_dodge(width = 0.3)) + 
+  theme_bw() +
+  xlab("Proportion of missing links") + ylab("Peer effect estimate") + 
+  theme(legend.title = element_blank(), legend.position = "bottom") + 
+  guides(colour = guide_legend(nrow = 2, byrow = FALSE))
+
+
+

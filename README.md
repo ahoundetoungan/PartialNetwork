@@ -1,22 +1,18 @@
 # An R package for estimating Peer Effects Using Partial Network Data
 
-The **PartialNetwork** package includes all functions for the replication of the results in Boucher and Houndetoungan (2022). The exact replication codes are located in the folder [**test**](https://github.com/ahoundetoungan/PartialNetwork/tree/master/test). Below, we also provide detailed examples on how to use the estimators described in the paper.
+The **PartialNetwork** package includes all functions for the replication of the results in Boucher and Houndetoungan (2023). The exact replication codes are located in the folder [**test**](https://github.com/ahoundetoungan/PartialNetwork/tree/master/test). Below, we also provide detailed examples on how to use the estimators described in the paper.
 
 ## Installation
-### Requirements
-- **PartialNetwork** package needs [**R**](https://cran.r-project.org/) version 3.0.0 or later which can be installed on Linux, Mac and Windows. See [**CRAN**](https://cran.r-project.org/) for installation details. 
-- [**remotes**](https://cran.r-project.org/package=remotes) package should be installed on [**R**](https://cran.r-project.org/).
-- (*Only for windows users*) Windows users should install  [**Rtools**](https://cran.r-project.org/bin/windows/Rtools/) compatible with their [**R**](https://cran.r-project.org/) version. 
-
-### How to install
-**PartialNetwork** package can be installed from this GitHub repos using the `install_github` function of the [**remotes**](https://cran.r-project.org/package=remotes) package.
+### CRAN version
+**PartialNetwork** can be directly installed from CRAN.
 ```R
-remotes::install_github("ahoundetoungan/PartialNetwork")
+install.packages("PartialNetwork")
 ```
-### Load PartialNetwork
-Once the installation is done, **PartialNetwork** can be loaded as a common package in [**R**](https://cran.r-project.org/).
+
+### GitHub version
+It may be possible that we updated the package without submitting the new version to CRAN. The latest version (*but not necessary stable*) of **PartialNetwork** can be installed from this GitHub repos. 
 ```R
-library(PartialNetwork)
+remotes::install_github("ahoundetoungan/PartialNetwork", build_vignettes = TRUE)
 ```
 ## How to use the `PartialNetwork` package?
 See our [vignette in pdf](https://nbviewer.jupyter.org/github/ahoundetoungan/PartialNetwork/blob/master/doc/PartialNetwork_vignette.pdf).

@@ -3,6 +3,7 @@
 #' @param Glist the adjacency matrix or list sub-adjacency matrix.
 #' @param V vector or matrix of observable characteristics.
 #' @param export.as.list (optional) boolean to indicate if the output should be a list of matrices or a single matrix.
+#' @return the matrix product `diag(Glist[[1]], Glist[[2]], ...) %*% V`, where `diag()` is the block diagonal operator.
 #' @examples 
 #' # Generate a list of adjacency matrices
 #' ## sub-network size

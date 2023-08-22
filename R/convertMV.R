@@ -6,11 +6,12 @@
 #' The elements of the generated vector are taken from column-wise and from the first matrix of the list to the last matrix of the list, while dropping the diagonal entry.
 #' `norm.network` row-normalizes matrices in a given list.
 #' @param u numeric vector to convert.
-#' @param W matrix or list of matrixes to convert. 
+#' @param W matrix or list of matrices to convert. 
 #' @param N vector of sub-network sizes  such that `length(u) == sum(N*(N - 1))`.
 #' @param normalise Boolean takes `TRUE` if the returned matrices should be row-normalized and `FALSE` otherwise.
 #' @param ceiled Boolean takes `TRUE` if the given matrices should be ceiled before conversion and `FALSE` otherwise.
 #' @param byrow Boolean takes `TRUE` is entries in the matrices should be taken by row and `FALSE` if they should be taken by column.
+#' @return a vector of size `sum(N*(N - 1))` or list of `length(N)` square matrices. The sizes of the matrices are `N[1], N[2], ...`
 #' @examples 
 #' # Generate a list of adjacency matrices
 #' ## sub-network size

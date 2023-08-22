@@ -10,9 +10,9 @@ License: GPL-3
 BugReports: https://github.com/ahoundetoungan/PartialNetwork/issues
 URL: https://github.com/ahoundetoungan/PartialNetwork
 LazyData: true
-Depends: R (>= 3.5.0), RcppArmadillo(>= 0.11.4.4.0)
+Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 1.0.0), Formula, formula.tools, abind, Matrix, parallel, doParallel, foreach, doRNG
-LinkingTo: Rcpp, RcppArmadillo, RcppEigen, RcppNumerical, RcppProgress
+LinkingTo: Rcpp, RcppArmadillo(>= 0.11.4.4.0), RcppEigen, RcppNumerical, RcppProgress
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Suggests: AER, knitr, rmarkdown, CDatanet, ggplot2, MASS

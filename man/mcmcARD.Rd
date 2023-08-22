@@ -185,24 +185,23 @@ The minimal jumping of every \eqn{\mathbf{z}_i}{zi} is 0, every \eqn{d_i}{di} is
   abline(h = gend[100], col = "red")
   
   # plot coordinates of individuals
+  oldpar <- par(no.readonly = TRUE) 
+  par(mfrow = c(3, 1))
   i <- 123 # individual 123
   {
-    par(mfrow = c(3, 1))
     lapply(1:3, function(x) {
       plot(out$simulations$z[i, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
       abline(h = genz[i, x], col = "red")
     })
-    par(mfrow = c(1, 1))
   }
   
   # plot coordinates of traits
   k <- 8
   {
-    par(mfrow = c(3, 1))
     lapply(1:3, function(x) {
       plot(out$simulations$v[k, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
       abline(h = genv[k, x], col = "red")
     })
-    par(mfrow = c(1, 1))
-  }}
+  }
+  par(oldpar)}
 }

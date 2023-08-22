@@ -21,9 +21,12 @@ norm.network(W)
 
 \item{byrow}{Boolean takes \code{TRUE} is entries in the matrices should be taken by row and \code{FALSE} if they should be taken by column.}
 
-\item{W}{matrix or list of matrixes to convert.}
+\item{W}{matrix or list of matrices to convert.}
 
 \item{ceiled}{Boolean takes \code{TRUE} if the given matrices should be ceiled before conversion and \code{FALSE} otherwise.}
+}
+\value{
+a vector of size \code{sum(N*(N - 1))} or list of \code{length(N)} square matrices. The sizes of the matrices are \verb{N[1], N[2], ...}
 }
 \description{
 \code{vec.to.mat} creates a list of square matrices from a given vector.

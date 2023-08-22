@@ -2,7 +2,7 @@
 % Please edit documentation in R/vMF.R
 \name{dvMF}
 \alias{dvMF}
-\title{Density function of von Mises-Fisher Distribution}
+\title{Density function of the von Mises-Fisher distribution}
 \usage{
 dvMF(z, theta, log.p = FALSE)
 }
@@ -14,8 +14,11 @@ dvMF(z, theta, log.p = FALSE)
 
 \item{log.p}{is logical; if TRUE, probabilities p are given as log(p).}
 }
+\value{
+the densities computed at each point.
+}
 \description{
-Density function for the von Mises-Fisher Distribution
+Density function for the von Mises-Fisher distribution
 of dimension \code{p} with location parameter equal to \code{mu} and intensity parameter \code{eta}.
 }
 \examples{

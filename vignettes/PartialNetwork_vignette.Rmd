@@ -14,7 +14,7 @@ output:
     toc: true
 bibliography: ["References.bib", "Packages.bib"]
 biblio-style: "apalike"
-abstract: \noindent This vignette makes it easier to get started with the package **PartialNetwork**. We illustrate the estimators presented in @boucher2020estimating with examples of simulated data. Section [1]{#IV} illustrates the instrumental variable (IV) estimator, which is biased when the network is sampled. We calculate the bias and propose a general consistent estimator using a simulated general method of moments (SGMM) in Section [2]{#SGMM}. Sections [3]{#BAYES}--[5]{#BAYESARD} present the Bayesian estimator that jointly estimates the spatial autoregressive (SAR) model and the network formation model. Finally, we discuss in Section [6]{#SELECT} how to address the problem of selection bias that can arise when missing links are not completely random.
+abstract: \noindent This vignette makes it easier to get started with the package **PartialNetwork**. We illustrate the estimators presented in @boucher2020estimating with examples of simulated data. Section [1]{#IV} illustrates the instrumental variable (IV) estimator, which is biased when the network is sampled. We calculate the bias and propose a general consistent estimator using a simulated general method of moments (SGMM) in Section [2]{#SGMM}. Section [3]{#BAYES} presents the Bayesian estimator that jointly estimates the spatial autoregressive (SAR) model and the network formation model. Finally, we discuss in Section [4]{#SELECT} how to address the problem of selection bias that can arise when missing links are not completely random.
 link-citations: true
 urlcolor: blue
 vignette: >
@@ -103,7 +103,6 @@ maxbias <- apply(sapply(1:1000, function(...){
 ## Model with contextual effects
 We now assume that the model includes contextual effects. We first generate data.
 ```{r IV4, echo = TRUE, eval = TRUE}
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 # Number of groups
@@ -178,7 +177,6 @@ As shown in the paper (see @boucher2020estimating), our IV estimator is inconsis
 ## Models without group heterogeneity
 We first simulate data.
 ```{r smm1, echo = TRUE, eval = TRUE}
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 # Number of groups
@@ -262,9 +260,6 @@ print(smm$smm4)
 
 ## Models with group heterogeneity
 We assume here that every group has an unobserved characteristic which affects the outcome. Let us first simulate the data.
-```{r smm6a, echo = TRUE, eval = FALSE}
-rm(list = ls())
-```
 ```{r smm6b, echo = TRUE, eval = TRUE}
 library(PartialNetwork)
 set.seed(123)
@@ -436,7 +431,6 @@ and $\mathbb{P}(a_{ij} = 1|\mathbf{P}) = p_{ij}$, where $\mathbf{A}$ is the adja
 
 ```{r smmp1, echo = TRUE, eval = FALSE}
 library(PartialNetwork)
-rm(list = ls())
 set.seed(123)
 # Number of groups
 M        <- 100
@@ -544,9 +538,10 @@ smmlo <- list(smm1 = smm.logit, smm2 = smm2)
 save(smmlo, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smmlogit.rda")
 ```
 
-# Bayesian estimator without network formation model {#BAYES}
-The Bayesian estimator is neatly packed in the function `mcmcSAR` (see the help page of the function in the package, using `?mcmcSAR`, for more details on the function). Below, we provide a simple example using simulated data.
+# Bayesian estimator {#BAYES}
+The Bayesian estimator is neatly packed in the function `mcmcSAR` (see the help page of the function in the package, using `?mcmcSAR`, for more details on the function). 
 
+## without network formation model
 For the sake of the example, we assume that linking probabilities are *known* and drawn from an uniform distribution. We first simulate data. Then, we estimate the linear-in-means model using our Bayesian estimator.
 
 **In the following example (example I-1, output `out.none1`), we assume that the network is entirely observed.**
@@ -558,7 +553,6 @@ load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavigne
 ```
 
 ```{r BayesNone1as, eval=FALSE}
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 # EXAMPLE I: WITHOUT NETWORK FORMATION MODEL 
@@ -590,7 +584,8 @@ y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
 ```
-**Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**^[We ran the program on a processor `Intel(R) Xeon(R) W-1270P CPU @ 3.80GHz`. The execution time in the output depends on the CPU performance.]
+**Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**
+
 ```{r BayesNone1ae, eval=FALSE}
 # Example I-1: When the network is fully observed 
 out.none1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
@@ -623,6 +618,7 @@ plot(out.none1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 # 60% of the network data is observed
 G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
 ```
+
 **Estimation `out.none2.1` assumes that the sampled network is the true one (inconsistent, peer effects are overestimated).**
 
 ```{r BayesNone21e, eval=FALSE}
@@ -653,6 +649,9 @@ summary(out.none2.1) # the peer effets seem overestimated
 ```{r BayesNone21c, fig.height = 3, fig.align = "center"}
 plot(out.none2.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
+
+\newpage
+
 **Estimation `out.none2.2` specifies which links are observed and which ones are not. The true probabilities are used to sample un-observed links (consistent).**
 ```{r BayesNone22a, eval=FALSE}
 out.none2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
@@ -679,7 +678,7 @@ summary(out.none2.2)
 ```
 ```{r BayesNone22c, fig.height = 3, fig.align = "center"}
 plot(out.none2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+``` 
 **For Example I-3, we assume that only linking probabilities are known. **
 
 **Estimation `out.none3.1` assumes the researcher uses a draw from that distribution as the true network (inconsistent, peer effects are overestimated).**
@@ -738,7 +737,7 @@ summary(out.none3.2)
 plot(out.none3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```
 
-# Bayesian estimator with logit model as network formation model {#BAYESLOG}
+## With logit model as network formation model
 
 For this example, we assume that links are generated using a simple logit model. We do not observe the true distribution.
 
@@ -750,7 +749,6 @@ load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavigne
 ```
 ```{r BayesLog1as, eval=FALSE}
 # EXAMPLE II: NETWORK FORMATION MODEL: LOGIT 
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 # Number of groups
@@ -829,12 +827,12 @@ rho acceptance rate         : 0.27185")
 ```{r BayesLog22b, echo=FALSE}
 summary(out.logi2.2) 
 ```
-```{r BayesLog22c, fig.height = 3, fig.align = "center"}
+<!-- ```{r BayesLog22c, fig.height = 3, fig.align = "center"}
 plot(out.logi2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
-```{r BayesLog22cc, fig.height = 3, fig.align = "center"}
+```-->
+<!-- ```{r BayesLog22cc, fig.height = 3, fig.align = "center"}
 plot(out.logi2.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
-```
+```-->
 
 **Example II-2 disregards the information about observed links (which we used to estimate the logit model) and only uses the asymptotic distribution of the network formation parameters.**
 
@@ -872,12 +870,12 @@ rho acceptance rate         : 0.27905")
 ```{r BayesLog32b, echo=FALSE}
 summary(out.logi3.2) 
 ```
-```{r BayesLog32c, fig.height = 3, fig.align = "center"}
+<!-- ```{r BayesLog32c, fig.height = 3, fig.align = "center"}
 plot(out.logi3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
-```{r BayesLog32cc, fig.height = 3, fig.align = "center"}
+```-->
+<!-- ```{r BayesLog32cc, fig.height = 3, fig.align = "center"}
 plot(out.logi3.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
-```
+```-->
 
 ### Remarks {-}
 In the previous example, partial network information is available to estimate `rho` and `var.rho`. These estimates are included in the object `estimates`. Then in the MCMC, we set `G0.obs = "none"`, which means that the entire network will be inferred. In this situation, the posterior distribution of `rho` is strongly linked to the prior given by the practitioner, i.e. a normal distribution of parameters, the initial estimates of `rho` and `var.rho`. Indeed, an additional source of identification of the posterior distribution of `rho` may come from the spatial autoregressive (SAR) model. However, the available information in the observed part of the network is not used to update `rho` since it is already used when computing `estimates`.
@@ -937,8 +935,8 @@ print(sout.logi4.3)
 ```
 -->
 
-# Bayesian estimator with latent space model as network formation model {#BAYESARD}
-## ARD, @breza2020using
+## With latent space model as network formation model 
+### ARD, @breza2020using
 
 We also offer a function of the estimator in @breza2020using. We first simulate data. We then estimate the model's parameters assuming that the researcher only knows ARD. We present two examples, one for which we observe ARD for the entire population (Example 1) and one for which we observe ARD for only 70% of the population (Example 2).
 
@@ -949,7 +947,6 @@ load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavigne
 
 The data is simulated following a procedure similar to the one in @breza2020using. 
 ```{r ard1, eval=FALSE}
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 # LATENT SPACE MODEL 
@@ -1039,9 +1036,8 @@ Average acceptance rate
 ```-->
 ```{r ardaa1, eval=FALSE}
 # plot coordinates of individual 123
-i     <- 123
-zi    <- estim.ard1$simulations$z[i,,]
-par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
+i      <- 123
+zi     <- estim.ard1$simulations$z[i,,]
 invisible(lapply(1:3, function(x) {
   plot(zi[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
   abline(h = genz[i, x], col = "red")
@@ -1049,19 +1045,20 @@ invisible(lapply(1:3, function(x) {
 ```
 
 ```{r ardaa1a, echo=FALSE, fig.height = 4, fig.align = "center"}
-i     <- 123
+i      <- 123
+oldpar <- par(no.readonly = TRUE)   
 par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
 invisible(lapply(1:3, function(x) {
   plot(zi[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
   abline(h = genz[i, x], col = "red")
 }))
+par(oldpar)
 ```
 
 ```{r ardaa2, eval=FALSE}
 # plot coordinates of the trait 8
 k     <- 8
 vk    <- estim.ard1$simulations$v[k,,]
-par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
 invisible(lapply(1:3, function(x) {
   plot(vk[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
   abline(h = genv[k, x], col = "red")
@@ -1069,12 +1066,14 @@ invisible(lapply(1:3, function(x) {
 ```
 
 ```{r ardaa2a, echo=FALSE, fig.height = 4, fig.align = "center"}
-k     <- 8
+k      <- 8
+oldpar <- par(no.readonly = TRUE)   
 par(mfrow = c(3, 1), mar = c(2.1, 2.1, 1, 1))
 invisible(lapply(1:3, function(x) {
   plot(vk[x,], type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
   abline(h = genv[k, x], col = "red")
 }))
+par(oldpar)
 ```
 
 ```{r ardb, message=FALSE, eval=FALSE}
@@ -1162,7 +1161,7 @@ ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_AR
 ```
 
 
-## Estimating peer effects model with ARD
+### Estimating peer effects model with ARD
 
 Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for the entire population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
 
@@ -1172,7 +1171,6 @@ load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavigne
 ```
 **We first simulate data.** 
 ```{r bayesard1, eval=FALSE}
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 M             <- 30
@@ -1294,18 +1292,17 @@ rho acceptance rate         : 0.2697867")
 ```{r Bayesard2b, echo=FALSE}
 summary(out.lspa1) 
 ```
-```{r Bayesard2c, fig.height = 3, fig.align = "center"}
+<!-- ```{r Bayesard2c, fig.height = 3, fig.align = "center"}
 plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```-->
 
 
-## Estimating peer effects with partial ARD
+### Estimating peer effects with partial ARD
 
 Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for 70% $\sim$ 100% of the population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
 
 **We first simulate data.** 
 ```{r bayesard3, eval=FALSE}
-rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
 M             <- 30
@@ -1435,9 +1432,9 @@ rho acceptance rate         : 0.2705733")
 ```{r Bayesard4b, echo=FALSE}
 summary(out.lspa2)
 ```
-```{r Bayesard4c, fig.height = 3, fig.align = "center"}
+<!-- ```{r Bayesard4c, fig.height = 3, fig.align = "center"}
 plot(out.lspa2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```-->
 
 # The selection bias issue {#SELECT}
 In many applications, missing links are not completely random. For example, an individual who has no friends is less likely to have missing value on their row in the adjacency matrix than someone who has a lot of links. Even regressing a logit/probit network formation model using the entries of the adjacency matrix that are correctly measured will not yield a consistent estimator due to the selection bias issue.
@@ -1448,7 +1445,6 @@ A straightforward approach to address the issue is to weight the selected rows t
 
 We consider the following example where the number of missing links is randomly chosen between zero and the true number of links.
 ```{r selb1, echo = TRUE, eval=FALSE}
-rm(list = ls())
 library(PartialNetwork)
 library(dplyr)
 set.seed(123)

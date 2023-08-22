@@ -13,6 +13,9 @@ peer.avg(Glist, V, export.as.list = FALSE)
 
 \item{export.as.list}{(optional) boolean to indicate if the output should be a list of matrices or a single matrix.}
 }
+\value{
+the matrix product \code{diag(Glist[[1]], Glist[[2]], ...) \%*\% V}, where \code{diag()} is the block diagonal operator.
+}
 \description{
 \code{peer.avg} computes peer average value using network data (as a list) and observable characteristics.
 }

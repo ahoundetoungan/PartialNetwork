@@ -105,8 +105,17 @@ smmSAR <- function(formula,
                    data){
   
   t1           <- Sys.time()
-  if(!exists(".Random.seed")) set.seed(0)
-  seed         <- .Random.seed 
+  sysSeed      <- .GlobalEnv$.Random.seed
+  if(is.null(sysSeed)) set.seed(0)
+  seed         <- .GlobalEnv$.Random.seed 
+  on.exit({
+    if (is.null(sysSeed)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    } else {
+      .GlobalEnv$.Random.seed <- sysSeed 
+    }
+  })
+  
   if(!inherits(W, "character")) W <- as.matrix(W)
   stopifnot(inherits(W, c("character", "matrix", "array")))
   
@@ -323,7 +332,7 @@ smmSAR <- function(formula,
   } else{
     opt        <- do.call(get("optimize"), ctr)
     ealpha     <- opt$minimum
-    assign(".Random.seed", seed, envir = .GlobalEnv)
+    assign(".Random.seed", seed, envir = .GlobalEnv) #Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function
     Day        <- rep(0, ninstr)
     Ra         <- matrix(0, ninstr, Kx1 + Kx2*contextual)
     tmp        <- c(list(alpha = ealpha, Day = Day, Ra = Ra), ctr.b)
@@ -344,7 +353,7 @@ smmSAR <- function(formula,
     if(!("ninstr" %in% names(ctr.b))){
       ctr.b    <- c(list(ninstr = ninstr), ctr.b)
     }
-    assign(".Random.seed", seed, envir = .GlobalEnv)
+    assign(".Random.seed", seed, envir = .GlobalEnv)#Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function
     tmp        <- do.call(fmvzH, ctr.b)
     avgrad     <- tmp$derM
     avm        <- tmp$sumM/Nsum
@@ -456,13 +465,15 @@ smmSAR <- function(formula,
   if(M < 2) stop("Inference is not possible with one group")
   Nsum          <- sum(N)
 
-  old_seed      <- details$seed
-  new_seed      <- NULL
-  if(exists(".Random.seed")){
-    new_seed    <- .Random.seed 
-  } else {
-    new_seed    <- old_seed
-  }
+  seed          <- details$seed
+  sysSeed       <- .GlobalEnv$.Random.seed
+  on.exit({
+    if (is.null(sysSeed)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    } else {
+      .GlobalEnv$.Random.seed <- sysSeed 
+    }
+  })
   
   lmethod       <- !cond.var | !missing(.fun)
   varcov        <- NULL
@@ -628,7 +639,14 @@ smmSAR <- function(formula,
       tderM   <- t(derM)
       H0      <- solve(tderM %*% W %*% derM, tderM)
     } else{
-      assign(".Random.seed", old_seed, envir = .GlobalEnv)
+      on.exit({
+        if (is.null(sysSeed)) {
+          rm(".Random.seed", envir = .GlobalEnv)
+        } else {
+          .GlobalEnv$.Random.seed <- sysSeed 
+        }
+      })
+      assign(".Random.seed", seed, envir = .GlobalEnv)#Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function
       tmp     <- do.call(fmvzetaH, Afmvzeta)
       derM    <- tmp$derM
       tderM   <- t(derM)
@@ -642,6 +660,13 @@ smmSAR <- function(formula,
     if(missing(.fun)) {
       SIGMA <- aveMM - Nsum*aveM %*% t(aveM)/M
     } else{
+      on.exit({
+        if (is.null(sysSeed)) {
+          rm(".Random.seed", envir = .GlobalEnv)
+        } else {
+          .GlobalEnv$.Random.seed <- sysSeed 
+        }
+      })
       stopifnot(sim > 5)
       # Construct cluster
       cl    <- makeCluster(ncores)
@@ -651,7 +676,7 @@ smmSAR <- function(formula,
       
       # Register parallel backend
       registerDoParallel(cl)
-      assign(".Random.seed", new_seed, envir = .GlobalEnv)
+      assign(".Random.seed", seed, envir = .GlobalEnv)#Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function
       tmp   <- foreach(i = 1:sim, .packages  = "PartialNetwork") %dorng% {
         fSIGMA(.fun, .args, fmvzeta, Afmvzeta, M)}
       

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vMF.R
 \name{logCpvMF}
 \alias{logCpvMF}
-\title{Normalization constant of von Mises-Fisher Distribution}
+\title{Normalization constant of the von Mises-Fisher distribution}
 \usage{
 logCpvMF(p, eta)
 }
@@ -11,8 +11,11 @@ logCpvMF(p, eta)
 
 \item{eta}{is the intensity parameter.}
 }
+\value{
+the log of normalization constant of the von Mises-Fisher distribution.
+}
 \description{
-log of the Normalization Constant for the von Mises-Fisher Distribution
+log of the Normalization Constant for the von Mises-Fisher distribution
 of dimension \code{p} with intensity parameter \code{eta}.
 }
 \examples{

@@ -279,6 +279,9 @@
   burnin          <- x$burnin
   iteration       <- x$iteration
   
+  oldpar          <- par(no.readonly = TRUE)   
+  on.exit(par(oldpar))    
+  
   do.call("par", c(x[-(1:13)], list(...)))
   sim             <- x$plot.type == "sim"
   
@@ -329,7 +332,7 @@
   }
   
   
-  par(mfrow = c(1, 1))
+  # par(mfrow = c(1, 1))
   
   invisible(x)
 }

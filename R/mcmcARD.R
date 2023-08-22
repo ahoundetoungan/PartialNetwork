@@ -145,23 +145,19 @@
 #'   # plot coordinates of individuals
 #'   i <- 123 # individual 123
 #'   {
-#'     par(mfrow = c(3, 1))
 #'     lapply(1:3, function(x) {
 #'       plot(out$simulations$z[i, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
 #'       abline(h = genz[i, x], col = "red")
 #'     })
-#'     par(mfrow = c(1, 1))
 #'   }
 #'   
 #'   # plot coordinates of traits
 #'   k <- 8
 #'   {
-#'     par(mfrow = c(3, 1))
 #'     lapply(1:3, function(x) {
 #'       plot(out$simulations$v[k, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
 #'       abline(h = genv[k, x], col = "red")
 #'     })
-#'     par(mfrow = c(1, 1))
 #'   }}
 #' @export
 mcmcARD        <- function(Y, traitARD, start, fixv, consb, iteration = 2000L, sim.d = TRUE, sim.zeta = TRUE, hyperparms = NULL, ctrl.mcmc = list()) {

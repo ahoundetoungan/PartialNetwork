@@ -2,7 +2,7 @@
 % Please edit documentation in R/vMF.R
 \name{rvMF}
 \alias{rvMF}
-\title{Simulation from von Mises-Fisher Distribution}
+\title{Simulation from the von Mises-Fisher distribution}
 \usage{
 rvMF(size, theta)
 }
@@ -11,8 +11,11 @@ rvMF(size, theta)
 
 \item{theta}{is the parameter as \code{eta*mu}.}
 }
+\value{
+A matrix whose each row is a random draw from the distribution.
+}
 \description{
-Random generation for the von Mises-Fisher Distribution
+Random generation for the von Mises-Fisher distribution
 of dimension \code{p} with location parameter \code{mu} and intensity parameter \code{eta}
 (see Wood, 1994; Mardia, 2014).
 }

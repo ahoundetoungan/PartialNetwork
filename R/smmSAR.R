@@ -633,7 +633,7 @@ smmSAR <- function(formula,
       }
     }
     
-    # Estimate H0 and Sigma
+    # Estimate H0 and OMEGA
     H0        <- NULL
     if(cond.var){
       tderM   <- t(derM)
@@ -656,9 +656,9 @@ smmSAR <- function(formula,
       details <- c(details, list(av.grad.m = derM, av.m = c(aveM), "av.m%*%t(m)"= aveMM))
     }
     
-    SIGMA   <- NULL
+    OMEGA   <- NULL
     if(missing(.fun)) {
-      SIGMA <- aveMM - Nsum*aveM %*% t(aveM)/M
+      OMEGA <- aveMM - Nsum*aveM %*% t(aveM)/M
     } else{
       on.exit({
         if (is.null(sysSeed)) {
@@ -678,18 +678,18 @@ smmSAR <- function(formula,
       registerDoParallel(cl)
       assign(".Random.seed", seed, envir = .GlobalEnv)#Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function
       tmp   <- foreach(i = 1:sim, .packages  = "PartialNetwork") %dorng% {
-        fSIGMA(.fun, .args, fmvzeta, Afmvzeta, M)}
+        fOMEGA(.fun, .args, fmvzeta, Afmvzeta, M)}
       
       VZ    <- Reduce('+', lapply(1:sim, function(x) tmp[[x]]$VZ))/(sim*Nsum)
       EZ    <- t(sapply(1:sim, function(x) tmp[[x]]$EZ))
-      SIGMA <- VZ + var(EZ)/Nsum
+      OMEGA <- VZ + var(EZ)/Nsum
     } 
-    varcov  <- H0 %*% W %*% SIGMA %*% t(W) %*% t(H0)/Nsum
+    varcov  <- H0 %*% W %*% OMEGA %*% t(W) %*% t(H0)/Nsum
   } else {
     tderM   <- t(derM)
     H0      <- solve(tderM %*% W %*% derM, tderM)
-    SIGMA   <- aveMM - Nsum*aveM %*% t(aveM)/M
-    varcov  <- H0 %*% W %*% SIGMA %*% t(W) %*% t(H0)/Nsum
+    OMEGA   <- aveMM - Nsum*aveM %*% t(aveM)/M
+    varcov  <- H0 %*% W %*% OMEGA %*% t(W) %*% t(H0)/Nsum
   }
   
   
@@ -708,7 +708,7 @@ smmSAR <- function(formula,
 }
 
 
-fSIGMA <- function(.fun, .args, fmvzeta, Afmvzeta, M) {
+fOMEGA <- function(.fun, .args, fmvzeta, Afmvzeta, M) {
   Afmvzeta$distr  <- do.call(.fun, .args)
   tmp   <- do.call(fmvzeta, Afmvzeta)
   sumMM <- tmp$sumMM

@@ -371,7 +371,7 @@ List fmvzetaH0nc(const double& alpha,
       dZVpl         += dZVplm;
     }
   }
-  arma::mat deM     = dZVpl/(-Ncum(M)*R);
+  arma::mat deM      = dZVpl/(-Ncum(M)*R);
   return List::create(Named("sumM")  = arma::sum(matM, 1), 
                       Named("sumMM") = matM*matM.t(),
                       Named("derM")  = deM);

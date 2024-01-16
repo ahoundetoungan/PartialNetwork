@@ -300,7 +300,7 @@ void updGnormblock (List& Gnorm,
       Eigen::MatrixXd Am = eyeM-alpha*Gmnorm;
       removeRow(Am,i);
       
-      arma::vec IndexMJ = IndexMIJ[ci];
+      arma::Col<int> IndexMJ = IndexMIJ[ci];
       int NJ = IndexMJ.n_elem;
       
       for(int j(0); j < N(m); ++j) {
@@ -316,7 +316,7 @@ void updGnormblock (List& Gnorm,
       
       
       for(int cj(0); cj<NJeff; ++cj){
-        arma::vec index_col = IndexMJ.subvec(Blocks(cj) + 1, Blocks(cj+1));
+        arma::Col<int> index_col = IndexMJ.subvec(Blocks(cj) + 1, Blocks(cj+1));
         int nupdate         = Blocks(cj+1) - Blocks(cj);
         int poss            = pow(2, nupdate);          // number of possibility
         arma::mat cposs     = possentries(nupdate, poss); // the possibility 
@@ -404,7 +404,7 @@ void updGnormblocknoc (List& Gnorm,
       Eigen::MatrixXd Am = eyeM-alpha*Gmnorm;
       removeRow(Am,i);
       
-      arma::vec IndexMJ = IndexMIJ[ci];
+      arma::Col<int> IndexMJ = IndexMIJ[ci];
       int NJ = IndexMJ.n_elem;
       
       for(int j(0); j < N(m); ++j) {
@@ -420,7 +420,7 @@ void updGnormblocknoc (List& Gnorm,
       
       
       for(int cj(0); cj<NJeff; ++cj){
-        arma::vec index_col = IndexMJ.subvec(Blocks(cj) + 1, Blocks(cj+1));
+        arma::Col<int> index_col = IndexMJ.subvec(Blocks(cj) + 1, Blocks(cj+1));
         int nupdate         = Blocks(cj+1) - Blocks(cj);
         int poss            = pow(2, nupdate);          // number of possibility
         arma::mat cposs     = possentries(nupdate, poss); // the possibility 

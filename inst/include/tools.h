@@ -36,7 +36,7 @@ void updselel (
         double& prior_blockl,
         const Eigen::MatrixXd priorm,
         const int& i,
-        const arma::vec& index_col,
+        const arma::Col<int>& index_col,
         const arma::rowvec& newval,
         const int& nupdate
 );

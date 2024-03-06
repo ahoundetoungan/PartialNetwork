@@ -1,4 +1,8 @@
-#' @title Removes IDs with `NA` in a list of adjacency matrices in an optimal way.
+#' @title Removes IDs with NA in a list of adjacency matrices optimally
+#' @description
+#' The function optimally removes identifiers with NA in a list of adjacency matrices. Many combinations of rows and columns can be deleted
+# before getting rid of NA. This function removes the smallest number of rows and columns.   
+#' removing many rows and column
 #' @param network is a list of adjacency matrices
 #' @param ncores is the number of cores to be used to run the program in parallel
 #' @return List of adjacency matrices without missing values and a list of vectors of retained indeces

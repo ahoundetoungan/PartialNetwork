@@ -2,7 +2,7 @@
 % Please edit documentation in R/removeIDs.R
 \name{remove.ids}
 \alias{remove.ids}
-\title{Removes IDs with \code{NA} in a list of adjacency matrices in an optimal way.}
+\title{Removes IDs with NA in a list of adjacency matrices optimally}
 \usage{
 remove.ids(network, ncores = 1L)
 }
@@ -15,7 +15,8 @@ remove.ids(network, ncores = 1L)
 List of adjacency matrices without missing values and a list of vectors of retained indeces
 }
 \description{
-Removes IDs with \code{NA} in a list of adjacency matrices in an optimal way.
+The function optimally removes identifiers with NA in a list of adjacency matrices. Many combinations of rows and columns can be deleted
+removing many rows and column
 }
 \examples{
 A <- matrix(1:25, 5)

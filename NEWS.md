@@ -9,3 +9,6 @@ First release
 - We provide a smoother simulator of adjacency matrices in the SGMM approach.
 - We add weights to the probit/logit network formation model.
 - We allows the use of an initial probit/logit estimate of  $\rho$, where the observed part of the network is assumed non-stochastic in the MCMC. This is a quite different from using an initial probit/logit estimate as prior distribution of $\rho$. In this latter case, $\rho$ is updated using, among others, information from the observed part of the network. In the first case, $\rho$ and the unobserved part of the network are updated using information in $y$, where the initial estimate acts as prior distribution of $\rho$. Information from the observed part of the network is not used to update $\rho$. This information is included in the initial estimate.
+
+# Changes in Version 1.0.3
+Adjustments with Eigen 3.4

@@ -676,7 +676,7 @@ smmSAR <- function(formula,
       
       # Register parallel backend
       registerDoParallel(cl)
-      assign(".Random.seed", seed, envir = .GlobalEnv)#Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function
+      # assign(".Random.seed", seed, envir = .GlobalEnv)#Note that I restore the system seed (if it exists) using on.exit, see the beginning of the function
       tmp   <- foreach(i = 1:sim, .packages  = "PartialNetwork") %dorng% {
         fOMEGA(.fun, .args, fmvzeta, Afmvzeta, M)}
       

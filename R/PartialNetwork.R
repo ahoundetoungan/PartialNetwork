@@ -21,9 +21,9 @@
 #' @references Eddelbuettel, D., Francois, R., Allaire, J., Ushey, K., Kou, Q., Russel, N., ... & Bates, D., 2011,
 #' \pkg{Rcpp}: Seamless \R and \code{C++} integration, \emph{Journal of Statistical Software}, 40(8), 1-18, \doi{10.18637/jss.v040.i08}
 #' @references  
-#' Lee, L. F., 2004, Asymptotic distributions of quasi-maximum likelihood estimators for spatial autoregressive models. Econometrica, 72(6), 1899-1925, \url{https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1468-0262.2004.00558.x}
+#' Lee, L. F., 2004, Asymptotic distributions of quasi-maximum likelihood estimators for spatial autoregressive models. Econometrica, 72(6), 1899-1925, \doi{10.1111/j.1468-0262.2004.00558.x}
 #' @references 
-#' LeSage, J. P. 1997, Bayesian estimation of spatial autoregressive models, \emph{International regional science review}, 20(1-2), 113-129, \url{https://journals.sagepub.com/doi/10.1177/016001769702000107}.
+#' LeSage, J. P. 1997, Bayesian estimation of spatial autoregressive models, \emph{International regional science review}, 20(1-2), 113-129, \doi{10.1177/016001769702000107}.
 #' @references 
 #' Mardia, K. V., 2014, Statistics of directional data, \emph{Academic press}.
 #' @references McCormick, T. H., & Zheng, T., 2015, Latent surface models for networks using Aggregated Relational Data, 

@@ -3,7 +3,7 @@ Encoding: UTF-8
 Version: 1.0.4
 Type: Package
 Title: Estimating Peer Effects Using Partial Network Data
-Date: 2024-03-15
+Date: 2024-06-01
 Authors@R: c(person("Vincent", "Boucher",  role = c("aut"), email =  "vincent.boucher@ecn.ulaval.ca"), person("Aristide", "Houndetoungan",  role = c("cre","aut"), email =  "ahoundetoungan@gmail.com"))
 Description: Implements IV-estimator and Bayesian estimator for linear-in-means Spatial Autoregressive (SAR) model (see LeSage, 1997 <doi:10.1177/016001769702000107>; Lee, 2004 <doi:10.1111/j.1468-0262.2004.00558.x>; Bramoullé et al., 2009 <doi:10.1016/j.jeconom.2008.12.021>), while assuming that only a partial information about the network structure is available. Examples are when the adjacency matrix is not fully observed or when only consistent estimation of the network formation model is available (see Boucher and Houndetoungan <https://ahoundetoungan.com/files/Papers/PartialNetwork.pdf>).
 License: GPL-3
@@ -13,7 +13,7 @@ LazyData: true
 Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 1.0.0), Formula, formula.tools, abind, Matrix, parallel, doParallel, foreach, doRNG
 LinkingTo: Rcpp, RcppArmadillo(>= 0.11.4.4.0), RcppEigen, RcppNumerical, RcppProgress
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 Suggests: AER, knitr, rmarkdown, CDatanet, ggplot2, MASS
 VignetteBuilder: knitr

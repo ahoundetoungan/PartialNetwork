@@ -12,3 +12,6 @@ First release
 
 # Changes in Version 1.0.3
 Adjustments with Eigen 3.4
+
+# Changes in Version 1.0.4
+Adjustments with CDatanet 2.2.0

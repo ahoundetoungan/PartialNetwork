@@ -50,7 +50,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Aristide Houndetoungan \email{ariel92and@gmail.com}
+\strong{Maintainer}: Aristide Houndetoungan \email{ahoundetoungan@gmail.com}
 
 Authors:
 \itemize{

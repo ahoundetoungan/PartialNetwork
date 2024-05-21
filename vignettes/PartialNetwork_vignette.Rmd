@@ -613,9 +613,9 @@ Peer effects acceptance rate: 0.44065")
 ```{r BayesNone1b, echo=FALSE}
 summary(out.none1)
 ```
-```{r BayesNone1c, fig.height = 3, fig.align = "center"}
+<!--```{r BayesNone1c, fig.height = 3, fig.align = "center"}
 plot(out.none1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```--->
 **For Example I-2, we assume that only 60% of the links are observed. **
 ```{r BayesNone21s, eval=FALSE}
 # Example I-2: When a part of the network is observed 
@@ -649,9 +649,9 @@ Peer effects acceptance rate: 0.4317")
 ```{r BayesNone21b, echo=FALSE}
 summary(out.none2.1) # the peer effets seem overestimated
 ```
-```{r BayesNone21c, fig.height = 3, fig.align = "center"}
+<!--```{r BayesNone21c, fig.height = 3, fig.align = "center"}
 plot(out.none2.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```--->
 **Estimation `out.none2.2` specifies which links are observed and which ones are not. The true probabilities are used to sample un-observed links (consistent).**
 ```{r BayesNone22a, eval=FALSE}
 out.none2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
@@ -676,9 +676,9 @@ Peer effects acceptance rate: 0.4353")
 ```{r BayesNone22b, echo=FALSE}
 summary(out.none2.2)
 ```
-```{r BayesNone22c, fig.height = 3, fig.align = "center"}
+<!--```{r BayesNone22c, fig.height = 3, fig.align = "center"}
 plot(out.none2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```--->
 **For Example I-3, we assume that only linking probabilities are known. **
 
 **Estimation `out.none3.1` assumes the researcher uses a draw from that distribution as the true network (inconsistent, peer effects are overestimated).**
@@ -707,9 +707,9 @@ Peer effects acceptance rate: 0.44445")
 ```{r BayesNone31b, echo=FALSE}
 summary(out.none3.1)  # the peer effets seem overestimated
 ```
-```{r BayesNone31c, fig.height = 3, fig.align = "center"}
+<!--```{r BayesNone31c, fig.height = 3, fig.align = "center"}
 plot(out.none3.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```--->
 **Estimation `out.none3.2` specifies that no link is observed, but that the distribution is known (consistent).**
 ```{r BayesNone32a, eval=FALSE}
 out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
@@ -733,9 +733,9 @@ Peer effects acceptance rate: 0.42995")
 ```{r BayesNone32b, echo=FALSE}
 summary(out.none3.2)  
 ```
-```{r BayesNone32c, fig.height = 3, fig.align = "center"}
+<!--```{r BayesNone32c, fig.height = 3, fig.align = "center"}
 plot(out.none3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
-```
+```--->
 
 # Bayesian estimator with logit model as network formation model {#BAYESLOG}
 

@@ -5,7 +5,7 @@ library(PartialNetwork)
 library(Matrix)
 library(DataCombine)
 library(stargazer)
-setwd("PartialNetwork")
+Rcpp::sourceCpp("CppFunctions.cpp")
 
 # the finale data set is save in the 'filname' path and can be loaded if saved before
 # otherwise, the code will be ran to prepare the data
@@ -524,7 +524,7 @@ lcensure          <- friendall
 rcensure          <- ifelse(friendmall >= 5, unlist(lapply(gendf, function(x) rowSums(x == 0))), friendmall)
 rcensure          <- rcensure + ifelse(friendfall >= 5, unlist(lapply(gendf, function(x) rowSums(x == 1))), friendfall)
 
-par               <- runif(ncol(Xpoisson), -1, 1)
+par               <- runif(ncol(Xpoisson), -0.01, 0.01)
 poisson.optin1    <- optim(par, f_rcpoisson, control = list(maxit = 1e9, reltol = 1e-20), y = friendall, 
                            X = Xpoisson, censure = censure, lcensure = lcensure, rcensure = rcensure)
 

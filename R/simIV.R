@@ -51,8 +51,8 @@
 #' # normalise 
 #' G0norm        <- norm.network(G0)
 #' # simulate dependent variable use an external package
-#' y             <- CDatanet::simsar(~ X, contextual = FALSE, Glist = G0norm, 
-#'                                      theta = c(alpha, beta, se))
+#' y             <- CDatanet::simsar(~ X, Glist = G0norm,
+#'                                   theta = c(alpha, beta, se))
 #' y             <- y$y
 #' # generate instruments 
 #' instr         <- sim.IV(prior, X, y, replication = 1, power = 1)

@@ -1075,8 +1075,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // fbeta1
-arma::vec fbeta1(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fbeta1(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+arma::vec fbeta1(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fbeta1(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1091,7 +1091,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1102,13 +1101,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fbeta1(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fbeta1(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fgmm1
-double fgmm1(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fgmm1(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+double fgmm1(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fgmm1(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1121,7 +1120,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1133,13 +1131,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzeta1
-List fmvzeta1(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzeta1(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzeta1(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzeta1(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1153,7 +1151,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1165,13 +1162,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzeta1(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzeta1(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzetaH1
-List fmvzetaH1(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzetaH1(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzetaH1(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzetaH1(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1185,7 +1182,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1197,13 +1193,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzetaH1(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzetaH1(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fbeta1nc
-arma::vec fbeta1nc(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fbeta1nc(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+arma::vec fbeta1nc(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fbeta1nc(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1218,7 +1214,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1227,13 +1222,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fbeta1nc(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fbeta1nc(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fgmm1nc
-double fgmm1nc(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fgmm1nc(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+double fgmm1nc(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fgmm1nc(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1246,7 +1241,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1256,13 +1250,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzeta1nc
-List fmvzeta1nc(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzeta1nc(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzeta1nc(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzeta1nc(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1276,7 +1270,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1286,13 +1279,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzeta1nc(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzeta1nc(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzetaH1nc
-List fmvzetaH1nc(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzetaH1nc(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzetaH1nc(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzetaH1nc(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1306,7 +1299,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1316,13 +1308,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzetaH1nc(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzetaH1nc(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fbeta1fe
-arma::vec fbeta1fe(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fbeta1fe(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+arma::vec fbeta1fe(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fbeta1fe(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1337,7 +1329,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1348,13 +1339,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fbeta1fe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fbeta1fe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fgmm1fe
-double fgmm1fe(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fgmm1fe(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+double fgmm1fe(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fgmm1fe(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1367,7 +1358,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1379,13 +1369,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzeta1fe
-List fmvzeta1fe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzeta1fe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzeta1fe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzeta1fe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1399,7 +1389,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1411,13 +1400,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzeta1fe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzeta1fe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzetaH1fe
-List fmvzetaH1fe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzetaH1fe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzetaH1fe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& V, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& Kx2, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzetaH1fe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP VSEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP Kx2SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1431,7 +1420,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
@@ -1443,13 +1431,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzetaH1fe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzetaH1fe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fbeta1ncfe
-arma::vec fbeta1ncfe(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fbeta1ncfe(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+arma::vec fbeta1ncfe(const double& alpha, arma::vec& Day, arma::mat& Ra, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fbeta1ncfe(SEXP alphaSEXP, SEXP DaySEXP, SEXP RaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1464,7 +1452,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1473,13 +1460,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fbeta1ncfe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fbeta1ncfe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fgmm1ncfe
-double fgmm1ncfe(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fgmm1ncfe(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+double fgmm1ncfe(const double& alpha, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fgmm1ncfe(SEXP alphaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1492,7 +1479,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1502,13 +1488,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzeta1ncfe
-List fmvzeta1ncfe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzeta1ncfe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzeta1ncfe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzeta1ncfe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1522,7 +1508,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1532,13 +1517,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzeta1ncfe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzeta1ncfe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
 // fmvzetaH1ncfe
-List fmvzetaH1ncfe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& GX2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
-RcppExport SEXP _PartialNetwork_fmvzetaH1ncfe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP GX2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
+List fmvzetaH1ncfe(const double& alpha, const arma::vec& beta, const int& R, const int& S, const int& T, List& distr, List& Ilist, const arma::vec& y, const arma::mat& X1, const arma::mat& X2, const arma::mat& W, const bool& smoother, const double& hN, const int& Kx1, const int& ninstr, const int& M, const arma::vec& N, const int& Pm, const arma::vec& Ncum);
+RcppExport SEXP _PartialNetwork_fmvzetaH1ncfe(SEXP alphaSEXP, SEXP betaSEXP, SEXP RSEXP, SEXP SSEXP, SEXP TSEXP, SEXP distrSEXP, SEXP IlistSEXP, SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP WSEXP, SEXP smootherSEXP, SEXP hNSEXP, SEXP Kx1SEXP, SEXP ninstrSEXP, SEXP MSEXP, SEXP NSEXP, SEXP PmSEXP, SEXP NcumSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1552,7 +1537,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type GX2(GX2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const bool& >::type smoother(smootherSEXP);
     Rcpp::traits::input_parameter< const double& >::type hN(hNSEXP);
@@ -1562,7 +1546,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type N(NSEXP);
     Rcpp::traits::input_parameter< const int& >::type Pm(PmSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type Ncum(NcumSEXP);
-    rcpp_result_gen = Rcpp::wrap(fmvzetaH1ncfe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
+    rcpp_result_gen = Rcpp::wrap(fmvzetaH1ncfe(alpha, beta, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2580,22 +2564,22 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PartialNetwork_falbeta0ncfe", (DL_FUNC) &_PartialNetwork_falbeta0ncfe, 15},
     {"_PartialNetwork_fmvzeta0ncfe", (DL_FUNC) &_PartialNetwork_fmvzeta0ncfe, 17},
     {"_PartialNetwork_fmvzetaH0ncfe", (DL_FUNC) &_PartialNetwork_fmvzetaH0ncfe, 17},
-    {"_PartialNetwork_fbeta1", (DL_FUNC) &_PartialNetwork_fbeta1, 22},
-    {"_PartialNetwork_fgmm1", (DL_FUNC) &_PartialNetwork_fgmm1, 21},
-    {"_PartialNetwork_fmvzeta1", (DL_FUNC) &_PartialNetwork_fmvzeta1, 22},
-    {"_PartialNetwork_fmvzetaH1", (DL_FUNC) &_PartialNetwork_fmvzetaH1, 22},
-    {"_PartialNetwork_fbeta1nc", (DL_FUNC) &_PartialNetwork_fbeta1nc, 20},
-    {"_PartialNetwork_fgmm1nc", (DL_FUNC) &_PartialNetwork_fgmm1nc, 19},
-    {"_PartialNetwork_fmvzeta1nc", (DL_FUNC) &_PartialNetwork_fmvzeta1nc, 20},
-    {"_PartialNetwork_fmvzetaH1nc", (DL_FUNC) &_PartialNetwork_fmvzetaH1nc, 20},
-    {"_PartialNetwork_fbeta1fe", (DL_FUNC) &_PartialNetwork_fbeta1fe, 22},
-    {"_PartialNetwork_fgmm1fe", (DL_FUNC) &_PartialNetwork_fgmm1fe, 21},
-    {"_PartialNetwork_fmvzeta1fe", (DL_FUNC) &_PartialNetwork_fmvzeta1fe, 22},
-    {"_PartialNetwork_fmvzetaH1fe", (DL_FUNC) &_PartialNetwork_fmvzetaH1fe, 22},
-    {"_PartialNetwork_fbeta1ncfe", (DL_FUNC) &_PartialNetwork_fbeta1ncfe, 20},
-    {"_PartialNetwork_fgmm1ncfe", (DL_FUNC) &_PartialNetwork_fgmm1ncfe, 19},
-    {"_PartialNetwork_fmvzeta1ncfe", (DL_FUNC) &_PartialNetwork_fmvzeta1ncfe, 20},
-    {"_PartialNetwork_fmvzetaH1ncfe", (DL_FUNC) &_PartialNetwork_fmvzetaH1ncfe, 20},
+    {"_PartialNetwork_fbeta1", (DL_FUNC) &_PartialNetwork_fbeta1, 21},
+    {"_PartialNetwork_fgmm1", (DL_FUNC) &_PartialNetwork_fgmm1, 20},
+    {"_PartialNetwork_fmvzeta1", (DL_FUNC) &_PartialNetwork_fmvzeta1, 21},
+    {"_PartialNetwork_fmvzetaH1", (DL_FUNC) &_PartialNetwork_fmvzetaH1, 21},
+    {"_PartialNetwork_fbeta1nc", (DL_FUNC) &_PartialNetwork_fbeta1nc, 19},
+    {"_PartialNetwork_fgmm1nc", (DL_FUNC) &_PartialNetwork_fgmm1nc, 18},
+    {"_PartialNetwork_fmvzeta1nc", (DL_FUNC) &_PartialNetwork_fmvzeta1nc, 19},
+    {"_PartialNetwork_fmvzetaH1nc", (DL_FUNC) &_PartialNetwork_fmvzetaH1nc, 19},
+    {"_PartialNetwork_fbeta1fe", (DL_FUNC) &_PartialNetwork_fbeta1fe, 21},
+    {"_PartialNetwork_fgmm1fe", (DL_FUNC) &_PartialNetwork_fgmm1fe, 20},
+    {"_PartialNetwork_fmvzeta1fe", (DL_FUNC) &_PartialNetwork_fmvzeta1fe, 21},
+    {"_PartialNetwork_fmvzetaH1fe", (DL_FUNC) &_PartialNetwork_fmvzetaH1fe, 21},
+    {"_PartialNetwork_fbeta1ncfe", (DL_FUNC) &_PartialNetwork_fbeta1ncfe, 19},
+    {"_PartialNetwork_fgmm1ncfe", (DL_FUNC) &_PartialNetwork_fgmm1ncfe, 18},
+    {"_PartialNetwork_fmvzeta1ncfe", (DL_FUNC) &_PartialNetwork_fmvzeta1ncfe, 19},
+    {"_PartialNetwork_fmvzetaH1ncfe", (DL_FUNC) &_PartialNetwork_fmvzetaH1ncfe, 19},
     {"_PartialNetwork_falbeta2", (DL_FUNC) &_PartialNetwork_falbeta2, 17},
     {"_PartialNetwork_fmvzeta2", (DL_FUNC) &_PartialNetwork_fmvzeta2, 19},
     {"_PartialNetwork_fmvzetaH2", (DL_FUNC) &_PartialNetwork_fmvzetaH2, 19},

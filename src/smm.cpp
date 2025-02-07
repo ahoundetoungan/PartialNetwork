@@ -365,8 +365,8 @@ List fmvzetaH0nc(const double& alpha,
       arma::vec ym   = y.subvec(n1, n2);
       arma::mat Vplm = Vpl.rows(n1, n2);
       arma::mat dZm  = dZ.rows(n1, n2); 
-      dZym          += dZm.t()*ym;
-      dZVplm        += dZm.t()*Vplm;
+      dZym           = dZm.t()*ym;
+      dZVplm         = dZm.t()*Vplm;
       matM.col(m)    = dZym - dZVplm*theta;
       dZVpl         += dZVplm;
     }
@@ -409,7 +409,7 @@ arma::vec falbeta0fe(const int& R,
     arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dG, Pm); dZ.each_row() -= arma::mean(dZ, 0);
+      dZ           = Vm;  fZ(dZ, GX2m, dG, Pm); //dZ.each_row() -= arma::mean(dZ, 0);
       dZy         += dZ.t()*ym;
       dZVpl       += dZ.t()*Vplm;
     }
@@ -454,7 +454,7 @@ List fmvzeta0fe(const double& alpha,
     arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dG, Pm); dZ.each_row() -= arma::mean(dZ, 0);
+      dZ           = Vm;  fZ(dZ, GX2m, dG, Pm); //dZ.each_row() -= arma::mean(dZ, 0);
       dZym        += dZ.t()*ym;
       dZVplm      += dZ.t()*Vplm;
     }
@@ -500,7 +500,7 @@ List fmvzetaH0fe(const double& alpha,
     arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dG, Pm); dZ.each_row() -= arma::mean(dZ, 0);
+      dZ           = Vm;  fZ(dZ, GX2m, dG, Pm); //dZ.each_row() -= arma::mean(dZ, 0);
       dZym        += dZ.t()*ym;
       dZVplm      += dZ.t()*Vplm;
     }
@@ -545,7 +545,7 @@ arma::vec falbeta0ncfe(const int& R,
       arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
       for(int r(0); r < R; ++r){
         dG           = fGm(dnm, Nm, smoother, hN);
-        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dG, Pm); dZm.each_row() -= arma::mean(dZm, 0);
+        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dG, Pm); //dZm.each_row() -= arma::mean(dZm, 0);
         dZy         += dZm.t()*ym;
         dZVpl       += dZm.t()*Vplm;
       }
@@ -554,8 +554,8 @@ arma::vec falbeta0ncfe(const int& R,
     for(int m(0); m < M; ++m){
       int n1         = Ncum(m);
       int n2         = Ncum(m + 1) - 1;
-      arma::vec ym   = y.subvec(n1, n2); ym  -= mean(ym);
-      arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
+      arma::vec ym   = y.subvec(n1, n2); //ym  -= mean(ym);
+      arma::mat Vplm = Vpl.rows(n1, n2); //Vplm.each_row() -= arma::mean(Vplm, 0);
       arma::mat dZm  = dZ.rows(n1, n2); dZm.each_row() -= arma::mean(dZm, 0);
       dZy            += dZm.t()*ym;
       dZVpl          += dZm.t()*Vplm;
@@ -602,7 +602,7 @@ List fmvzeta0ncfe(const double& alpha,
       arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
       for(int r(0); r < R; ++r){
         dG           = fGm(dnm, Nm, smoother, hN);
-        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dG, Pm); dZm.each_row() -= arma::mean(dZm, 0);
+        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dG, Pm); //dZm.each_row() -= arma::mean(dZm, 0);
         dZym        += dZm.t()*ym;
         dZVplm      += dZm.t()*Vplm;
       }
@@ -614,11 +614,11 @@ List fmvzeta0ncfe(const double& alpha,
       arma::mat dZVplm(ninstr, 1 + Kx1, arma::fill::zeros);
       int n1         = Ncum(m);
       int n2         = Ncum(m + 1) - 1;
-      arma::vec ym   = y.subvec(n1, n2); ym  -= mean(ym);
-      arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
+      arma::vec ym   = y.subvec(n1, n2); //ym  -= mean(ym);
+      arma::mat Vplm = Vpl.rows(n1, n2); //Vplm.each_row() -= arma::mean(Vplm, 0);
       arma::mat dZm  = dZ.rows(n1, n2); dZm.each_row() -= arma::mean(dZm, 0);
-      dZym          += dZm.t()*ym;
-      dZVplm        += dZm.t()*Vplm;
+      dZym           = dZm.t()*ym;
+      dZVplm         = dZm.t()*Vplm;
       matM.col(m)    = dZym - dZVplm*theta;
     }
   }
@@ -662,7 +662,7 @@ List fmvzetaH0ncfe(const double& alpha,
       arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
       for(int r(0); r < R; ++r){
         dG           = fGm(dnm, Nm, smoother, hN);
-        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dG, Pm); dZm.each_row() -= arma::mean(dZm, 0);
+        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dG, Pm); //dZm.each_row() -= arma::mean(dZm, 0);
         dZym        += dZm.t()*ym;
         dZVplm      += dZm.t()*Vplm;
       }
@@ -675,11 +675,11 @@ List fmvzetaH0ncfe(const double& alpha,
       arma::mat dZVplm(ninstr, 1 + Kx1, arma::fill::zeros);
       int n1         = Ncum(m);
       int n2         = Ncum(m + 1) - 1;
-      arma::vec ym   = y.subvec(n1, n2); ym  -= mean(ym);
-      arma::mat Vplm = Vpl.rows(n1, n2); Vplm.each_row() -= arma::mean(Vplm, 0);
+      arma::vec ym   = y.subvec(n1, n2); //ym  -= mean(ym);
+      arma::mat Vplm = Vpl.rows(n1, n2); //Vplm.each_row() -= arma::mean(Vplm, 0);
       arma::mat dZm  = dZ.rows(n1, n2); dZm.each_row() -= arma::mean(dZm, 0);
-      dZym          += dZm.t()*ym;
-      dZVplm        += dZm.t()*Vplm;
+      dZym           = dZm.t()*ym;
+      dZVplm         = dZm.t()*Vplm;
       matM.col(m)    = dZym - dZVplm*theta;
       dZVpl         += dZVplm;
     }
@@ -703,7 +703,6 @@ arma::vec fbeta1(const double& alpha,
                  const arma::vec& y, 
                  const arma::mat& X1, 
                  const arma::mat& X2, 
-                 const arma::mat& GX2,
                  const arma::mat& V, 
                  const arma::mat& W,
                  const bool& smoother,
@@ -714,7 +713,7 @@ arma::vec fbeta1(const double& alpha,
                  const arma::vec& N, 
                  const int& Pm,
                  const arma::vec& Ncum){
-  arma::mat ddG, dA, dZ, ddGX2, ddZ, ddV, dddG;
+  arma::mat ddG, dA, dZ, ddGX2, ddZ, ddV, dddG, dddGX2;
   for(int m(0); m < M; ++m){
     int Nm         = N(m);
     int n1         = Ncum(m);
@@ -724,28 +723,26 @@ arma::vec fbeta1(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     arma::mat Vm   = V.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dddG, Pm);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); 
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); 
         Day         += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddV        = arma::join_rows(X1m, ddGX2);
-          ddZ        = ddV; fZ(ddZ, ddGX2, dddG, Pm);
-          Ra        += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - ddV));
+          ddV        = arma::join_rows(X1m, ddG*X2m);
+          Ra        += (dZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - ddV + Vm));
         }
-        Ra          += (T*dZ.t()*Vm);
       }
     }
   }
   Day     *= T;
   return arma::solve(Ra.t()*W*Ra, Ra.t()*(W*Day));
 }
+
 //[[Rcpp::export]]
 double fgmm1(const double& alpha,
              const int& R,
@@ -756,7 +753,6 @@ double fgmm1(const double& alpha,
              const arma::vec& y, 
              const arma::mat& X1, 
              const arma::mat& X2, 
-             const arma::mat& GX2,
              const arma::mat& V, 
              const arma::mat& W,
              const bool& smoother,
@@ -770,7 +766,7 @@ double fgmm1(const double& alpha,
              const arma::vec& Ncum){
   arma::vec Day(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1 + Kx2, arma::fill::zeros);
-  arma::vec beta = fbeta1(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum);
+  arma::vec beta = fbeta1(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum);
   arma::vec h = Day - Ra*beta;
   return arma::dot(h, W*h)/(Ncum(M)*Ncum(M)*R*R*T*T*S*S);
 }
@@ -786,7 +782,6 @@ List fmvzeta1(const double& alpha,
               const arma::vec& y, 
               const arma::mat& X1, 
               const arma::mat& X2, 
-              const arma::mat& GX2,
               const arma::mat& V, 
               const arma::mat& W,
               const bool& smoother,
@@ -798,7 +793,7 @@ List fmvzeta1(const double& alpha,
               const arma::vec& N, 
               const int& Pm,
               const arma::vec& Ncum){
-  arma::mat ddG, dA, dZ, ddGX2, ddZ, ddV, dddG;
+  arma::mat ddG, dA, dZ, ddV, dddG, dddGX2;
   arma::mat matM(ninstr, M);
   
   for(int m(0); m < M; ++m){
@@ -812,28 +807,27 @@ List fmvzeta1(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     arma::mat Vm   = V.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dddG, Pm);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); 
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= arma::mean(dA, 0);
         Daym        += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddV        = arma::join_rows(X1m, ddGX2);
-          ddZ        = ddV; fZ(ddZ, ddGX2, dddG, Pm);
-          Ram       += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - ddV));
+          ddV        = arma::join_rows(X1m, ddG*X2m); 
+          Ram       += (dZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - ddV + Vm));//.each_row() - mean(ddV, 0))));
         }
-        Ram         += (T*dZ.t()*Vm);
       }
     }
     matM.col(m)    = Daym/(R*S) - Ram*beta/(R*S*T);
   }
   return List::create(Named("sumM") = arma::sum(matM, 1), Named("sumMM") = matM*matM.t());
 }
+
+
 
 //[[Rcpp::export]]
 List fmvzetaH1(const double& alpha,
@@ -846,7 +840,6 @@ List fmvzetaH1(const double& alpha,
                const arma::vec& y, 
                const arma::mat& X1, 
                const arma::mat& X2, 
-               const arma::mat& GX2,
                const arma::mat& V, 
                const arma::mat& W,
                const bool& smoother,
@@ -858,7 +851,7 @@ List fmvzetaH1(const double& alpha,
                const arma::vec& N, 
                const int& Pm,
                const arma::vec& Ncum){
-  arma::mat dG, ddG, dA, dZ, ddGX2, ddZ, ddA, ddV, ddAV, dddG;
+  arma::mat dG, ddG, dA, dZ, ddA, ddV, ddAV, dddG, dddGX2;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1 + Kx2, arma::fill::zeros);
@@ -876,11 +869,11 @@ List fmvzetaH1(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     arma::mat Vm   = V.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dddG, Pm);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); 
       for(int s(0); s < S; ++s){
         dG           = fGm(dnm, Nm, smoother, hN);
         dA           = Im - alpha*dG;
@@ -888,16 +881,13 @@ List fmvzetaH1(const double& alpha,
         Dgym        += (dZ.t()*dG*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddV        = arma::join_rows(X1m, ddGX2);
-          ddZ        = ddV; fZ(ddZ, ddGX2, dddG, Pm);
+          ddV        = arma::join_rows(X1m, ddG*X2m); 
           ddA        = Im - alpha*ddG;
           ddAV       = arma::solve(ddA, ddV);
-          Ram       += (ddZ.t()*(dA*ddAV - ddV));
-          tmp1      += (ddZ.t()*dG*ddAV);
-          tmp2      += (ddZ.t()*dA*arma::solve(ddA, ddG*ddAV));
+          Ram       += (dZ.t()*(dA*ddAV - ddV + Vm));//.each_row() - mean(ddV, 0))));
+          tmp1      += (dZ.t()*dG*ddAV);
+          tmp2      += (dZ.t()*dA*arma::solve(ddA, ddG*ddAV));
         }
-        Ram         += (T*dZ.t()*Vm);
       }
     }
     matM.col(m)    = Daym/(R*S) - (Ram*beta)/(R*S*T);
@@ -912,6 +902,7 @@ List fmvzetaH1(const double& alpha,
                       Named("derM")  = deM);
 }
 
+
 //*** No Contextual, No fixed effects
 //[[Rcpp::export]]
 arma::vec fbeta1nc(const double& alpha,
@@ -924,8 +915,7 @@ arma::vec fbeta1nc(const double& alpha,
                    List& Ilist, 
                    const arma::vec& y, 
                    const arma::mat& X1, 
-                   const arma::mat& X2, 
-                   const arma::mat& GX2,
+                   const arma::mat& X2,
                    const arma::mat& W,
                    const bool& smoother,
                    const double& hN,
@@ -934,7 +924,7 @@ arma::vec fbeta1nc(const double& alpha,
                    const arma::vec& N, 
                    const int& Pm,
                    const arma::vec& Ncum){
-  arma::mat dddG, ddG, dA, dZ = arma::join_rows(X1, GX2), ddGX2, ddZ;
+  arma::mat dddG, ddG, dA, dZ, dddGX2;
   for(int m(0); m < M; ++m){
     int Nm         = N(m);
     int n1         = Ncum(m);
@@ -944,20 +934,17 @@ arma::vec fbeta1nc(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dddG, Pm);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); 
       for(int s(0); s < S; ++s){
         dA           = Im - alpha*fGm(dnm, Nm, smoother, hN);
-        Day         += (dZm.t()*dA*ym);
+        Day         += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddZ        = arma::join_rows(X1m, ddGX2); fZ(ddZ, ddGX2, dddG, Pm);
-          Ra        += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, X1m) - X1m));
+          Ra        += (dZ.t()*dA*arma::solve(Im - alpha*ddG, X1m));
         }
-        Ra          += (T*dZm.t()*X1m);
       }
     }
   }
@@ -976,7 +963,6 @@ double fgmm1nc(const double& alpha,
                const arma::vec& y, 
                const arma::mat& X1, 
                const arma::mat& X2, 
-               const arma::mat& GX2,
                const arma::mat& W,
                const bool& smoother,
                const double& hN,
@@ -988,7 +974,7 @@ double fgmm1nc(const double& alpha,
                const arma::vec& Ncum){
   arma::vec Day(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1, arma::fill::zeros);
-  arma::vec beta = fbeta1nc(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum);
+  arma::vec beta = fbeta1nc(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum);
   arma::vec h = Day - Ra*beta;
   return arma::dot(h, W*h)/(Ncum(M)*Ncum(M)*R*R*T*T*S*S);
 }
@@ -1004,7 +990,6 @@ List fmvzeta1nc(const double& alpha,
                 const arma::vec& y, 
                 const arma::mat& X1, 
                 const arma::mat& X2, 
-                const arma::mat& GX2,
                 const arma::mat& W,
                 const bool& smoother,
                 const double& hN,
@@ -1014,12 +999,11 @@ List fmvzeta1nc(const double& alpha,
                 const arma::vec& N, 
                 const int& Pm,
                 const arma::vec& Ncum){
-  arma::vec X1b = X1*beta.head(Kx1);
-  arma::mat dddG, ddG, dA, dZ = arma::join_rows(X1, GX2), ddGX2, ddZ;
+  arma::mat dddG, ddG, dA, dZ, dddGX2;
   arma::mat matM(ninstr, M);
   for(int m(0); m < M; ++m){
     arma::vec Daym(ninstr, arma::fill::zeros);
-    arma::vec Rabm(ninstr, Kx1, arma::fill::zeros);
+    arma::mat Ram(ninstr, Kx1, arma::fill::zeros);
     int Nm         = N(m);
     int n1         = Ncum(m);
     int n2         = Ncum(m + 1) - 1;
@@ -1028,27 +1012,24 @@ List fmvzeta1nc(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::vec X1bm = X1b.subvec(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dddG, Pm);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); 
       for(int s(0); s < S; ++s){
         dA           = Im - alpha*fGm(dnm, Nm, smoother, hN);
-        Daym        += (dZm.t()*dA*ym);
+        Daym        += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddZ        = arma::join_rows(X1m, ddGX2); fZ(ddZ, ddGX2, dddG, Pm);
-          Rabm      += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, X1bm) - X1bm));
+          Ram       += (dZ.t()*dA*arma::solve(Im - alpha*ddG, X1m));
         }
-        Rabm        += (T*dZm.t()*X1bm);
       }
     }
-    matM.col(m)    = Daym/(R*S) - Rabm/(R*S*T);
+    matM.col(m)    = Daym/(R*S) - Ram*beta/(R*S*T);
   }
   return List::create(Named("sumM") = arma::sum(matM, 1), Named("sumMM") = matM*matM.t());
 }
+
 
 //[[Rcpp::export]]
 List fmvzetaH1nc(const double& alpha,
@@ -1061,7 +1042,6 @@ List fmvzetaH1nc(const double& alpha,
                  const arma::vec& y, 
                  const arma::mat& X1, 
                  const arma::mat& X2, 
-                 const arma::mat& GX2,
                  const arma::mat& W,
                  const bool& smoother,
                  const double& hN,
@@ -1071,7 +1051,7 @@ List fmvzetaH1nc(const double& alpha,
                  const arma::vec& N, 
                  const int& Pm,
                  const arma::vec& Ncum){
-  arma::mat dG, ddG, dA, dZ = arma::join_rows(X1, GX2), ddGX2, ddZ, ddA, ddV, ddAV, dddG;
+  arma::mat dG, ddG, dA, dZ, ddA, ddV, ddAV, dddG, dddGX2;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1, arma::fill::zeros);
@@ -1089,26 +1069,23 @@ List fmvzetaH1nc(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dddG, Pm);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); 
       for(int s(0); s < S; ++s){
         dG           = fGm(dnm, Nm, smoother, hN);
         dA           = Im - alpha*dG;
-        Daym        += (dZm.t()*dA*ym);
-        Dgym        += (dZm.t()*dG*ym);
+        Daym        += (dZ.t()*dA*ym);
+        Dgym        += (dZ.t()*dG*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddZ        = arma::join_rows(X1m, ddGX2); fZ(ddZ, ddGX2, dddG, Pm);
           ddA        = Im - alpha*ddG;
           ddAV       = arma::solve(ddA, X1m);
-          Ram       += (ddZ.t()*(dA*ddAV - X1m));
-          tmp1      += (ddZ.t()*dG*ddAV);
-          tmp2      += (ddZ.t()*dA*arma::solve(ddA, ddG*ddAV));
+          Ram       += (dZ.t()*dA*ddAV);
+          tmp1      += (dZ.t()*dG*ddAV);
+          tmp2      += (dZ.t()*dA*arma::solve(ddA, ddG*ddAV));
         }
-        Ram         += (T*dZm.t()*X1m);
       }
     }
     matM.col(m)    = Daym/(R*S) - (Ram*beta)/(R*S*T);
@@ -1122,6 +1099,8 @@ List fmvzetaH1nc(const double& alpha,
                       Named("sumMM") = matM*matM.t(),
                       Named("derM")  = deM);
 }
+
+
 //*** Contextual, fixed effects
 //[[Rcpp::export]]
 arma::vec fbeta1fe(const double& alpha,
@@ -1135,7 +1114,6 @@ arma::vec fbeta1fe(const double& alpha,
                    const arma::vec& y, 
                    const arma::mat& X1, 
                    const arma::mat& X2, 
-                   const arma::mat& GX2,
                    const arma::mat& V, 
                    const arma::mat& W,
                    const bool& smoother,
@@ -1146,7 +1124,7 @@ arma::vec fbeta1fe(const double& alpha,
                    const arma::vec& N, 
                    const int& Pm,
                    const arma::vec& Ncum){
-  arma::mat dddG, ddG, dA, dZ, ddGX2, ddZ, ddV;
+  arma::mat dddG, ddG, dA, dZ, ddV, dddGX2;
   for(int m(0); m < M; ++m){
     int Nm         = N(m);
     int n1         = Ncum(m);
@@ -1156,23 +1134,19 @@ arma::vec fbeta1fe(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2); 
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     arma::mat Vm   = V.rows(n1, n2); 
-    arma::mat Vmc  = Vm.each_row() - mean(Vm, 0); 
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dddG, Pm); dZ.each_row() -= arma::mean(dZ, 0);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= arma::mean(dA, 0);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= arma::mean(dA, 0);
         Day         += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddV        = arma::join_rows(X1m, ddGX2); 
-          ddZ        = ddV; fZ(ddZ, ddGX2, dddG, Pm); ddZ.each_row() -= arma::mean(ddZ, 0);
-          Ra        += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - (ddV.each_row() - mean(ddV, 0))));
+          ddV        = arma::join_rows(X1m, ddG*X2m);
+          Ra        += (dZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - ddV + Vm));//.each_row() - mean(ddV, 0))));
         }
-        Ra          += (T*dZ.t()*Vmc);
       }
     }
   }
@@ -1190,7 +1164,6 @@ double fgmm1fe(const double& alpha,
                const arma::vec& y, 
                const arma::mat& X1, 
                const arma::mat& X2, 
-               const arma::mat& GX2,
                const arma::mat& V, 
                const arma::mat& W,
                const bool& smoother,
@@ -1204,7 +1177,7 @@ double fgmm1fe(const double& alpha,
                const arma::vec& Ncum){
   arma::vec Day(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1 + Kx2, arma::fill::zeros);
-  arma::vec beta = fbeta1fe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum);
+  arma::vec beta = fbeta1fe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, M, N, Pm, Ncum);
   arma::vec h = Day - Ra*beta;
   return arma::dot(h, W*h)/(Ncum(M)*Ncum(M)*R*R*T*T*S*S);
 }
@@ -1220,7 +1193,6 @@ List fmvzeta1fe(const double& alpha,
                 const arma::vec& y, 
                 const arma::mat& X1, 
                 const arma::mat& X2, 
-                const arma::mat& GX2,
                 const arma::mat& V, 
                 const arma::mat& W,
                 const bool& smoother,
@@ -1232,7 +1204,7 @@ List fmvzeta1fe(const double& alpha,
                 const arma::vec& N, 
                 const int& Pm,
                 const arma::vec& Ncum){
-  arma::mat dddG, ddG, dA, dZ, ddGX2, ddZ, ddV;
+  arma::mat dddG, ddG, dA, dZ, ddV, dddGX2;
   arma::mat matM(ninstr, M);
   for(int m(0); m < M; ++m){
     arma::vec Daym(ninstr, arma::fill::zeros);
@@ -1245,23 +1217,19 @@ List fmvzeta1fe(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2); 
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     arma::mat Vm   = V.rows(n1, n2); 
-    arma::mat Vmc  = Vm.each_row() - mean(Vm, 0); 
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dddG, Pm); dZ.each_row() -= arma::mean(dZ, 0);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= arma::mean(dA, 0);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= arma::mean(dA, 0);
         Daym        += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddV        = arma::join_rows(X1m, ddGX2); 
-          ddZ        = ddV; fZ(ddZ, ddGX2, dddG, Pm); ddZ.each_row() -= arma::mean(ddZ, 0);
-          Ram       += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - (ddV.each_row() - mean(ddV, 0))));
+          ddV        = arma::join_rows(X1m, ddG*X2m); 
+          Ram       += (dZ.t()*(dA*arma::solve(Im - alpha*ddG, ddV) - ddV + Vm));//.each_row() - mean(ddV, 0))));
         }
-        Ram         += (T*dZ.t()*Vmc);
       }
     }
     matM.col(m)    = Daym/(R*S) - Ram*beta/(R*S*T);
@@ -1280,7 +1248,6 @@ List fmvzetaH1fe(const double& alpha,
                  const arma::vec& y, 
                  const arma::mat& X1, 
                  const arma::mat& X2, 
-                 const arma::mat& GX2,
                  const arma::mat& V, 
                  const arma::mat& W,
                  const bool& smoother,
@@ -1292,7 +1259,7 @@ List fmvzetaH1fe(const double& alpha,
                  const arma::vec& N, 
                  const int& Pm,
                  const arma::vec& Ncum){
-  arma::mat dG, ddG, dA, dZ, ddGX2, ddZ, ddV, ddA, ddAV, dGc, dddG;
+  arma::mat dG, ddG, dA, dZ, ddV, ddA, ddAV, dddG, dddGX2;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1 + Kx2, arma::fill::zeros);
@@ -1310,30 +1277,25 @@ List fmvzetaH1fe(const double& alpha,
     arma::vec ym   = y.subvec(n1, n2); 
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     arma::mat Vm   = V.rows(n1, n2); 
-    arma::mat Vmc  = Vm.each_row() - mean(Vm, 0); 
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      dZ           = Vm;  fZ(dZ, GX2m, dddG, Pm); dZ.each_row() -= arma::mean(dZ, 0);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
         dG           = fGm(dnm, Nm, smoother, hN);
-        dGc          = dG.each_row() - mean(dG, 0);
-        dA           = Im - alpha*dG; dA.each_row() -= arma::mean(dA, 0);
+        dA           = Im - alpha*dG; //dA.each_row() -= arma::mean(dA, 0);
         Daym        += (dZ.t()*dA*ym);
-        Dgym        += (dZ.t()*dGc*ym);
+        Dgym        += (dZ.t()*dG*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddV        = arma::join_rows(X1m, ddGX2); 
-          ddZ        = ddV; fZ(ddZ, ddGX2, dddG, Pm); ddZ.each_row() -= arma::mean(ddZ, 0);
+          ddV        = arma::join_rows(X1m, ddG*X2m); 
           ddA        = Im - alpha*ddG;
           ddAV       = arma::solve(ddA, ddV);
-          Ram       += (ddZ.t()*(dA*ddAV - (ddV.each_row() - mean(ddV, 0))));
-          tmp1      += (ddZ.t()*dGc*ddAV);
-          tmp2      += (ddZ.t()*dA*arma::solve(ddA, ddG*ddAV));
+          Ram       += (dZ.t()*(dA*ddAV - ddV + Vm));//.each_row() - mean(ddV, 0))));
+          tmp1      += (dZ.t()*dG*ddAV);
+          tmp2      += (dZ.t()*dA*arma::solve(ddA, ddG*ddAV));
         }
-        Ram         += (T*dZ.t()*Vmc);
       }
     }
     matM.col(m)    = Daym/(R*S) - (Ram*beta)/(R*S*T);
@@ -1361,7 +1323,6 @@ arma::vec fbeta1ncfe(const double& alpha,
                      const arma::vec& y, 
                      const arma::mat& X1, 
                      const arma::mat& X2, 
-                     const arma::mat& GX2,
                      const arma::mat& W,
                      const bool& smoother,
                      const double& hN,
@@ -1370,7 +1331,7 @@ arma::vec fbeta1ncfe(const double& alpha,
                      const arma::vec& N, 
                      const int& Pm,
                      const arma::vec& Ncum){
-  arma::mat dddG, ddG, dA, dZ = arma::join_rows(X1, GX2), ddGX2, ddZ;
+  arma::mat dddG, ddG, dA, dZ, dddGX2;
   for(int m(0); m < M; ++m){
     int Nm         = N(m);
     int n1         = Ncum(m);
@@ -1379,22 +1340,18 @@ arma::vec fbeta1ncfe(const double& alpha,
     arma::mat Im   = Ilist(m);
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
-    arma::mat X1mc = X1m.each_row() - arma::mean(X1m, 0);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dddG, Pm); dZm.each_row() -= arma::mean(dZm, 0);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= arma::mean(dA, 0);
-        Day         += (dZm.t()*dA*ym);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= arma::mean(dA, 0);
+        Day         += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddZ        = arma::join_rows(X1m, ddGX2); fZ(ddZ, ddGX2, dddG, Pm); ddZ.each_row() -= arma::mean(ddZ, 0);
-          Ra        += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, X1m) - X1mc));
+          Ra        += (dZ.t()*dA*arma::solve(Im - alpha*ddG, X1m));
         }
-        Ra          += (T*dZm.t()*X1mc);
       }
     }
   }
@@ -1412,7 +1369,6 @@ double fgmm1ncfe(const double& alpha,
                  const arma::vec& y, 
                  const arma::mat& X1, 
                  const arma::mat& X2, 
-                 const arma::mat& GX2,
                  const arma::mat& W,
                  const bool& smoother,
                  const double& hN,
@@ -1424,7 +1380,7 @@ double fgmm1ncfe(const double& alpha,
                  const arma::vec& Ncum){
   arma::vec Day(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1, arma::fill::zeros);
-  arma::vec beta = fbeta1ncfe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, M, N, Pm, Ncum);
+  arma::vec beta = fbeta1ncfe(alpha, Day, Ra, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, M, N, Pm, Ncum);
   arma::vec h = Day - Ra*beta;
   return arma::dot(h, W*h)/(Ncum(M)*Ncum(M)*R*R*T*T*S*S);
 }
@@ -1440,7 +1396,6 @@ List fmvzeta1ncfe(const double& alpha,
                   const arma::vec& y, 
                   const arma::mat& X1, 
                   const arma::mat& X2, 
-                  const arma::mat& GX2,
                   const arma::mat& W,
                   const bool& smoother,
                   const double& hN,
@@ -1450,8 +1405,9 @@ List fmvzeta1ncfe(const double& alpha,
                   const arma::vec& N, 
                   const int& Pm,
                   const arma::vec& Ncum){
-  arma::mat dddG, ddG, dA, dZ = arma::join_rows(X1, GX2), ddGX2, ddZ;
+  arma::mat dddG, ddG, dA, dZ, dddGX2;
   arma::mat matM(ninstr, M);
+  
   for(int m(0); m < M; ++m){
     arma::vec Daym(ninstr, arma::fill::zeros);
     arma::mat Ram(ninstr, Kx1, arma::fill::zeros);
@@ -1462,22 +1418,18 @@ List fmvzeta1ncfe(const double& alpha,
     arma::mat Im   = Ilist(m);
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
-    arma::mat X1mc = X1m.each_row() - arma::mean(X1m, 0);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     for(int r(0); r < R; ++r){
+      dddG         = fGm(dnm, Nm, smoother, hN);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dddG         = fGm(dnm, Nm, smoother, hN);
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= arma::mean(dA, 0);
-        arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dddG, Pm); dZm.each_row() -= arma::mean(dZm, 0);
-        Daym        += (dZm.t()*dA*ym);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= arma::mean(dA, 0);
+        Daym        += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddZ        = arma::join_rows(X1m, ddGX2); fZ(ddZ, ddGX2, dddG, Pm); ddZ.each_row() -= arma::mean(ddZ, 0);
-          Ram       += (ddZ.t()*(dA*arma::solve(Im - alpha*ddG, X1m) - X1mc));
+          Ram       += (dZ.t()*dA*arma::solve(Im - alpha*ddG, X1m));
         }
-        Ram         += (T*dZm.t()*X1mc);
       }
     }
     matM.col(m)    = Daym/(R*S) - Ram*beta/(R*S*T);
@@ -1496,7 +1448,6 @@ List fmvzetaH1ncfe(const double& alpha,
                    const arma::vec& y, 
                    const arma::mat& X1, 
                    const arma::mat& X2, 
-                   const arma::mat& GX2,
                    const arma::mat& W,
                    const bool& smoother,
                    const double& hN,
@@ -1506,7 +1457,7 @@ List fmvzetaH1ncfe(const double& alpha,
                    const arma::vec& N, 
                    const int& Pm,
                    const arma::vec& Ncum){
-  arma::mat dG, ddG, dA, dZ = arma::join_rows(X1, GX2), ddGX2, ddZ, ddA, ddV, ddAV, dGc, dddG;
+  arma::mat dG, ddG, dA, dZ, ddA, ddV, ddAV, dddG, dddGX2;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1, arma::fill::zeros);
@@ -1523,29 +1474,24 @@ List fmvzetaH1ncfe(const double& alpha,
     arma::mat Im   = Ilist(m);
     arma::vec ym   = y.subvec(n1, n2);
     arma::mat X1m  = X1.rows(n1, n2);
-    arma::mat X1mc = X1m.each_row() - arma::mean(X1m, 0);
     arma::mat X2m  = X2.rows(n1, n2);
-    arma::mat GX2m = GX2.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dddG         = fGm(dnm, Nm, smoother, hN);
-      arma::mat dZm= dZ.rows(n1, n2); fZ(dZm, GX2m, dddG, Pm); dZm.each_row() -= arma::mean(dZm, 0);
+      dddGX2       = dddG*X2m;
+      dZ           = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
         dG           = fGm(dnm, Nm, smoother, hN);
-        dGc          = dG.each_row() - mean(dG, 0);
-        dA           = Im - alpha*dG; dA.each_row() -= arma::mean(dA, 0);
-        Daym        += (dZm.t()*dA*ym);
-        Dgym        += (dZm.t()*dGc*ym);
+        dA           = Im - alpha*dG; //dA.each_row() -= arma::mean(dA, 0);
+        Daym        += (dZ.t()*dA*ym);
+        Dgym        += (dZ.t()*dG*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
-          ddGX2      = ddG*X2m;
-          ddZ        = arma::join_rows(X1m, ddGX2); fZ(ddZ, ddGX2, dddG, Pm); ddZ.each_row() -= arma::mean(ddZ, 0);
           ddA        = Im - alpha*ddG;
           ddAV       = arma::solve(ddA, X1m);
-          Ram       += (ddZ.t()*(dA*ddAV - X1mc));
-          tmp1      += (ddZ.t()*dGc*ddAV);
-          tmp2      += (ddZ.t()*dA*arma::solve(ddA, ddG*ddAV));
+          Ram       += (dZ.t()*dA*ddAV);
+          tmp1      += (dZ.t()*dG*ddAV);
+          tmp2      += (dZ.t()*dA*arma::solve(ddA, ddG*ddAV));
         }
-        Ram         += (T*dZm.t()*X1mc);
       }
     }
     matM.col(m)    = Daym/(R*S) - (Ram*beta)/(R*S*T);
@@ -1879,7 +1825,7 @@ arma::vec falbeta2fe(const int& R,
     int n1         = Ncum(m);
     int n2         = Ncum(m + 1) - 1;
     arma::mat dnm  = distr(m);
-    arma::vec ym   = y.subvec(n1, n2); ym -= mean(ym);
+    arma::vec ym   = y.subvec(n1, n2);// ym -= mean(ym);
     arma::mat X1m  = X1.rows(n1, n2);
     arma::mat X1pm = X1p.rows(n1, n2);
     arma::mat X2m  = X2.rows(n1, n2);
@@ -1889,7 +1835,7 @@ arma::vec falbeta2fe(const int& R,
       dZ           = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); dZ.each_row() -= mean(dZ, 0);
       dZy         += (dZ.t()*ym);
       for(int s(0); s < S; ++s){
-        Vpl        = arma::join_rows(X1pm, fGm(dnm, Nm, smoother, hN)*X2m); Vpl.each_row() -= mean(Vpl, 0);
+        Vpl        = arma::join_rows(X1pm, fGm(dnm, Nm, smoother, hN)*X2m);// Vpl.each_row() -= mean(Vpl, 0);
         dZVpl     += (dZ.t()*Vpl);
       }
     }
@@ -1937,11 +1883,11 @@ List fmvzeta2fe(const double& alpha,
       dG           = fGm(dnm, Nm, smoother, hN);
       dGX2         = dG*X2m;
       dZ           = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); dZ.each_row() -= mean(dZ, 0);
-      Ay           = ym - alpha*Gym; Ay -= mean(Ay);
+      Ay           = ym - alpha*Gym; //Ay -= mean(Ay);
       Daym        += (dZ.t()*Ay);
       for(int s(0); s < S; ++s){
         ddG        = fGm(dnm, Nm, smoother, hN);
-        tmp        = arma::join_rows(X1m, ddG*X2m); tmp.each_row() -= mean(tmp, 0);
+        tmp        = arma::join_rows(X1m, ddG*X2m); //tmp.each_row() -= mean(tmp, 0);
         Ram       += (dZ.t()*tmp);
       }
     }
@@ -1971,7 +1917,7 @@ List fmvzetaH2fe(const double& alpha,
                  const arma::vec& N, 
                  const int& Pm,
                  const arma::vec& Ncum){
-  arma::mat dG, ddG, dZ, dGX2, tmp, dGc, ddGX2;
+  arma::mat dG, ddG, dZ, dGX2, ddGX2;
   arma::vec Ay;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
@@ -1992,17 +1938,15 @@ List fmvzetaH2fe(const double& alpha,
     arma::vec Gym  = Gy.rows(n1, n2);
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
-      dGc          = dG.each_row() - mean(dG, 0);
       dGX2         = dG*X2m;
       dZ           = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); dZ.each_row() -= mean(dZ, 0);
-      Ay           = ym - alpha*Gym; Ay -= mean(Ay);
+      Ay           = ym - alpha*Gym; //Ay -= mean(Ay);
       Daym        += (dZ.t()*Ay);
-      Dgym        += (dZ.t()*dGc*ym);
+      Dgym        += (dZ.t()*dG*ym);
       for(int s(0); s < S; ++s){
         ddG        = fGm(dnm, Nm, smoother, hN);
         ddGX2      = ddG*X2m;
-        tmp        = arma::join_rows(X1m, ddGX2); tmp.each_row() -= mean(tmp, 0);
-        Ram       += (dZ.t()*tmp);
+        Ram       += (dZ.t()*arma::join_rows(X1m, ddGX2));
       }
     }
     matM.col(m)    = Daym/R - Ram*beta/(R*S);
@@ -2049,7 +1993,7 @@ arma::vec falbeta2ncfe(const int& R,
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
       dGX2         = dG*X2m;
-      arma::mat dZ = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); dZ.each_row() -= mean(dZ, 0);
+      arma::mat dZ = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); //dZ.each_row() -= mean(dZ, 0);
       dZy         += dZ.t()*ym;
       dZVpl       += dZ.t()*Vplm;
     }
@@ -2095,7 +2039,7 @@ List fmvzeta2ncfe(const double& alpha,
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
       dGX2         = dG*X2m;
-      arma::mat dZ = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); dZ.each_row() -= mean(dZ, 0);
+      arma::mat dZ = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); //dZ.each_row() -= mean(dZ, 0);
       dZym        += dZ.t()*ym;
       dZVplm      += dZ.t()*Vplm;
     }
@@ -2141,7 +2085,7 @@ List fmvzetaH2ncfe(const double& alpha,
     for(int r(0); r < R; ++r){
       dG           = fGm(dnm, Nm, smoother, hN);
       dGX2         = dG*X2m;
-      arma::mat dZ = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); dZ.each_row() -= mean(dZ, 0);
+      arma::mat dZ = arma::join_rows(X1m, dGX2); fZ(dZ, dGX2, dG, Pm); //dZ.each_row() -= mean(dZ, 0);
       dZym        += dZ.t()*ym;
       dZVplm      += dZ.t()*Vplm;
     }
@@ -2590,7 +2534,7 @@ arma::vec fbeta3fe(const double& alpha,
       dddGX2         = dddG*X2m;
       dZ             = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= mean(dA, 0);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= mean(dA, 0);
         Day         += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
@@ -2673,7 +2617,7 @@ List fmvzeta3fe(const double& alpha,
       dddGX2         = dddG*X2m;
       dZ             = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= mean(dA, 0);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= mean(dA, 0);
         Daym        += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
@@ -2707,7 +2651,7 @@ List fmvzetaH3fe(const double& alpha,
                  const arma::vec& N, 
                  const int& Pm,
                  const arma::vec& Ncum){
-  arma::mat dG, ddG, dddG, dA, dZ, dddGX2, ddA, ddAV, dGc;
+  arma::mat dG, ddG, dddG, dA, dZ, dddGX2, ddA, ddAV;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1 + Kx2, arma::fill::zeros);
@@ -2731,15 +2675,14 @@ List fmvzetaH3fe(const double& alpha,
       dZ             = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
         dG           = fGm(dnm, Nm, smoother, hN);
-        dGc          = dG.each_row() - mean(dG, 0);
-        dA           = Im - alpha*dG; dA.each_row() -= mean(dA, 0);
+        dA           = Im - alpha*dG; 
         Daym        += (dZ.t()*dA*ym);
-        Dgym        += (dZ.t()*dGc*ym);
+        Dgym        += (dZ.t()*dG*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
           ddA        = Im - alpha*ddG;
           ddAV       = arma::solve(ddA, arma::join_rows(X1m, ddG*X2m));
-          tmp1      += (dZ.t()*dGc*ddAV);
+          tmp1      += (dZ.t()*dG*ddAV);
           tmp2      += (dZ.t()*dA*arma::solve(ddA, ddG*ddAV));
           Ram       += (dZ.t()*dA*ddAV);
         }
@@ -2872,7 +2815,7 @@ List fmvzeta3ncfe(const double& alpha,
       dddGX2         = dddG*X2m;
       dZ             = arma::join_rows(X1m, dddGX2);  fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
-        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); dA.each_row() -= mean(dA, 0);
+        dA           = Im - alpha*fGm(dnm, Nm, smoother, hN); //dA.each_row() -= mean(dA, 0);
         Daym        += (dZ.t()*dA*ym);
         for(int t(0); t < T; ++t){
           ddG        = fGm(dnm, Nm, smoother, hN);
@@ -2905,7 +2848,7 @@ List fmvzetaH3ncfe(const double& alpha,
                    const arma::vec& N, 
                    const int& Pm,
                    const arma::vec& Ncum){
-  arma::mat dG, ddG, dddG, dA, dZ, dddGX2, ddA, ddAV;//, dGc;
+  arma::mat dG, ddG, dddG, dA, dZ, dddGX2, ddA, ddAV;
   arma::mat matM(ninstr, M);
   arma::vec Dgy(ninstr, arma::fill::zeros);
   arma::mat Ra(ninstr, Kx1, arma::fill::zeros);
@@ -2929,8 +2872,7 @@ List fmvzetaH3ncfe(const double& alpha,
       dZ             = arma::join_rows(X1m, dddGX2); fZ(dZ, dddGX2, dddG, Pm); dZ.each_row() -= mean(dZ, 0);
       for(int s(0); s < S; ++s){
         dG           = fGm(dnm, Nm, smoother, hN);
-        //dGc          = dG.each_row() - mean(dG, 0);
-        dA           = Im - alpha*dG; //dA.each_row() -= mean(dA, 0);
+        dA           = Im - alpha*dG; 
         Daym        += (dZ.t()*dA*ym);
         Dgym        += (dZ.t()*dG*ym);
         for(int t(0); t < T; ++t){

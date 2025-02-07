@@ -210,8 +210,9 @@ X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 G0            <- sim.network(prior)
 # normalise
 G0norm        <- norm.network(G0)
+GX            <- peer.avg(G0norm, X)
 # simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X, contextual = TRUE, Glist = G0norm,
+y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
                                   theta = c(alpha, beta, gamma, se))
 y             <- y$y
 # dataset

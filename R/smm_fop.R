@@ -7,50 +7,50 @@
 
 
 # GX observed, Gy not observed
-optim1       <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1       <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-optim1pr     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1pr     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  out        <- fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim1nc     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1nc     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
+  fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-optim1ncpr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1ncpr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  out        <- fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1nc(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim1fe     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1fe     <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }
 
-optim1fepr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
+optim1fepr   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  out        <- fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1fe(alpha, R, S, T, distr, Ilist, y, X1, X2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }
 
-optim1ncfe   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1ncfe   <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
+  fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
 }
 
-optim1ncfepr <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
+optim1ncfepr <- function(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum, seed){
   assign(".Random.seed", seed, envir = .GlobalEnv)#This is used in the function smmSAR. Note that I restore the system seed (it it exist) using on.exit, see the beginning of the function smmSAR
-  out        <- fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, GX2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
+  out        <- fgmm1ncfe(alpha, R, S, T, distr, Ilist, y, X1, X2, W, smoother, hN, Kx1, ninstr, M, N, Pm, Ncum)
   cat("alpha:", alpha, "** objective:", out, "\n")
   out
 }

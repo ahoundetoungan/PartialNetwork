@@ -214,7 +214,7 @@ The function allows to specify if `GX` and `Gy` are observed. We provide an exam
 
 If `GX` and `Gy` are observed (instruments will be constructed using the network distribution).
 ```{r Smmload, echo = FALSE, eval = TRUE, message=FALSE}
-load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/smm.rda?raw=true'))
+load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/smm.RData?raw=true', "rb"))
 ```
 ```{r Smm2, echo = TRUE, eval = FALSE, message=FALSE}
 out.smm1       <- smmSAR(y ~ X1 + X2 | Gy | GX1 + GX2, dnetwork = distr, contextual = T, 
@@ -418,11 +418,11 @@ smm <- list(smm1 = out.smm1, smm2 = out.smm2,
             smm3 = out.smm3, smm4 = out.smm4,
             smme1 = out.smmeff1, smme2 = out.smmeff2,
             smme3 = out.smmeff3, smmmc = smm$smmmc)
-save(smm, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smm.rda")
+save(smm, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smm.RData")
 ```
 ## How to compute the variance when the network distribution is estimated?
 ```{r Smmlogitload, echo = FALSE, eval = TRUE, message=FALSE}
-load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/smmlogit.rda?raw=true'))
+load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/smmlogit.RData?raw=true', "rb"))
 ```
 In practice, the econometrician does not observed the true distribution of the entire network. They can only have an estimator based on partial network data (see @boucher2020estimating). Because this estimator is used instead of the true distribution, this increases the variance of the SMM estimator. We develop a method to estimate the variance by taking into account the uncertainty related to the estimator of the network distribution.
 
@@ -538,7 +538,7 @@ We can notice that the variance is larger when we take into account the uncertai
 ```{r smmlogitsave, echo = FALSE, eval = FALSE}
 smm2  <- summary(smm.logit, dnetwork = d.logit, data = dataset, .fun = fdist, .args = fdist_args, sim = 500, ncores = 8)
 smmlo <- list(smm1 = smm.logit, smm2 = smm2)
-save(smmlo, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smmlogit.rda")
+save(smmlo, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/smmlogit.RData")
 ```
 
 # Bayesian estimator without network formation model {#BAYES}
@@ -550,8 +550,8 @@ For the sake of the example, we assume that linking probabilities are *known* an
 
 **We first simulate data.** 
 ```{r BayesNone0, echo=FALSE}
-load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.none.rda?raw=true'))
-#save(out.none1, out.none2.1, out.none2.2, out.none3.1, out.none3.2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.none.rda")
+load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.none.RData?raw=true', "rb"))
+#save(out.none1, out.none2.1, out.none2.2, out.none3.1, out.none3.2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.none.RData")
 ```
 
 ```{r BayesNone1as, eval=FALSE}
@@ -744,8 +744,8 @@ For this example, we assume that links are generated using a simple logit model.
 **We first simulate data.** 
 
 ```{r BayesLog0, echo=FALSE}
-load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.logi.rda?raw=true'))
-# save(out.logi2.2, out.logi3.2, slogestim, sout.logi4.1, sout.logi4.2, sout.logi4.3, sout.selb1, sout.selb2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.logi.rda")
+load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.logi.RData?raw=true', "rb"))
+# save(out.logi2.2, out.logi3.2, slogestim, sout.logi4.1, sout.logi4.2, sout.logi4.3, sout.selb1, sout.selb2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.logi.RData")
 ```
 ```{r BayesLog1as, eval=FALSE}
 # EXAMPLE II: NETWORK FORMATION MODEL: LOGIT 
@@ -944,8 +944,8 @@ print(sout.logi4.3)
 We also offer a function of the estimator in @breza2020using. We first simulate data. We then estimate the model's parameters assuming that the researcher only knows ARD. We present two examples, one for which we observe ARD for the entire population (Example 1) and one for which we observe ARD for only 70% of the population (Example 2).
 
 ```{r Bayesard0, echo=FALSE}
-load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.ard.rda?raw=true'))
-# save(data.plot1, data.plot2, genz, genv, zi, vk, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.ard.rda")
+load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.ard.RData?raw=true', "rb"))
+# save(data.plot1, data.plot2, genz, genv, zi, vk, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.ard.RData")
 ```
 
 The data is simulated following a procedure similar to the one in @breza2020using. 
@@ -1168,8 +1168,8 @@ ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_AR
 Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for the entire population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
 
 ```{r Bayesard00, echo=FALSE}
-load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.lsp.rda?raw=true'))
-#save(out.lspa1, out.lspa2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.lsp.rda")
+load(url('https://github.com/ahoundetoungan/PartialNetwork/blob/master/datavignettes/out.lsp.RData?raw=true', "rb"))
+#save(out.lspa1, out.lspa2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.lsp.RData")
 ```
 **We first simulate data.** 
 ```{r bayesard1, eval=FALSE}

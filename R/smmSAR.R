@@ -35,11 +35,10 @@
 #'     \item{smm.ctr}{input value of `smm.ctr`.}
 #'     \item{details}{other details of the model.}
 #' @examples 
-#' \donttest{
 #' # Number of groups
-#' M        <- 100
+#' M        <- 10
 #' # size of each group
-#' N        <- rep(30,M)
+#' N        <- rep(20,M)
 #' # covariates
 #' X        <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 #' # network formation model parameter
@@ -93,7 +92,6 @@
 #' smm.logit   <- smmSAR(y ~ X1 + X2, dnetwork = d.logit, contextual = TRUE,
 #'                       smm.ctr  = list(R = 100L, print = TRUE), data = dataset)
 #' summary(smm.logit, dnetwork = d.logit, data = dataset)
-#' }
 #' @export
 smmSAR <- function(formula,
                    contextual    = FALSE,

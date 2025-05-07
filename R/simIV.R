@@ -29,7 +29,6 @@
 #' `G1y` and `G1X` computed with the same network and `G2X` computed with another network, which can be used in order to approximate the instruments.
 #' This process can be replicated several times and the argument `replication` can be used to set the number of replications desired.
 #' @examples 
-#' \donttest{
 #' library(AER)
 #' # Number of groups
 #' M             <- 30
@@ -72,7 +71,6 @@
 #' # Different draws
 #' out.iv2           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G2X1 + G2X2, data = dataset)
 #' summary(out.iv2)
-#' }
 #' @seealso 
 #' \code{\link{mcmcSAR}}
 #' @importFrom abind abind

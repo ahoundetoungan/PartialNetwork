@@ -53,7 +53,6 @@ the same draw should not be used to approximate the instruments. Thus, each comp
 This process can be replicated several times and the argument \code{replication} can be used to set the number of replications desired.
 }
 \examples{
-\donttest{
 library(AER)
 # Number of groups
 M             <- 30
@@ -96,7 +95,6 @@ summary(out.iv1)
 # Different draws
 out.iv2           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G2X1 + G2X2, data = dataset)
 summary(out.iv2)
-}
 }
 \seealso{
 \code{\link{mcmcSAR}}

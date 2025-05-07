@@ -186,13 +186,12 @@ then the entries (i, 1), (i, 3), (i, 8), and so on.
 }
 }
 \examples{
-\donttest{
-# We assume that the network is fully observed 
-# See our vignette for examples where the network is partially observed 
+# We assume that the network is fully observed
+# See our vignette for examples where the network is partially observed
 # Number of groups
-M             <- 50
+M             <- 10
 # size of each group
-N             <- rep(30,M)
+N             <- rep(20,M)
 # individual effects
 beta          <- c(2,1,1.5)
 # contextual effects
@@ -218,11 +217,10 @@ y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 out.none1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
-                         G0 = G0, data = dataset, iteration = 1e4)
+                         G0 = G0, data = dataset, iteration = 3000)
 summary(out.none1)
 plot(out.none1)
 plot(out.none1, plot.type = "dens")
-}
 }
 \seealso{
 \code{\link{smmSAR}}, \code{\link{sim.IV}}

@@ -46,12 +46,11 @@ The order of individuals provided through the arguments \code{traitARD} and \cod
 \code{X} and \code{obsARD}. Especially, the i-th row of \code{X[obsARD,]} should correspond to the i-th row in \code{traitARD} or \code{ARD}.
 }
 \examples{
-\donttest{
 set.seed(123)
 # GENERATE DATA
 # Sample size
-N  <- 500 
-n  <- 300
+N  <- 50
+n  <- 30
 
 # ARD parameters
 genzeta <- 1
@@ -125,8 +124,8 @@ v0[vfixcolumn,] <- genv[vfixcolumn,]
 start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
 # MCMC ARD
 out    <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
-                  consb = bfixcolumn, iteration = 5000)
-                  
+                  consb = bfixcolumn, iteration = 500)
+
 # fit network distribution
 dist   <- fit.dnetwork(out)
 
@@ -153,8 +152,8 @@ v0[vfixcolumn,] <- genv[vfixcolumn,]
 start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
 # MCMC ARD
 out    <- mcmcARD(Y = ARD, traitARD = traitard, start = start, fixv = vfixcolumn,
-                  consb = bfixcolumn, iteration = 5000)
-                  
+                  consb = bfixcolumn, iteration = 500)
+
 # fit network distribution
 dist   <- fit.dnetwork(out, X = trait, obsARD = logicalARD, m = 1)
 
@@ -164,5 +163,4 @@ ggplot(data.frame("etimated.degree" = dist$degree,
                   "observed"        = ifelse(logicalARD, TRUE, FALSE)),
        aes(x = etimated.degree, y = true.degree, colour = observed)) +
   geom_point()
-}
 }

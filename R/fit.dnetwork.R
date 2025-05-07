@@ -19,12 +19,11 @@
 #' @details The order of individuals provided through the arguments `traitARD` and `ARD` (when calling the function \code{\link{mcmcARD}}) should fit the order of individuals in
 #' `X` and `obsARD`. Especially, the i-th row of `X[obsARD,]` should correspond to the i-th row in `traitARD` or `ARD`.
 #' @examples 
-#' \donttest{
 #' set.seed(123)
 #' # GENERATE DATA
 #' # Sample size
-#' N  <- 500 
-#' n  <- 300
+#' N  <- 50
+#' n  <- 30
 #' 
 #' # ARD parameters
 #' genzeta <- 1
@@ -98,8 +97,8 @@
 #' start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
 #' # MCMC ARD
 #' out    <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
-#'                   consb = bfixcolumn, iteration = 5000)
-#'                   
+#'                   consb = bfixcolumn, iteration = 500)
+#' 
 #' # fit network distribution
 #' dist   <- fit.dnetwork(out)
 #' 
@@ -126,8 +125,8 @@
 #' start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
 #' # MCMC ARD
 #' out    <- mcmcARD(Y = ARD, traitARD = traitard, start = start, fixv = vfixcolumn,
-#'                   consb = bfixcolumn, iteration = 5000)
-#'                   
+#'                   consb = bfixcolumn, iteration = 500)
+#' 
 #' # fit network distribution
 #' dist   <- fit.dnetwork(out, X = trait, obsARD = logicalARD, m = 1)
 #' 
@@ -137,7 +136,6 @@
 #'                   "observed"        = ifelse(logicalARD, TRUE, FALSE)),
 #'        aes(x = etimated.degree, y = true.degree, colour = observed)) +
 #'   geom_point()
-#' }
 #' @export
 
 fit.dnetwork   <- function(object, X = NULL, obsARD = NULL,

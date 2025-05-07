@@ -30,7 +30,7 @@
 #' mu      <- -1.35
 #' sigma   <- 0.37
 #' K       <- 12    # number of traits
-#' P       <- 3     # Sphere dimension 
+#' P       <- 3     # Sphere dimension
 #' 
 #' # Generate z (spherical coordinates)
 #' genz    <- rvMF(N,rep(0,P))
@@ -42,7 +42,7 @@
 #' gend <- N*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
 #' 
 #' # Link probabilities
-#' Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz) 
+#' Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz)
 #' 
 #' # Adjacency matrix
 #' G <- sim.network(Probabilities)
@@ -65,7 +65,7 @@
 #' }
 #' 
 #' trait       <- matrix(0,N,K)
-#' NK          <- floor(runif(K, 0.8, 0.95)*colSums(densityatz)/apply(densityatz, 2, max)) 
+#' NK          <- floor(runif(K, 0.8, 0.95)*colSums(densityatz)/apply(densityatz, 2, max))
 #' for (k in 1:K) {
 #'   trait[,k]       <- rbinom(N, 1, NK[k]*densityatz[,k]/sum(densityatz[,k]))
 #' }
@@ -82,9 +82,9 @@
 #'   genb[k]   <- sum(G[,trait[,k]==1])/sum(G)
 #' }
 #' 
-#' ############ ARD Posterior distribution ################### 
+#' ############ ARD Posterior distribution ###################
 #' # EXAMPLE 1: ARD observed for the entire population
-#' # initialization 
+#' # initialization
 #' d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 #' zeta0  <- 1; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
 #' 
@@ -95,47 +95,53 @@
 #' v0[vfixcolumn,] <- genv[vfixcolumn,]
 #' 
 #' start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
-#' # MCMC ARD
-#' out    <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
-#'                   consb = bfixcolumn, iteration = 500)
-#' 
-#' # fit network distribution
-#' dist   <- fit.dnetwork(out)
-#' 
-#' plot(rowSums(dist$dnetwork), gend)
-#' abline(0, 1, col = "red")
-#' 
-#' # EXAMPLE 2: ARD observed for a sample of the population
-#' # observed sample
-#' selectARD   <- sort(sample(1:N, n, FALSE))
-#' traitard    <- trait[selectARD,]
-#' ARD         <- ARD[selectARD,]
-#' logicalARD  <- (1:N) %in% selectARD
-#' 
-#' # initianalization 
-#' d0     <- exp(rnorm(n)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
-#' zeta0  <- 1; z0 <- matrix(rvMF(n,rep(0,P)),n); v0 <- matrix(rvMF(K,rep(0,P)),K)
-#' 
-#' # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
-#' vfixcolumn      <- 1:6
-#' bfixcolumn      <- c(3, 5)
-#' b0[bfixcolumn]  <- genb[bfixcolumn]
-#' v0[vfixcolumn,] <- genv[vfixcolumn,]
-#' 
-#' start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
-#' # MCMC ARD
-#' out    <- mcmcARD(Y = ARD, traitARD = traitard, start = start, fixv = vfixcolumn,
-#'                   consb = bfixcolumn, iteration = 500)
-#' 
-#' # fit network distribution
-#' dist   <- fit.dnetwork(out, X = trait, obsARD = logicalARD, m = 1)
-#' 
-#' library(ggplot2)
-#' ggplot(data.frame("etimated.degree" = dist$degree,
-#'                   "true.degree"     = gend,
-#'                   "observed"        = ifelse(logicalARD, TRUE, FALSE)),
-#'        aes(x = etimated.degree, y = true.degree, colour = observed)) +
-#'   geom_point()
+#' # # MCMC ARD
+#' # REMOVE COMMENTS TO RUN THE REST OF THE CODE.
+#' # mcmcARD USES Rcpp FUNCTIONS IN PARALLEL TO BE FAST AND CRAN POLICY DOES NOT ALLOW CODE IN PARALLEL.
+#' # FOR THIS REASON WE PUT THE REST OF THE CODE IN PARALLEL SO THAT CRAN ACCEPTS THE PACKAGE.
+#' # out    <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
+#' #                   consb = bfixcolumn, iteration = 500)
+#' # 
+#' # # fit network distribution
+#' # dist   <- fit.dnetwork(out)
+#' # 
+#' # plot(rowSums(dist$dnetwork), gend)
+#' # abline(0, 1, col = "red")
+#' # 
+#' # # EXAMPLE 2: ARD observed for a sample of the population
+#' # # observed sample
+#' # selectARD   <- sort(sample(1:N, n, FALSE))
+#' # traitard    <- trait[selectARD,]
+#' # ARD         <- ARD[selectARD,]
+#' # logicalARD  <- (1:N) %in% selectARD
+#' # 
+#' # # initianalization
+#' # d0     <- exp(rnorm(n)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
+#' # zeta0  <- 1; z0 <- matrix(rvMF(n,rep(0,P)),n); v0 <- matrix(rvMF(K,rep(0,P)),K)
+#' # 
+#' # # We need to fix some of the vk and bk for identification (see Breza et al. (2020) for details).
+#' # vfixcolumn      <- 1:6
+#' # bfixcolumn      <- c(3, 5)
+#' # b0[bfixcolumn]  <- genb[bfixcolumn]
+#' # v0[vfixcolumn,] <- genv[vfixcolumn,]
+#' # 
+#' # start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
+#' # # MCMC ARD
+#' # REMOVE COMMENTS TO RUN THE REST OF THE CODE.
+#' # mcmcARD USES Rcpp FUNCTIONS IN PARALLEL TO BE FAST AND CRAN POLICY DOES NOT ALLOW CODE IN PARALLEL.
+#' # FOR THIS REASON WE PUT THE REST OF THE CODE IN PARALLEL SO THAT CRAN ACCEPTS THE PACKAGE.
+#' # out    <- mcmcARD(Y = ARD, traitARD = traitard, start = start, fixv = vfixcolumn,
+#' #                   consb = bfixcolumn, iteration = 500)
+#' # 
+#' # # fit network distribution
+#' # dist   <- fit.dnetwork(out, X = trait, obsARD = logicalARD, m = 1)
+#' # 
+#' # library(ggplot2)
+#' # ggplot(data.frame("etimated.degree" = dist$degree,
+#' #                   "true.degree"     = gend,
+#' #                   "observed"        = ifelse(logicalARD, TRUE, FALSE)),
+#' #        aes(x = etimated.degree, y = true.degree, colour = observed)) +
+#' #   geom_point()
 #' @export
 
 fit.dnetwork   <- function(object, X = NULL, obsARD = NULL,

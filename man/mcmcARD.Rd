@@ -175,29 +175,32 @@ v0[vfixcolumn,] <- genv[vfixcolumn,]
 start  <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
 
 # MCMC
-out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
-                 consb = bfixcolumn, iteration = 500)
-
-# plot simulations
-# plot d
-plot(out$simulations$d[,10], type = "l", col = "blue", ylab = "")
-abline(h = gend[10], col = "red")
-
-# plot coordinates of individuals
-i <- 13 # individual 123
-{
-  lapply(1:3, function(x) {
-    plot(out$simulations$z[i, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
-    abline(h = genz[i, x], col = "red")
-  })
-}
-
-# plot coordinates of traits
-k <- 8
-{
-  lapply(1:3, function(x) {
-    plot(out$simulations$v[k, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
-    abline(h = genv[k, x], col = "red")
-  })
-}
+# REMOVE COMMENTS TO RUN THE REST OF THE CODE.
+# mcmcARD USES Rcpp FUNCTIONS IN PARALLEL TO BE FAST AND CRAN POLICY DOES NOT ALLOW CODE IN PARALLEL.
+# FOR THIS REASON WE PUT THE REST OF THE CODE IN PARALLEL SO THAT CRAN ACCEPTS THE PACKAGE.
+# out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
+#                  consb = bfixcolumn, iteration = 500)
+# 
+# # plot simulations
+# # plot d
+# plot(out$simulations$d[,10], type = "l", col = "blue", ylab = "")
+# abline(h = gend[10], col = "red")
+# 
+# # plot coordinates of individuals
+# i <- 13 # individual 123
+# {
+#   lapply(1:3, function(x) {
+#     plot(out$simulations$z[i, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+#     abline(h = genz[i, x], col = "red")
+#   })
+# }
+# 
+# # plot coordinates of traits
+# k <- 8
+# {
+#   lapply(1:3, function(x) {
+#     plot(out$simulations$v[k, x,] , type = "l", ylab = "", col = "blue", ylim = c(-1, 1))
+#     abline(h = genv[k, x], col = "red")
+#   })
+# }
 }

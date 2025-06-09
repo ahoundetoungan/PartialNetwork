@@ -9,17 +9,7 @@
 ## And with R 3.4.0, and RcppArmadillo 0.7.960.*, we turn C++11 on as OpenMP
 ## support within Armadillo prefers / requires it
 ## CXX_STD = CXX11
-CXX14 = g++ -std=c++1y
-
-
 PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) 
+PKG_CPPFLAGS = -DARMA_64BIT_WORD=1
+PKG_CPPFLAGS = -I../inst/include
 PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
-
-PKG_CPPFLAGS =  -I../inst/include/
-
-## CXXFLAGS = -g -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2 $(LTO)
-CXX98FLAGS = -g -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2
-CXX11FLAGS = -g -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2
-CXX14FLAGS = -g -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2
-
-

@@ -21,6 +21,10 @@ jobs:
 
       - name: Generate badge JSON
         run: Rscript scripts/generate_badge_json.R
+        
+      - name: Add .nojekyll
+        run: New-Item -Path badges/.nojekyll -ItemType File
+        shell: pwsh
 
       - name: Deploy badge to gh-pages
         uses: peaceiris/actions-gh-pages@v3

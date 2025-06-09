@@ -17,8 +17,8 @@ label <- if (total >= 1e6) {
 
 json <- list(
   schemaVersion = 1,
-  label = "downloads",
-  message = paste0(label),
+  label = "CRAN",
+  message = paste0(label, " downloads"),
   color = "blue"
 )
 

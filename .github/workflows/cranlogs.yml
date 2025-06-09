@@ -1,0 +1,32 @@
+name: Generate CRAN Downloads Badge
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Runs daily at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  badge:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install R packages
+        run: |
+          Rscript -e "install.packages(c('cranlogs', 'jsonlite'), repos = 'https://cloud.r-project.org')"
+
+      - name: Generate badge JSON
+        run: Rscript generate_badge_json.R
+
+      - name: Deploy badge to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          keep_files: true
+          destination_dir: badges

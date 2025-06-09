@@ -1,0 +1,107 @@
+name: R-CMD-check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  R-CMD-check:
+    name: R CMD check on ${{ matrix.config.os }} (R ${{ matrix.config.r }})
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu-latest,   r: 'oldrel-2'}
+
+    env:
+      R_KEEP_PKG_SOURCE: yes
+      _R_CHECK_FORCE_SUGGESTS_: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent || '' }}
+
+      - name: Setup TeX Live (macOS and Linux)
+        uses: teatimeguest/setup-texlive-action@v3
+        if: runner.os != 'Windows'
+        with:
+          packages: |
+            scheme-medium
+            xcolor
+            framed
+            inconsolata
+
+      - name: Install TinyTeX (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Rscript -e "install.packages('tinytex')"
+          Rscript -e "tinytex::install_tinytex(force = TRUE)"
+          Rscript -e "tinytex::tlmgr_install(c('latex-bin', 'pdftex', 'babel-english', 'xcolor', 'framed', 'inconsolata'))"
+          echo "C:/Users/runneradmin/AppData/Roaming/TinyTeX/bin/windows" >> $env:GITHUB_PATH
+
+      # - name: Print contents (Windows)
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     echo "Listing Listing C:/Users/runneradmin/AppData/Roaming/TinyTeX"
+      #     dir "C:\Users\runneradmin\AppData\Roaming\TinyTeX"
+      #     echo "Listing C:/Users/runneradmin/AppData/Roaming/TinyTeX/bin"
+      #     dir "C:\Users\runneradmin\AppData\Roaming\TinyTex\bin"
+          
+      - name: Check pdflatex version (Windows)
+        if: runner.os == 'Windows'
+        run: pdflatex --version
+      
+      - name: Install tidy (macOS only)
+        if: runner.os == 'macOS'
+        run: brew install tidy-html5
+
+      # Install HTML tidy on Linux (if needed)
+      - name: Install tidy (Linux only)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y tidy
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::V8
+            any::qpdf
+            any::rcmdcheck
+            any::tinytex
+          
+      - name: Run R CMD check (Linux and Mac)
+        if: runner.os != 'Windows'
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--as-cran")'
+          build_args: 'c("--compact-vignettes=gs+qpdf")'
+          upload-snapshots: true
+
+      - name: Run R CMD check (Windows - skip manual)
+        if: runner.os == 'Windows'
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--as-cran", "--no-manual")'
+          build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
+          upload-snapshots: true
+          
+      # - name: Upload R CMD check artifacts (Windows only)
+      #   if: runner.os == 'Windows'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #    name: rcmdcheck-logs-windows
+      #    path: check/QuantilePeer.Rcheck
+

@@ -1,15 +1,15 @@
 # An R package for estimating Peer Effects Using Partial Network Data
 
 <!-- badges: start -->
-  [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+  [![Lifecycle: stable](https://img.shields.io/badge/Lifecycle-Stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![R-CMD-check](https://github.com/ahoundetoungan/PartialNetwork/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/ahoundetoungan/PartialNetwork/actions/workflows/R-CMD-check.yml)
-    
+
   [![R-universe](https://ahoundetoungan.r-universe.dev/badges/PartialNetwork)](https://ahoundetoungan.r-universe.dev/PartialNetwork)
   [![CRAN](https://www.r-pkg.org/badges/version/PartialNetwork)](https://CRAN.R-project.org/package=PartialNetwork)
   [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/PartialNetwork)](https://cran.r-project.org/package=PartialNetwork)
-   
-  [![Vignette](https://img.shields.io/badge/vignette-introduction-blue.svg)](https://nbviewer.org/github/ahoundetoungan/PartialNetwork/blob/master/doc/PartialNetwork_vignette.pdf)
+
+  [![Vignette](https://img.shields.io/badge/Vignette-blue.svg)](https://nbviewer.org/github/ahoundetoungan/PartialNetwork/blob/master/doc/PartialNetwork_vignette.pdf)
 
 <!-- badges: end -->
 
@@ -24,7 +24,7 @@ install.packages("PartialNetwork")
 ```
 
 ### GitHub version
-It may be possible that we updated the package without submitting the new version to CRAN. The latest version (*but not necessary stable*) of **PartialNetwork** can be installed from this GitHub repos. 
+It may be possible that we updated the package without submitting the new version to CRAN. The latest version (*but not necessary stable*) of **PartialNetwork** can be installed from this GitHub repos.
 ```R
 remotes::install_github("ahoundetoungan/PartialNetwork", build_vignettes = TRUE)
 ```
@@ -43,9 +43,9 @@ N             <- 100
 # value of lambda (precision parameter for the network formation model)
 lambda        <- 1   
 # individual effects
-beta          <- c(2, 1, 1.5) 
+beta          <- c(2, 1, 1.5)
 # contextual effects
-gamma         <- c(5, -3) 
+gamma         <- c(5, -3)
 # endogenous effect
 alpha         <- 0.4
 # std-dev errors
@@ -56,11 +56,11 @@ Prob          <- list()
 
 for (m in 1:M) {
   # heterogeneity of the linking probabilities
-  c           <- rnorm(N*N, 0, 1) 
+  c           <- rnorm(N*N, 0, 1)
   # generate linking probabilities
   Pm          <- matrix(exp(c / lambda) / (1 + exp(c / lambda)), N)
   # no self-link
-  diag(Pm)    <- 0 
+  diag(Pm)    <- 0
   Prob[[m]]   <- Pm
 }
 
@@ -70,20 +70,20 @@ y             <- c()
 
 for (m in 1:M) {
   # generate the 'observed network'
-  Gm          <- sim.network(Prob[[m]]) 
+  Gm          <- sim.network(Prob[[m]])
   rs          <- rowSums(Gm)
   rs[rs == 0] <- 1
   # row-normalize
   Wm          <- Gm/rs
   # covariates
-  Xm          <- cbind(rnorm(N,0,5),rpois(N,6)) 
+  Xm          <- cbind(rnorm(N,0,5),rpois(N,6))
   # endogenous variable, no contextual effect
-  ym          <- solve(diag(N) - alpha * Wm) %*% (cbind(rep(1, N), Xm) %*% beta + rnorm(N,0,se)) 
+  ym          <- solve(diag(N) - alpha * Wm) %*% (cbind(rep(1, N), Xm) %*% beta + rnorm(N,0,se))
   y           <- c(y, ym)
   X           <- rbind(X, Xm)
 }
 
-# generate instruments 
+# generate instruments
 instr         <- sim.IV(Prob, X, y, replication = 1, power = 2)
 
 GY1c1         <- instr[[1]]$G1y       # proxy for Gy (draw 1)
@@ -96,9 +96,9 @@ Once the instruments are generated, the estimation can be performed using standa
   ```R
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy
-dataset           <- as.data.frame(cbind(y,X,GY1c1,GXc2,G2Xc2)) 
+dataset           <- as.data.frame(cbind(y,X,GY1c1,GXc2,G2Xc2))
 # rename variables
-colnames(dataset) <- c("y","X1","X2","Gy1","Z1","Z2","ZZ1","ZZ2") 
+colnames(dataset) <- c("y","X1","X2","Gy1","Z1","Z2","ZZ1","ZZ2")
 library(AER)
 results           <- ivreg(y ~ X1 + X2 + Gy1 | X1 + X2 + Z1 + Z2 + ZZ1 + ZZ2, data = dataset)
 summary(results)
@@ -115,18 +115,18 @@ M             <- 100
 # size of each group
 N             <- rep(50,M)
 # precision parameter for the network formation process
-lambda        <- 1 
+lambda        <- 1
 
 G             <- list()
 
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # contextual effects
-gamma         <- c(5,-3) 
+gamma         <- c(5,-3)
 # endogenous effect
 alpha         <- 0.4
 # std-dev errors
-se            <- 1 
+se            <- 1
 
 prior         <-list()
 
@@ -135,9 +135,9 @@ for (m in 1:M) {
   Nm          <- N[m]
   c           <- rnorm(Nm*Nm,0,1)
   # linking probabilities
-  Prob        <- matrix(exp(c/lambda)/(1+exp(c/lambda)),Nm) 
+  Prob        <- matrix(exp(c/lambda)/(1+exp(c/lambda)),Nm)
   # no self-link
-  diag(Prob)  <- 0 
+  diag(Prob)  <- 0
   prior[[m]]  <-Prob
 }
 
@@ -150,21 +150,21 @@ y             <- c()
 for (m in 1:M) {
   Nm          <- N[m]
   # true network
-  Gm          <- matrix(runif(Nm^2),Nm,Nm) < prior[[m]] 
+  Gm          <- matrix(runif(Nm^2),Nm,Nm) < prior[[m]]
   # no self-link
-  diag(Gm)    <- rep(0,Nm) 
+  diag(Gm)    <- rep(0,Nm)
   G[[m]]      <- Gm
   rsm         <- rowSums(Gm)
   rsm[rsm==0] <- 1
   # normalize
-  Gm          <- Gm/rsm 
+  Gm          <- Gm/rsm
   # rows index of group m
   r2          <- sum(N[1:m])
   r1          <- r2 - Nm + 1
   # contextual effect
   Xm          <- X[r1:r2,]
   GXm         <- Gm %*% Xm
-  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm) %*% (cbind(rep(1,Nm),Xm) %*% beta + GXm %*% gamma + rnorm(Nm,0,se)) 
+  y[r1:r2]    <- solve(diag(Nm)-alpha*Gm) %*% (cbind(rep(1,Nm),Xm) %*% beta + GXm %*% gamma + rnorm(Nm,0,se))
 }
 ```
 
@@ -172,7 +172,7 @@ for (m in 1:M) {
 ```R
 # set the hyperparameter
 # the hyperparameter is a list
-hyperparms    <- list("dnetwork" = prior) 
+hyperparms    <- list("dnetwork" = prior)
 
 # launch the MCMC
 ctrl          <- list(print.level = 2)
@@ -193,14 +193,14 @@ The data is simulated following a procedure similar to the one in Breza et al. (
 
 ```R
 # Sample size
-N       <- 500 
+N       <- 500
 
 # ARD parameters
 genzeta <- 1
 mu      <- -1.35
 sigma   <- 0.37
 K       <- 12    # number of traits
-P       <- 3     # Sphere dimension 
+P       <- 3     # Sphere dimension
 
 
 # Generate z (spherical coordinates)
@@ -213,7 +213,7 @@ gennu   <- rnorm(N,mu,sigma)
 gend    <- N*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
 
 # Link probabilities
-Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz) 
+Probabilities <- sim.dnetwork(gennu,gend,genzeta,genz)
 
 # Adjacency matrix
 G        <- sim.network(Probabilities)
@@ -241,10 +241,10 @@ for(k in 1:K){
 }
 # print a percentage of people having a trait
 colSums(trait)*100/N
-  
+
 # Build ADR
 ARD         <- G %*% trait
-  
+
 # generate b
 genb        <- numeric(K)
 for(k in 1:K){
@@ -257,17 +257,17 @@ for(k in 1:K){
 We present a simple function wrapping, `mcmcARD`, for the estimation procedure proposed by Breza et al. (2020). For specific information on the function, see the help file.
 
 ```R
-# initialization 
+# initialization
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K);
 zeta0  <- 05; z0 <- matrix(rvMF(N,rep(0,P)),N); v0 <- matrix(rvMF(K,rep(0,P)),K)
-  
+
 # We should fix some vk and bk
 vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 5)
 b0[bfixcolumn]  <- genb[bfixcolumn]
 v0[vfixcolumn,] <- genv[vfixcolumn,]
 start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
-  
+
 # MCMC
 out   <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn, consb = bfixcolumn, iteration = 5000)
 

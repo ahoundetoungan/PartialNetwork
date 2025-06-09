@@ -24,7 +24,7 @@ jobs:
         
       - name: Create .nojekyll file in badges/
         run: |
-          echo # empty > .nojekyll
+          Set-Content -Path .nojekyll -Value "# empty"
         shell: pwsh
 
       - name: Deploy badge to gh-pages

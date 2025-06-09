@@ -22,15 +22,16 @@ jobs:
       - name: Generate badge JSON
         run: Rscript scripts/generate_badge_json.R
         
-      - name: Add .nojekyll
-        run: New-Item -Path badges/.nojekyll -ItemType File
+      - name: Create .nojekyll file in badges/
+        run: |
+          echo # empty > .nojekyll
         shell: pwsh
 
       - name: Deploy badge to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: badges
+          publish_dir: .
           publish_branch: gh-pages
-          destination_dir: badges
+          destination_dir: .
           keep_files: true

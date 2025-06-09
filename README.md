@@ -1,5 +1,18 @@
 # An R package for estimating Peer Effects Using Partial Network Data
 
+<!-- badges: start -->
+  [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+  [![CRAN](https://www.r-pkg.org/badges/version/PartialNetwork)](https://CRAN.R-project.org/package=PartialNetwork)
+  [![R-universe](https://ahoundetoungan.r-universe.dev/badges/PartialNetwork)](https://ahoundetoungan.r-universe.dev/ui#package:PartialNetwork)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  
+  [![R-CMD-check](https://github.com/ahoundetoungan/PartialNetwork/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/ahoundetoungan/QuantilePeer/actions/workflows/R-CMD-check.yml)
+   
+  [![Vignette](https://img.shields.io/badge/vignette-introduction-blue.svg)](https://nbviewer.org/github/ahoundetoungan/PartialNetwork/blob/master/doc/PartialNetwork_vignette.pdf)
+
+<!-- badges: end -->
+
+
 The **PartialNetwork** package includes all functions for the replication of the results in Boucher and Houndetoungan (2023). The exact replication codes are located in the folder [**test**](https://github.com/ahoundetoungan/PartialNetwork/tree/master/test). Below, we also provide detailed examples on how to use the estimators described in the paper.
 
 ## Installation

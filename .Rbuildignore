@@ -3,6 +3,7 @@
 ^test$
 ^archives$
 ^Results$
+^scripts$
 ^.github$
 ^\.travis\.yml$
 ^\.gitignore$

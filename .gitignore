@@ -5,6 +5,10 @@ doc/*.Rmd
 # doc
 Meta
 
+# Some archives files
+archives/PartialNetwork_1.0.0-2draws.tar.gz
+archives/PartialNetwork_1.0.0-3draws-intensive.tar.gz
+
 # History files
 .Rhistory
 .Rapp.history

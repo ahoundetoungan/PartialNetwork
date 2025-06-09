@@ -1,6 +1,8 @@
 ^doc$
 ^Meta$
 ^test$
+^archives$
+^.github$
 ^\.travis\.yml$
 ^\.gitignore$
 ^\.Rbuildignore$
@@ -12,3 +14,6 @@
 ^datavignettes$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^QuantilePeer\.Rproj, README\.md$
+^\.tar\.gz$
+^vignettes/\.pdf$

@@ -20,7 +20,7 @@ jobs:
           Rscript -e "install.packages(c('cranlogs', 'jsonlite'), repos = 'https://cloud.r-project.org')"
 
       - name: Generate badge JSON
-        run: Rscript generate_badge_json.R
+        run: Rscript scripts/generate_badge_json.R
 
       - name: Deploy badge to gh-pages
         uses: peaceiris/actions-gh-pages@v3

@@ -23,5 +23,7 @@ json <- list(
 )
 
 # Save JSON
+# Remove everything in badges/
+unlink("badges", recursive = TRUE)
 dir.create("badges", showWarnings = FALSE)
 write_json(json, "badges/cran_downloads.json", auto_unbox = TRUE)

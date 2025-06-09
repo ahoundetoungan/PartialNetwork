@@ -4,7 +4,6 @@ doc/*.Rmd
 *.so
 # doc
 Meta
-/*.json
 
 # Some archives files
 archives/PartialNetwork_1.0.0-2draws.tar.gz

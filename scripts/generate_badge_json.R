@@ -23,4 +23,5 @@ json <- list(
 )
 
 # Save JSON
-write_json(json, "cran_downloads.json", auto_unbox = TRUE)
+dir.create("badges", showWarnings = FALSE)
+write_json(json, "badges/cran_downloads.json", auto_unbox = TRUE)

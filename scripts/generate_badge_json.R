@@ -9,7 +9,7 @@ total <- sum(downloads$count)
 # Format number
 label <- if (total >= 1e6) {
   paste0(round(total / 1e6, 1), "M")
-} else if (total >= 1e3) {
+} else if (total >= 1e4) {
   paste0(round(total / 1e3), "K")
 } else {
   as.character(total)

@@ -1,4 +1,4 @@
-# An R package for estimating Peer Effects Using Partial Network Data
+# An R Package for Estimating Peer Effects Using Partial Network Data
 
 <!-- badges: start -->
   [![Lifecycle: stable](https://img.shields.io/badge/Lifecycle-Stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)

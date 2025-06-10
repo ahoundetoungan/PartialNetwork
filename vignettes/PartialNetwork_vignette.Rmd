@@ -1,6 +1,6 @@
 ---
-title: "PartialNetwork: An R package for estimating peer effects using partial network information"
-header-includes: 
+title: "PartialNetwork: An R Package for Estimating Peer Effects Using Partial Network Data"
+header-includes:
    - \usepackage[utf8]{inputenc}
    - \usepackage[T1]{fontenc}
    - \usepackage{xcolor}
@@ -43,7 +43,7 @@ M             <- 30
 # size of each group
 N             <- rep(50,M)
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # endogenous effects
 alpha         <- 0.4
 # std-dev errors
@@ -55,20 +55,20 @@ distr         <- vec.to.mat(distr, N, normalise = FALSE)
 X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 # true network
 G0            <- sim.network(distr)
-# normalise 
+# normalise
 G0norm        <- norm.network(G0)
 # simulate dependent variable use an external package
 y             <- CDatanet::simsar(~ X, Glist = G0norm, theta = c(alpha, beta, se))
 y             <- y$y
-# generate instruments 
+# generate instruments
 instr         <- sim.IV(distr, X, y, replication = 1, power = 1)
 GY1c1         <- instr[[1]]$G1y       # proxy for Gy (draw 1)
 GXc1          <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)
 GXc2          <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy
-dataset           <- as.data.frame(cbind(y, X, GY1c1, GXc1, GXc2)) 
-colnames(dataset) <- c("y","X1","X2","G1y", "G1X1", "G1X2", "G2X1", "G2X2") 
+dataset           <- as.data.frame(cbind(y, X, GY1c1, GXc1, GXc2))
+colnames(dataset) <- c("y","X1","X2","G1y", "G1X1", "G1X2", "G2X1", "G2X2")
 ```
 Once the instruments are generated, the estimation can be performed using standard tools, e.g. the function `ivreg` from the **AER** package. For example, if we use the same draw for the proxy and the instruments, the estimation is "bad".
 
@@ -88,8 +88,8 @@ summary(out.iv2)
 However, as stated by our Proposition 2, this estimator is biased. We can approximate the bias as follows.
 
 ```{r IV3bias}
-ddS     <- as.matrix(cbind(1, dataset[,c("X1", "X2", "G1y")]))         #\ddot{S} 
-dZ      <- as.matrix(cbind(1, dataset[,c("X1", "X2", "G2X1", "G2X2")]))#\dot{Z} 
+ddS     <- as.matrix(cbind(1, dataset[,c("X1", "X2", "G1y")]))         #\ddot{S}
+dZ      <- as.matrix(cbind(1, dataset[,c("X1", "X2", "G2X1", "G2X2")]))#\dot{Z}
 dZddS   <- crossprod(dZ, ddS)/sum(N)                                  
 W       <- solve(crossprod(dZ)/sum(N))                                 
 matM    <- solve(crossprod(dZddS, W%*%dZddS), crossprod(dZddS, W))    
@@ -110,7 +110,7 @@ M             <- 30
 # size of each group
 N             <- rep(50,M)
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # contextual effects
 gamma         <- c(5, -3)
 # endogenous effects
@@ -124,15 +124,15 @@ distr         <- vec.to.mat(distr, N, normalise = FALSE)
 X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 # true network
 G0            <- sim.network(distr)
-# normalise 
+# normalise
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
 # simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm, 
+y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
                                   theta = c(alpha, beta, gamma, se))
 y             <- y$y
-# generate instruments 
+# generate instruments
 # we need power = 2 for models with contextual effetcs
 instr         <- sim.IV(distr, X, y, replication = 1, power = 2)
 GY1c1         <- instr[[1]]$G1y       # proxy for Gy (draw 1)
@@ -141,25 +141,25 @@ GXc2          <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
 GXc2sq        <- instr[[1]]$G2X[,,2]  # proxy for G^2X (draw 2)
 # build dataset
 # keep only instrument constructed using a different draw than the one used to proxy Gy
-dataset           <- as.data.frame(cbind(y, X, GX, GY1c1, GXc1, GXc2, GXc2sq)) 
+dataset           <- as.data.frame(cbind(y, X, GX, GY1c1, GXc1, GXc2, GXc2sq))
 colnames(dataset) <- c("y","X1","X2", "GX1", "GX2", "G1y", "G1X1", "G1X2", "G2X1", "G2X2",
-                       "G2X1sq", "G2X2sq") 
+                       "G2X1sq", "G2X2sq")
 ```
 As pointed out in the paper, the IV procedure requires $\mathbf{G}\mathbf{X}$ being observed. In additions, when contextual effects are included, we consider the extended model.
 
 ```{r IV5, echo = TRUE, eval = TRUE, message=FALSE}
 # Different draws
-out.iv2           <- ivreg(y ~ X1 + X2 + GX1 + GX2 + G1X1 + G1X2 + G1y | X1 + X2 + GX1 + 
-                             GX2 + G1X1 + G1X2 + G2X1 + G2X2 + G2X1sq + G2X2sq, 
+out.iv2           <- ivreg(y ~ X1 + X2 + GX1 + GX2 + G1X1 + G1X2 + G1y | X1 + X2 + GX1 +
+                             GX2 + G1X1 + G1X2 + G2X1 + G2X2 + G2X1sq + G2X2sq,
                            data = dataset)
 summary(out.iv2)
 ```
 
 We also compute the maximal absolute bias.
 ```{r IV5bias}
-ddS     <- as.matrix(cbind(1, dataset[,c("X1", "X2", "GX1", "GX2", "G1X1", "G1X2", 
+ddS     <- as.matrix(cbind(1, dataset[,c("X1", "X2", "GX1", "GX2", "G1X1", "G1X2",
                                          "G1y")]))                
-dZ      <- as.matrix(cbind(1, dataset[,c("X1", "X2", "GX1", "GX2", "G1X1", 
+dZ      <- as.matrix(cbind(1, dataset[,c("X1", "X2", "GX1", "GX2", "G1X1",
                                          "G1X2", "G2X1", "G2X2", "G2X1sq", "G2X2sq")]))
 dZddS   <- crossprod(dZ, ddS)/sum(N)                                  
 W       <- solve(crossprod(dZ)/sum(N))                                 
@@ -167,7 +167,7 @@ matM    <- solve(crossprod(dZddS, W%*%dZddS), crossprod(dZddS, W))
 maxbias <- apply(sapply(1:1000, function(...){
   dddGy <- peer.avg(sim.network(distr, normalise = TRUE) , y)
   abs(matM%*%crossprod(dZ, dddGy - dataset$G1y)/sum(N))
-}), 1, max); names(maxbias) <- c("(Intercept)", "X1", "X2", "GX1", "GX2", "G1X1", 
+}), 1, max); names(maxbias) <- c("(Intercept)", "X1", "X2", "GX1", "GX2", "G1X1",
                                  "G1X2", "G1y")
 {cat("Maximal absolute bias\n"); print(maxbias)}
 ```
@@ -185,11 +185,11 @@ M             <- 100
 # size of each group
 N             <- rep(30,M)
 # individual effects
-beta          <- c(2, 1, 1.5, 5, -3) 
+beta          <- c(2, 1, 1.5, 5, -3)
 # endogenous effects
 alpha         <- 0.4
 # std-dev errors
-se            <- 1 
+se            <- 1
 # network distribution
 distr         <- runif(sum(N*(N-1)))
 distr         <- vec.to.mat(distr, N, normalise = FALSE)
@@ -197,7 +197,7 @@ distr         <- vec.to.mat(distr, N, normalise = FALSE)
 X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 # true network
 G0            <- sim.network(distr)
-# normalise 
+# normalise
 G0norm        <- norm.network(G0)
 # Matrix GX
 GX            <- peer.avg(G0norm, X)
@@ -206,8 +206,8 @@ y             <- CDatanet::simsar(~ X + GX, Glist = G0norm, theta = c(alpha, bet
 Gy            <- y$Gy
 y             <- y$y
 # build dataset
-dataset           <- as.data.frame(cbind(y, X, Gy, GX)) 
-colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2") 
+dataset           <- as.data.frame(cbind(y, X, Gy, GX))
+colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2")
 ```
 The estimation can be performed using the function `smmSAR` (do `?smmSAR` to read the help file of the function).
 The function allows to specify if `GX` and `Gy` are observed. We provide an example for each case.
@@ -217,7 +217,7 @@ If `GX` and `Gy` are observed (instruments will be constructed using the network
 load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master/datavignettes/smm.rda', "rb"))
 ```
 ```{r Smm2, echo = TRUE, eval = FALSE, message=FALSE}
-out.smm1       <- smmSAR(y ~ X1 + X2 | Gy | GX1 + GX2, dnetwork = distr, contextual = T, 
+out.smm1       <- smmSAR(y ~ X1 + X2 | Gy | GX1 + GX2, dnetwork = distr, contextual = T,
                          smm.ctr  = list(R = 1, print = F), data = dataset)
 summary(out.smm1)
 ```
@@ -228,7 +228,7 @@ print(smm$smm1)
 If `GX` is observed and not `Gy`.
 
 ```{r Smm3, echo = TRUE, eval = FALSE, message=FALSE}
-out.smm2       <- smmSAR(y ~ X1 + X2 || GX1 + GX2, dnetwork = distr, contextual = T, 
+out.smm2       <- smmSAR(y ~ X1 + X2 || GX1 + GX2, dnetwork = distr, contextual = T,
                          smm.ctr  = list(R = 1, print = F), data = dataset)
 summary(out.smm2)
 ```
@@ -239,7 +239,7 @@ print(smm$smm2)
 If `Gy` is observed and not `GX`.
 
 ```{r Smm4, echo = TRUE, eval = FALSE, message=FALSE}
-out.smm3       <- smmSAR(y ~ X1 + X2 | Gy, dnetwork = distr, contextual = T, 
+out.smm3       <- smmSAR(y ~ X1 + X2 | Gy, dnetwork = distr, contextual = T,
                          smm.ctr  = list(R = 100, print = F), data = dataset)
 summary(out.smm3)
 ```
@@ -250,7 +250,7 @@ print(smm$smm3)
 If neither `Gy` nor  `GX` are observed.
 
 ```{r Smm5, echo = TRUE, eval = FALSE, message=FALSE}
-out.smm4       <- smmSAR(y ~ X1 + X2, dnetwork = distr, contextual = T, 
+out.smm4       <- smmSAR(y ~ X1 + X2, dnetwork = distr, contextual = T,
                          smm.ctr  = list(R = 100, print = F), data = dataset)
 summary(out.smm4)
 ```
@@ -284,27 +284,27 @@ X             <- cbind(rnorm(sum(N),0,5), rpois(sum(N),7))
 # Groups' fixed effects
 # In order to have groups' heterogeneity correlated to X (fixed effects),
 # We consider the quantile of X2 at 25% in the group
-eff           <- unlist(lapply(1:M, function(x) 
+eff           <- unlist(lapply(1:M, function(x)
   rep(quantile(X[(c(0, cumsum(N))[x]+1):(cumsum(N)[x]),2], probs = 0.25), each = N[x])))
-print(c("cor(eff, X1)" = cor(eff, X[,1]), "cor(eff, X2)" = cor(eff, X[,2]))) 
-# We can see that eff is correlated to X2. We can confirm that the correlation is 
+print(c("cor(eff, X1)" = cor(eff, X[,1]), "cor(eff, X2)" = cor(eff, X[,2])))
+# We can see that eff is correlated to X2. We can confirm that the correlation is
 # strongly significant.
 print(c("p.value.cor(eff, X1)" = cor.test(eff, X[,1])$p.value,
         "p.value.cor(eff, X2)" = cor.test(eff, X[,2])$p.value))
 # true network
 G0            <- sim.network(distr)
-# normalise 
+# normalise
 G0norm        <- norm.network(G0)
 # Matrix GX
 GX            <- peer.avg(G0norm, X)
 # simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ -1 + eff + X + GX, Glist = G0norm, 
+y             <- CDatanet::simsar(~ -1 + eff + X + GX, Glist = G0norm,
                                   theta = c(alpha, beta, se))
 Gy            <- y$Gy
 y             <- y$y
 # build dataset
-dataset           <- as.data.frame(cbind(y, X, Gy, GX)) 
-colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2") 
+dataset           <- as.data.frame(cbind(y, X, Gy, GX))
+colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2")
 ```
 The group heterogeneity is correlated to $\mathbf{X}$ and induces bias if we do not control for it.
 In practice, we do not observe `eff` and we cannot add 200 dummies variables as explanatory variables to the model. We can control for group heterogeneity by taking the difference of each variable with respect to the group average (see @bramoulle2009identification). To do this, we only need to set `fixed.effects = TRUE` in `smmSAR`. We provide examples.
@@ -313,8 +313,8 @@ If `GX` is observed and not `Gy`.
 
 
 ```{r Smm7, echo = TRUE, eval = FALSE, message=FALSE}
-out.smmeff1 <- smmSAR(y ~ X1 + X2 || GX1 + GX2, dnetwork = distr, contextual = T, 
-                      fixed.effects = T, smm.ctr  = list(R = 1, print = F), 
+out.smmeff1 <- smmSAR(y ~ X1 + X2 || GX1 + GX2, dnetwork = distr, contextual = T,
+                      fixed.effects = T, smm.ctr  = list(R = 1, print = F),
                       data = dataset)
 summary(out.smmeff1)
 ```
@@ -325,8 +325,8 @@ print(smm$smme1)
 If `Gy` is observed and not `GX`.
 
 ```{r Smm8, echo = TRUE, eval = FALSE, message=FALSE}
-out.smmeff2 <- smmSAR(y ~ X1 + X2 | Gy, dnetwork = distr, contextual = T, 
-                      fixed.effects = T, smm.ctr  = list(R = 100, print = F), 
+out.smmeff2 <- smmSAR(y ~ X1 + X2 | Gy, dnetwork = distr, contextual = T,
+                      fixed.effects = T, smm.ctr  = list(R = 100, print = F),
                       data = dataset)
 summary(out.smmeff2)
 ```
@@ -369,27 +369,27 @@ fMC <- function(...){
   # Groups' fixed effects
   # We defined the groups' fixed effect as the quantile at 25% of X2 in the group
   # This implies that the effects are correlated with X
-  eff           <- unlist(lapply(1:M, function(x) 
+  eff           <- unlist(lapply(1:M, function(x)
     rep(quantile(X[(c(0, cumsum(N))[x]+1):(cumsum(N)[x]),2], probs = 0.25), each = N[x])))
   # true network
   G0            <- sim.network(distr)
-  # normalise 
+  # normalise
   G0norm        <- norm.network(G0)
   # Matrix GX
   GX            <- peer.avg(G0norm, X)
   # simulate dependent variable use an external package
-  y             <- CDatanet::simsar(~ -1 + eff + X + GX, Glist = G0norm, 
+  y             <- CDatanet::simsar(~ -1 + eff + X + GX, Glist = G0norm,
                                     theta = c(alpha, beta, se))
   Gy            <- y$Gy
   y             <- y$y
   # build dataset
-  dataset           <- as.data.frame(cbind(y, X, Gy, GX)) 
-  colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2") 
-  out.smmeff1 <- smmSAR(y ~ X1 + X2 || GX1 + GX2, dnetwork = distr, contextual = T, 
-                        fixed.effects = T, smm.ctr  = list(R = 1, print = F), 
+  dataset           <- as.data.frame(cbind(y, X, Gy, GX))
+  colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2")
+  out.smmeff1 <- smmSAR(y ~ X1 + X2 || GX1 + GX2, dnetwork = distr, contextual = T,
+                        fixed.effects = T, smm.ctr  = list(R = 1, print = F),
                         data = dataset)
-  out.smmeff2 <- smmSAR(y ~ X1 + X2 | Gy, dnetwork = distr, contextual = T, 
-                        fixed.effects = T, smm.ctr  = list(R = 100, print = F), 
+  out.smmeff2 <- smmSAR(y ~ X1 + X2 | Gy, dnetwork = distr, contextual = T,
+                        fixed.effects = T, smm.ctr  = list(R = 100, print = F),
                         data = dataset)
   out.smmeff3 <- smmSAR(y ~ X1 + X2, dnetwork = distr, contextual = T, fixed.effects = T,
                       smm.ctr  = list(R = 100, print = F), data = dataset)
@@ -426,7 +426,7 @@ load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master
 ```
 In practice, the econometrician does not observed the true distribution of the entire network. They can only have an estimator based on partial network data (see @boucher2020estimating). Because this estimator is used instead of the true distribution, this increases the variance of the SMM estimator. We develop a method to estimate the variance by taking into account the uncertainty related to the estimator of the network distribution.
 
-Assume that the network distribution is logistic, ie, 
+Assume that the network distribution is logistic, ie,
 \begin{equation}\dfrac{p_{ij}}{1 - p_{ij}} = \exp(\rho_0 + \rho_1|X_{i1} + X_{j1}| + \rho_2|X_{i2} - X_{j2}|)\label{eq:logit}\end{equation}
 
 and $\mathbb{P}(a_{ij} = 1|\mathbf{P}) = p_{ij}$, where $\mathbf{A}$ is the adjacency matrix, $a_{ij}$ is the ($i$, $j$)-th entry of $\mathbf{A}$ and $\mathbf{P}$ is the matrix of $p_{ij}$. We simulated data following this assumption.
@@ -445,11 +445,11 @@ X        <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 # network formation model parameter
 rho      <- c(-0.8, 0.2, -0.1)
 # individual effects
-beta     <- c(2, 1, 1.5, 5, -3) 
+beta     <- c(2, 1, 1.5, 5, -3)
 # endogenous effects
 alpha    <- 0.4
 # std-dev errors
-se       <- 1 
+se       <- 1
 # network
 tmp      <- c(0, cumsum(N))
 X1l      <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],1])
@@ -459,13 +459,13 @@ X1.mat   <- lapply(1:M, function(m) {
   matrix(kronecker(X1l[[m]], X1l[[m]], FUN = dist.net), N[m])})
 X2.mat   <- lapply(1:M, function(m) {
   matrix(kronecker(X2l[[m]], X2l[[m]], FUN = dist.net), N[m])})
-Xnet     <- as.matrix(cbind("Const" = 1, 
+Xnet     <- as.matrix(cbind("Const" = 1,
                             "dX1"   = mat.to.vec(X1.mat),
                             "dX2"   = mat.to.vec(X2.mat)))
 ynet     <- Xnet %*% rho
 ynet     <- c(1*((ynet + rlogis(length(ynet))) > 0))
 G0       <- vec.to.mat(ynet, N, normalise = FALSE)
-# normalise 
+# normalise
 G0norm   <- norm.network(G0)
 # Matrix GX
 GX       <- peer.avg(G0norm, X)
@@ -474,10 +474,10 @@ y        <- CDatanet::simsar(~ X + GX, Glist = G0norm, theta = c(alpha, beta, se
 Gy       <- y$Gy
 y        <- y$y
 # build dataset
-dataset           <- as.data.frame(cbind(y, X, Gy, GX)) 
-colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2") 
+dataset           <- as.data.frame(cbind(y, X, Gy, GX))
+colnames(dataset) <- c("y","X1","X2", "Gy", "GX1", "GX2")
 ```
-We do not observed the true distribution of the network. We observe a subset of $\{a_{ij}\}$. Let $\mathcal{A}^{obs} = \{(i,~j), ~ a_{ij} \text{ is observed}\}$ and  $\mathcal{A}^{nobs} = \{(i,~j), ~ a_{ij} \text{ is not observed}\}$. We assume that $|\mathcal{A}^{obs}| \to \infty$ as the sample size grows to $\infty$. Therefore, $\rho_0$, $\rho_1$, and $\rho_2$ can be consistently estimated. 
+We do not observed the true distribution of the network. We observe a subset of $\{a_{ij}\}$. Let $\mathcal{A}^{obs} = \{(i,~j), ~ a_{ij} \text{ is observed}\}$ and  $\mathcal{A}^{nobs} = \{(i,~j), ~ a_{ij} \text{ is not observed}\}$. We assume that $|\mathcal{A}^{obs}| \to \infty$ as the sample size grows to $\infty$. Therefore, $\rho_0$, $\rho_1$, and $\rho_2$ can be consistently estimated.
 
 ```{r smmp2, echo = TRUE, eval = FALSE}
 nNet      <- nrow(Xnet) # network formation model sample size
@@ -492,7 +492,7 @@ We assume that the explanatory variables $X_{i1}$ and $X_{i2}$ are observed for 
 
 ```{r smmp3, echo = TRUE, eval = FALSE}
 d.logit     <- lapply(1:M, function(x) {
-  out       <- 1/(1 + exp(-rho.est[1] - rho.est[2]*X1.mat[[x]] - 
+  out       <- 1/(1 + exp(-rho.est[1] - rho.est[2]*X1.mat[[x]] -
                             rho.est[3]*X2.mat[[x]]))
   diag(out) <- 0
   out})
@@ -500,7 +500,7 @@ d.logit     <- lapply(1:M, function(x) {
 We can use $\hat{\mathbf{P}}$  for our SMM estimator. We focus on the case where neither $\mathbf{G}\mathbf{X}$ nor $\mathbf{G}\mathbf{y}$ are observed. The same strategy can be used for other cases.
 
 ```{r Smmp4, echo = TRUE, eval = FALSE, message=FALSE}
-smm.logit   <- smmSAR(y ~ X1 + X2, dnetwork = d.logit, contextual = T, 
+smm.logit   <- smmSAR(y ~ X1 + X2, dnetwork = d.logit, contextual = T,
                       smm.ctr  = list(R = 100, print = F), data = dataset)
 summary(smm.logit)
 ```
@@ -524,7 +524,7 @@ fdist        <- function(rho.est, rho.var, M, X1.mat, X2.mat){
 The function can be passed into the argument `.fun` of the `summary` method. We also need to pass the arguments of the simulator as a list into `.args`.
 
 ```{r Smmp6a, echo = TRUE, eval = FALSE, message=FALSE}
-fdist_args  <- list(rho.est = rho.est, rho.var = rho.var, M = M, X1.mat = X1.mat, 
+fdist_args  <- list(rho.est = rho.est, rho.var = rho.var, M = M, X1.mat = X1.mat,
                     X2.mat = X2.mat)
 summary(smm.logit, dnetwork = d.logit, data = dataset, .fun = fdist, .args = fdist_args,
         sim = 500, ncores = 8) # ncores performs simulations in parallel
@@ -548,7 +548,7 @@ For the sake of the example, we assume that linking probabilities are *known* an
 
 **In the following example (example I-1, output `out.none1`), we assume that the network is entirely observed.**
 
-**We first simulate data.** 
+**We first simulate data.**
 ```{r BayesNone0, echo=FALSE}
 load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master/datavignettes/out.none.rda', "rb"))
 #save(out.none1, out.none2.1, out.none2.2, out.none3.1, out.none3.2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.none.rda")
@@ -558,19 +558,19 @@ load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master
 rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
-# EXAMPLE I: WITHOUT NETWORK FORMATION MODEL 
+# EXAMPLE I: WITHOUT NETWORK FORMATION MODEL
 # Number of groups
 M             <- 50
 # size of each group
 N             <- rep(30,M)
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # contextual effects
-gamma         <- c(5,-3) 
+gamma         <- c(5,-3)
 # endogenous effects
 alpha         <- 0.4
 # std-dev errors
-se            <- 1 
+se            <- 1
 # network distribution
 distr         <- runif(sum(N*(N-1)))
 distr         <- vec.to.mat(distr, N, normalise = FALSE)
@@ -578,7 +578,7 @@ distr         <- vec.to.mat(distr, N, normalise = FALSE)
 X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 # true network
 G0            <- sim.network(distr)
-# normalize 
+# normalize
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
@@ -587,11 +587,11 @@ y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
                                   theta = c(alpha, beta, gamma, se))
 y             <- y$y
 # dataset
-dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 ```
 **Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**^[We ran the program on a processor `Intel(R) Xeon(R) W-1270P CPU @ 3.80GHz`. The execution time in the output depends on the CPU performance.]
 ```{r BayesNone1ae, eval=FALSE}
-# Example I-1: When the network is fully observed 
+# Example I-1: When the network is fully observed
 out.none1     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
                          G0 = G0, data = dataset, iteration = 2e4)
 summary(out.none1)
@@ -618,7 +618,7 @@ plot(out.none1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```--->
 **For Example I-2, we assume that only 60% of the links are observed. **
 ```{r BayesNone21s, eval=FALSE}
-# Example I-2: When a part of the network is observed 
+# Example I-2: When a part of the network is observed
 # 60% of the network data is observed
 G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
 ```
@@ -637,13 +637,13 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  50 
-Iteration              :  20000 
-Elapsed time           :  0  HH  0  mm  26  ss 
- 
+*************SUMMARY*************
+Number of group        :  50
+Iteration              :  20000
+Elapsed time           :  0  HH  0  mm  26  ss
+
 Peer effects acceptance rate: 0.4317")
 ```-->
 ```{r BayesNone21b, echo=FALSE}
@@ -655,7 +655,7 @@ plot(out.none2.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 **Estimation `out.none2.2` specifies which links are observed and which ones are not. The true probabilities are used to sample un-observed links (consistent).**
 ```{r BayesNone22a, eval=FALSE}
 out.none2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start, data = dataset, 
+                        G0 = G0.start, data = dataset,
                         mlinks = list(dnetwork = distr), iteration = 2e4)
 summary(out.none2.2)
 ```
@@ -664,13 +664,13 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  50 
-Iteration              :  20000 
-Elapsed time           :  0  HH  18  mm  59  ss 
- 
+*************SUMMARY*************
+Number of group        :  50
+Iteration              :  20000
+Elapsed time           :  0  HH  18  mm  59  ss
+
 Peer effects acceptance rate: 0.4353")
 ```-->
 ```{r BayesNone22b, echo=FALSE}
@@ -683,7 +683,7 @@ plot(out.none2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 
 **Estimation `out.none3.1` assumes the researcher uses a draw from that distribution as the true network (inconsistent, peer effects are overestimated).**
 ```{r BayesNone31as, eval=FALSE}
-# Example I-3: When only the network distribution is available 
+# Example I-3: When only the network distribution is available
 # Simulate a fictitious network and use as true network
 G0.tmp       <- sim.network(distr)
 out.none3.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "all",
@@ -695,13 +695,13 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  50 
-Iteration              :  20000 
-Elapsed time           :  0  HH  0  mm  26  ss 
- 
+*************SUMMARY*************
+Number of group        :  50
+Iteration              :  20000
+Elapsed time           :  0  HH  0  mm  26  ss
+
 Peer effects acceptance rate: 0.44445")
 ```-->
 ```{r BayesNone31b, echo=FALSE}
@@ -714,20 +714,20 @@ plot(out.none3.1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 ```{r BayesNone32a, eval=FALSE}
 out.none3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
                         data = dataset, mlinks = list(dnetwork = distr), iteration = 2e4)
-summary(out.none3.2) 
+summary(out.none3.2)
 ```
 <!--```{r BayesNone32aa, echo=FALSE}
 cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  50 
-Iteration              :  20000 
+*************SUMMARY*************
+Number of group        :  50
+Iteration              :  20000
 Elapsed time           :  0  HH  46  mm  18  ss
- 
+
 Peer effects acceptance rate: 0.42995")
 ```-->
 ```{r BayesNone32b, echo=FALSE}
@@ -741,14 +741,14 @@ plot(out.none3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 
 For this example, we assume that links are generated using a simple logit model. We do not observe the true distribution.
 
-**We first simulate data.** 
+**We first simulate data.**
 
 ```{r BayesLog0, echo=FALSE}
 load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master/datavignettes/out.logi.rda', "rb"))
 # save(out.logi2.2, out.logi3.2, slogestim, sout.logi4.1, sout.logi4.2, sout.logi4.3, sout.selb1, sout.selb2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.logi.rda")
 ```
 ```{r BayesLog1as, eval=FALSE}
-# EXAMPLE II: NETWORK FORMATION MODEL: LOGIT 
+# EXAMPLE II: NETWORK FORMATION MODEL: LOGIT
 rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
@@ -757,29 +757,29 @@ M             <- 50
 # size of each group
 N             <- rep(30,M)
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # contextual effects
-gamma         <- c(5,-3) 
+gamma         <- c(5,-3)
 # endogenous effects
 alpha         <- 0.4
 # std-dev errors
-se            <- 2 
+se            <- 2
 # parameters of the network formation model
 rho           <- c(-2, -.5, .2)
 # covariates
 X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
-# compute distance between individuals 
+# compute distance between individuals
 tmp           <- c(0, cumsum(N))
 X1l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],1])
 X2l           <- lapply(1:M, function(x) X[c(tmp[x] + 1):tmp[x+1],2])
-dist.net      <- function(x, y) abs(x - y) 
+dist.net      <- function(x, y) abs(x - y)
 X1.mat        <- lapply(1:M, function(m) {
   matrix(kronecker(X1l[[m]], X1l[[m]], FUN = dist.net), N[m])})
 X2.mat        <- lapply(1:M, function(m) {
   matrix(kronecker(X2l[[m]], X2l[[m]], FUN = dist.net), N[m])})
 # true network
-Xnet          <- as.matrix(cbind("Const" = 1, 
-                                 "dX1"   = mat.to.vec(X1.mat), 
+Xnet          <- as.matrix(cbind("Const" = 1,
+                                 "dX1"   = mat.to.vec(X1.mat),
                                  "dX2"   = mat.to.vec(X2.mat)))
 ynet          <- Xnet %*% rho
 ynet          <- 1*((ynet + rlogis(length(ynet))) > 0)
@@ -788,27 +788,27 @@ G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
 # simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm, 
+y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
                                      theta = c(alpha, beta, gamma, se))
 y             <- y$y
 # dataset
-dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 ```
 For example II-1, we assume that the researcher only **observes 60% of the links**, but **know that the network formation model is logistic**.
 ```{r BayesLog21as, eval=FALSE}
-# Example II-1: When a part of the network is observed 
+# Example II-1: When a part of the network is observed
 # 60% of the network data is observed
 G0.obs       <- lapply(N, function(x) matrix(rbinom(x^2, 1, 0.6), x))
 # replace the non-observed part of the network by 0
 G0.start     <- lapply(1:M, function(x) G0[[x]]*G0.obs[[x]])
 # Infer the missing links in the network data
-mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
                      mlinks.data = as.data.frame(Xnet))
 ```
 **Once the data are simulated, the estimation can be performed.**
 ```{r BayesLog21ae, eval=FALSE}
 out.logi2.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start, data = dataset, mlinks = mlinks, 
+                        G0 = G0.start, data = dataset, mlinks = mlinks,
                         iteration = 2e4)
 summary(out.logi2.2)
 ```
@@ -817,18 +817,18 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
 *************SUMMARY*************
 Number of group        :  50
 Iteration              :  20000
-Elapsed time           :  0  HH  19  mm  16  ss 
+Elapsed time           :  0  HH  19  mm  16  ss
 
 Peer effects acceptance rate: 0.438
 rho acceptance rate         : 0.27185")
 ```-->
 ```{r BayesLog22b, echo=FALSE}
-summary(out.logi2.2) 
+summary(out.logi2.2)
 ```
 ```{r BayesLog22c, fig.height = 3, fig.align = "center"}
 plot(out.logi2.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
@@ -846,32 +846,32 @@ plot(out.logi2.2, plot.type = "sim", which.parms = "rho", mar = c(3, 2.1, 1, 1))
 Gvec         <- mat.to.vec(G0, ceiled = TRUE)
 logestim     <- glm(Gvec ~ -1 + Xnet, family = binomial(link = "logit"))
 slogestim    <- summary(logestim)
-estimates    <- list("rho"     = logestim$coefficients, 
+estimates    <- list("rho"     = logestim$coefficients,
                      "var.rho" = slogestim$cov.unscaled,
                      "N"       = N)
-mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
                      mlinks.data = as.data.frame(Xnet), estimates = estimates)
-out.logi3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
+out.logi3.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
                         data = dataset, mlinks = mlinks, iteration = 2e4)
-summary(out.logi3.2) 
+summary(out.logi3.2)
 ```
 <!--```{r BayesLog32aa, echo=FALSE}
 cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  50 
-Iteration              :  20000 
+*************SUMMARY*************
+Number of group        :  50
+Iteration              :  20000
 Elapsed time           :  0  HH  47  mm  10  ss
- 
+
 Peer effects acceptance rate: 0.4446
 rho acceptance rate         : 0.27905")
 ```-->
 ```{r BayesLog32b, echo=FALSE}
-summary(out.logi3.2) 
+summary(out.logi3.2)
 ```
 ```{r BayesLog32c, fig.height = 3, fig.align = "center"}
 plot(out.logi3.2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
@@ -887,14 +887,14 @@ From a certain point of view, inferring the observed part of the network can be 
 
 We present an example below.
 ```{r BayesLog21ae3, eval=FALSE}
-estimates    <- list("rho"     = logestim$coefficients, 
-                     "var.rho" = slogestim$cov.unscaled) 
-mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+estimates    <- list("rho"     = logestim$coefficients,
+                     "var.rho" = slogestim$cov.unscaled)
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
                      mlinks.data = as.data.frame(Xnet), estimates = estimates)
 out.logi4.1  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start, data = dataset, mlinks = mlinks, 
+                        G0 = G0.start, data = dataset, mlinks = mlinks,
                         iteration = 2e4)
-summary(out.logi4.1) 
+summary(out.logi4.1)
 ```
 ```{r BayesLog21ae4, eval=TRUE, echo=FALSE}
 print(sout.logi4.1)
@@ -908,14 +908,14 @@ It is also possible to update `rho` in the MCMC using the observed part of the n
 
 This is an example where we assume that the prior distribution of `rho` is the standard normal distribution.
 ```{r BayesLog21ae5, eval=FALSE}
-prior        <- list("rho"     = c(0, 0, 0), 
-                     "var.rho" = diag(3)) 
-mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+prior        <- list("rho"     = c(0, 0, 0),
+                     "var.rho" = diag(3))
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
                      mlinks.data = as.data.frame(Xnet), prior = prior)
 out.logi4.2  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start, data = dataset, mlinks = mlinks, 
+                        G0 = G0.start, data = dataset, mlinks = mlinks,
                         iteration = 2e4)
-summary(out.logi4.2) 
+summary(out.logi4.2)
 ```
 ```{r BayesLog21ae6, echo=FALSE}
 print(sout.logi4.2)
@@ -924,14 +924,14 @@ print(sout.logi4.2)
 The MCMC performs well although the distribution of `rho` defined in `prior` is not true. This is because the observed part of the network is used to update `rho`. In contrast, the MCMC could be inconsistent if one defines `estimates` as `prior` because `rho` will not be updated using the observed entries in the adjacency matrix, but only using information from the outcome `y`.
 
 <!--```{r BayesLog21ae7, eval=FALSE}
-estimates    <- list("rho"     = c(0, 0, 0), 
-                     "var.rho" = diag(3)) 
-mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2, 
+estimates    <- list("rho"     = c(0, 0, 0),
+                     "var.rho" = diag(3))
+mlinks       <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
                      mlinks.data = as.data.frame(Xnet), estimates = estimates)
 out.logi4.3  <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = G0.obs,
-                        G0 = G0.start, data = dataset, mlinks = mlinks, 
+                        G0 = G0.start, data = dataset, mlinks = mlinks,
                         iteration = 2e4)
-summary(out.logi4.3) 
+summary(out.logi4.3)
 ```
 ```{r BayesLog21ae8, echo=FALSE}
 print(sout.logi4.3)
@@ -948,18 +948,18 @@ load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master
 # save(data.plot1, data.plot2, genz, genv, zi, vk, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.ard.rda")
 ```
 
-The data is simulated following a procedure similar to the one in @breza2020using. 
+The data is simulated following a procedure similar to the one in @breza2020using.
 ```{r ard1, eval=FALSE}
 rm(list = ls())
 library(PartialNetwork)
 set.seed(123)
-# LATENT SPACE MODEL 
+# LATENT SPACE MODEL
 N           <- 500
 genzeta     <- 1
 mu          <- -1.35
 sigma       <- 0.37
 K           <- 12    # number of traits
-P           <- 3     # Sphere dimension 
+P           <- 3     # Sphere dimension
 # ARD parameters
 # Generate z (spherical coordinates)
 genz        <- rvMF(N, rep(0,P))
@@ -968,7 +968,7 @@ gennu       <- rnorm(N, mu, sigma)
 # compute degrees
 gend        <- N*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
 # Link probabilities
-distr       <- sim.dnetwork(gennu, gend, genzeta, genz) 
+distr       <- sim.dnetwork(gennu, gend, genzeta, genz)
 # Adjacency matrix
 G           <- sim.network(distr)
 # Generate vk, the trait location
@@ -1000,7 +1000,7 @@ for(k in 1:K){
 **Example 1: we observe ARD for the entire population**
 ```{r ard1as, eval=FALSE}
 # Example1: ARD is observed for the whole population
-# initialization 
+# initialization
 d0     <- exp(rnorm(N)); b0 <- exp(rnorm(K)); eta0 <- rep(1,K)
 zeta0  <- 2; z0 <- matrix(rvMF(N, rep(0,P)), N); v0 <- matrix(rvMF(K,rep(0, P)), K)
 # We should fix some vk and bk
@@ -1008,7 +1008,7 @@ vfixcolumn      <- 1:5
 bfixcolumn      <- c(3, 7, 9)
 b0[bfixcolumn]  <- genb[bfixcolumn]
 v0[vfixcolumn,] <- genv[vfixcolumn,]
-start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
+start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0,
                         "zeta" = zeta0)
 ```
 **The estimation can be performed using the function `mcmcARD`**
@@ -1022,20 +1022,20 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-********SUMMARY******** 
-n              :  500 
-K              :  12 
-Dimension      :  3 
-Iteration      :  5000 
-Elapsed time   :  0  HH  0  mm  47  ss 
- 
-Average acceptance rate 
-                      z:  0.441398 
-                      d:  0.4399204 
-                      b:  0.4392833 
-                    eta:  0.4397833 
+********SUMMARY********
+n              :  500
+K              :  12
+Dimension      :  3
+Iteration      :  5000
+Elapsed time   :  0  HH  0  mm  47  ss
+
+Average acceptance rate
+                      z:  0.441398
+                      d:  0.4399204
+                      b:  0.4392833
+                    eta:  0.4397833
                    zeta:  0.4402")
 ```-->
 ```{r ardaa1, eval=FALSE}
@@ -1081,27 +1081,27 @@ invisible(lapply(1:3, function(x) {
 ```{r ardb, message=FALSE, eval=FALSE}
 # plot degree
 library(ggplot2)
-data.plot1 <- data.frame(True_degree  = gend, 
+data.plot1 <- data.frame(True_degree  = gend,
                          Estim_degree = colMeans(tail(estim.ard1$simulations$d, 2500)))
-ggplot(data = data.plot1, aes(x = True_degree, y = Estim_degree)) + 
+ggplot(data = data.plot1, aes(x = True_degree, y = Estim_degree)) +
    geom_abline(col = "red") + geom_point(col = "blue")
 ```
 ```{r ardbb, message=FALSE, echo=FALSE, fig.height = 3, fig.align = "center"}
 library(ggplot2)
-ggplot(data = data.plot1, aes(x = True_degree, y = Estim_degree)) + 
+ggplot(data = data.plot1, aes(x = True_degree, y = Estim_degree)) +
    geom_abline(col = "red") + geom_point(col = "blue")
 ```
 **Example 2: we observe ARD for only 70% of the population**
 ```{r ard2as, eval=FALSE}
 # Example2: ARD is observed for 70% population
-# sample with ARD 
+# sample with ARD
 n          <- round(0.7*N)
 # individual with ARD
 iselect    <- sort(sample(1:N, n, replace = FALSE))
 ARDs       <- ARD[iselect,]
 traits     <- trait[iselect,]
-# initialization 
-d0         <- d0[iselect]; z0 <- z0[iselect,] 
+# initialization
+d0         <- d0[iselect]; z0 <- z0[iselect,]
 start      <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, "zeta" = zeta0)
 ```
 **The estimation can be performed using the function `mcmcARD`**
@@ -1115,20 +1115,20 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-********SUMMARY******** 
-n              :  350 
-K              :  12 
-Dimension      :  3 
-Iteration      :  5000 
-Elapsed time   :  0  HH  0  mm  32  ss 
- 
-Average acceptance rate 
-                      z:  0.4419703 
-                      d:  0.4401291 
-                      b:  0.4406667 
-                    eta:  0.44055 
+********SUMMARY********
+n              :  350
+K              :  12
+Dimension      :  3
+Iteration      :  5000
+Elapsed time   :  0  HH  0  mm  32  ss
+
+Average acceptance rate
+                      z:  0.4419703
+                      d:  0.4401291
+                      b:  0.4406667
+                    eta:  0.44055
                    zeta:  0.4422")
 ```-->
 ```{r ard2b, eval=FALSE}
@@ -1136,30 +1136,30 @@ Average acceptance rate
 # we need a logical vector indicating if the i-th element has ARD
 hasARD      <- (1:N) %in% iselect
 # we use the matrix of traits to estimate distance between individuals
-estim.nard2 <- fit.dnetwork(estim.ard2, X = trait, obsARD = hasARD, m = 1) 
+estim.nard2 <- fit.dnetwork(estim.ard2, X = trait, obsARD = hasARD, m = 1)
 ```
 <!--```{r ardd, echo=FALSE}
-cat("ARD non observed on the entire population 
+cat("ARD non observed on the entire population
 0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-Average link probabilities estimated 
-Iteration             : 2500 
+Average link probabilities estimated
+Iteration             : 2500
 Elapsed time          : 0  HH  0  mm  3  ss ")
 ```-->
 ```{r arde, eval=FALSE}
 # estimated degree
 estd          <- estim.nard2$degree
-data.plot2    <- data.frame(True_degree  = gend, 
-                            Estim_degree = estd, 
+data.plot2    <- data.frame(True_degree  = gend,
+                            Estim_degree = estd,
                             Has_ARD      = ifelse(hasARD, "YES", "NO"))
-ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_ARD)) + 
-  geom_abline(col = "red") + geom_point() 
+ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_ARD)) +
+  geom_abline(col = "red") + geom_point()
 ```
 ```{r ardee, message=FALSE, echo=FALSE, fig.height = 3, fig.align = "center"}
-ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_ARD)) + 
-  geom_abline(col = "red") + geom_point() 
+ggplot(data = data.plot2, aes(x = True_degree, y = Estim_degree, colour = Has_ARD)) +
+  geom_abline(col = "red") + geom_point()
 ```
 
 
@@ -1171,7 +1171,7 @@ Given the predicted probabilities, estimated using the estimator proposed by @br
 load(url('https://raw.githubusercontent.com/ahoundetoungan/PartialNetwork/master/datavignettes/out.lsp.rda', "rb"))
 #save(out.lspa1, out.lspa2, file = "~/Dropbox/Papers - In progress/Partial Network/Package/AH/PartialNetwork/datavignettes/out.lsp.rda")
 ```
-**We first simulate data.** 
+**We first simulate data.**
 ```{r bayesard1, eval=FALSE}
 rm(list = ls())
 library(PartialNetwork)
@@ -1184,7 +1184,7 @@ sigma         <- 0.37
 K             <- 12    # number of traits
 P             <- 3     # Sphere dimension
 
-# IN THIS LOOP, WE GENERATE DATA FOLLOWING BREZA ET AL. (2020) AND 
+# IN THIS LOOP, WE GENERATE DATA FOLLOWING BREZA ET AL. (2020) AND
 # ESTIMATE THEIR LATENT SPACE MODEL FOR EACH SUB-NETWORK.
 estimates     <- list()
 list.trait    <- list()
@@ -1201,7 +1201,7 @@ for (m in 1:M) {
   # compute degrees
   gend    <- N[m]*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
   # Link probabilities
-  distr   <- sim.dnetwork(gennu, gend, genzeta, genz) 
+  distr   <- sim.dnetwork(gennu, gend, genzeta, genz)
   # Adjacency matrix
   G        <- sim.network(distr)
   G0[[m]]  <- G
@@ -1231,30 +1231,30 @@ for (m in 1:M) {
   for(k in 1:K){
     genb[k]  <- sum(G[,trait[,k]==1])/sum(G) + 1e-8
   }
-  
+
   #######################################################################################
   #######                             ESTIMATION STAGE                           ########
   #######################################################################################
-  # initialization 
-  d0     <- gend; b0 <- exp(rnorm(K)); eta0 <- rep(1,K); zeta0 <- genzeta 
+  # initialization
+  d0     <- gend; b0 <- exp(rnorm(K)); eta0 <- rep(1,K); zeta0 <- genzeta
   z0     <- matrix(rvMF(N[m], rep(0,P)), N[m]); v0 <- matrix(rvMF(K,rep(0, P)), K)
   # We should fix some vk and bk
   vfixcolumn      <- 1:5
   bfixcolumn      <- c(1, 3, 5, 7, 9, 11)
   b0[bfixcolumn]  <- genb[bfixcolumn]
   v0[vfixcolumn,] <- genv[vfixcolumn,]
-  start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
+  start           <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0,
                           "zeta" = zeta0)
-  estimates[[m]]  <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn, 
-                             consb = bfixcolumn, sim.d = FALSE, sim.zeta = FALSE, 
+  estimates[[m]]  <- mcmcARD(Y = ARD, traitARD = trait, start = start, fixv = vfixcolumn,
+                             consb = bfixcolumn, sim.d = FALSE, sim.zeta = FALSE,
                              iteration = 5000, ctrl.mcmc = list(print = FALSE))
 }
 
 # SIMULATE DATA FOR THE OUTCOME MODEL
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # contextual effects
-gamma         <- c(5,-3) 
+gamma         <- c(5,-3)
 # endogenous effects
 alpha         <- 0.4
 # std-dev errors
@@ -1270,32 +1270,32 @@ y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
                                   theta = c(alpha, beta, gamma, se))
 y             <- y$y
 # dataset
-dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 ```
 **Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**
 ```{r bayesard2s, eval=FALSE}
 mlinks       <- list(model = "latent space", estimates = estimates)
-out.lspa1    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
+out.lspa1    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
                         data = dataset, mlinks = mlinks, iteration = 2e4)
-summary(out.lspa1) 
+summary(out.lspa1)
 ```
 <!--```{r Bayesarda, echo=FALSE}
 cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  30 
-Iteration              :  20000 
-Elapsed time           :  7  HH  49  mm  17  ss 
- 
+*************SUMMARY*************
+Number of group        :  30
+Iteration              :  20000
+Elapsed time           :  7  HH  49  mm  17  ss
+
 Peer effects acceptance rate: 0.43145
 rho acceptance rate         : 0.2697867")
 ```-->
 ```{r Bayesard2b, echo=FALSE}
-summary(out.lspa1) 
+summary(out.lspa1)
 ```
 ```{r Bayesard2c, fig.height = 3, fig.align = "center"}
 plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
@@ -1306,7 +1306,7 @@ plot(out.lspa1, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 
 Given the predicted probabilities, estimated using the estimator proposed by @breza2020using assuming that ARD are observed for 70% $\sim$ 100% of the population, we implement our Bayesian estimator assuming that the posterior distribution of the linking probabilities are jointly normally distributed.
 
-**We first simulate data.** 
+**We first simulate data.**
 ```{r bayesard3, eval=FALSE}
 rm(list = ls())
 library(PartialNetwork)
@@ -1319,7 +1319,7 @@ sigma         <- 0.37
 K             <- 12
 P             <- 3
 
-# IN THIS LOOP, WE GENERATE DATA FOLLOWING BREZA ET AL. (2020) AND 
+# IN THIS LOOP, WE GENERATE DATA FOLLOWING BREZA ET AL. (2020) AND
 # ESTIMATE THEIR LATENT SPACE MODEL FOR EACH SUB-NETWORK.
 estimates     <- list()
 list.trait    <- list()
@@ -1337,7 +1337,7 @@ for (m in 1:M) {
   # compute degrees
   gend    <- N[m]*exp(gennu)*exp(mu+0.5*sigma^2)*exp(logCpvMF(P,0) - logCpvMF(P,genzeta))
   # Link probabilities
-  distr   <- sim.dnetwork(gennu, gend, genzeta, genz) 
+  distr   <- sim.dnetwork(gennu, gend, genzeta, genz)
   # Adjacency matrix
   G        <- sim.network(distr)
   G0[[m]]  <- G
@@ -1355,10 +1355,10 @@ for (m in 1:M) {
     densityatz[,k] <- dvMF(genz, genv[k,]*geneta[k])
   }
   trait       <- matrix(0, N[m], K)
-  NK          <- floor(runif(K, .8, .95)*colSums(densityatz)/apply(densityatz, 2, max)) 
+  NK          <- floor(runif(K, .8, .95)*colSums(densityatz)/apply(densityatz, 2, max))
   for (k in 1:K) {
     trait[,k] <- rbinom(N[m], 1, NK[k]*densityatz[,k]/sum(densityatz[,k]))
-  } 
+  }
   list.trait[[m]]  <- trait
   # Build ADR
   ARD         <- G %*% trait
@@ -1367,7 +1367,7 @@ for (m in 1:M) {
   for(k in 1:K){
     genb[k]  <- sum(G[,trait[,k]==1])/sum(G) + 1e-8
   }
-  # sample with ARD 
+  # sample with ARD
   n          <- round(runif(1, .7, 1)*N[m])
   # individual with ARD
   iselect    <- sort(sample(1:N[m], n, replace = FALSE))
@@ -1378,25 +1378,25 @@ for (m in 1:M) {
   #######################################################################################
   #######                             ESTIMATION STAGE                           ########
   #######################################################################################
-  # initialization 
+  # initialization
   d0         <- gend[iselect]; b0 <- exp(rnorm(K)); eta0 <- rep(1,K); zeta0 <- genzeta
-  z0         <- matrix(rvMF(n, rep(0,P)), n); v0 <- matrix(rvMF(K, rep(0, P)), K) 
+  z0         <- matrix(rvMF(n, rep(0,P)), n); v0 <- matrix(rvMF(K, rep(0, P)), K)
   # We should fix some vk and bk
   vfixcolumn     <- 1:5
   bfixcolumn     <- c(1, 3, 5, 7, 9, 11)
   b0[bfixcolumn] <- genb[bfixcolumn]; v0[vfixcolumn,] <- genv[vfixcolumn,]
-  start          <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0, 
+  start          <- list("z" = z0, "v" = v0, "d" = d0, "b" = b0, "eta" = eta0,
                           "zeta" = zeta0)
   estimates[[m]] <- mcmcARD(Y = ARDs, traitARD = traits, start = start, fixv = vfixcolumn,
-                            consb = bfixcolumn,  sim.d = FALSE, sim.zeta = FALSE, 
+                            consb = bfixcolumn,  sim.d = FALSE, sim.zeta = FALSE,
                             iteration = 5000, ctrl.mcmc = list(print = FALSE))
 }
 
 # SIMULATE DATA FOR THE OUTCOME MODEL
 # individual effects
-beta          <- c(2,1,1.5) 
+beta          <- c(2,1,1.5)
 # contextual effects
-gamma         <- c(5,-3) 
+gamma         <- c(5,-3)
 # endogenous effects
 alpha         <- 0.4
 # std-dev errors
@@ -1412,13 +1412,13 @@ y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
                                   theta = c(alpha, beta, gamma, se))
 y             <- y$y
 # dataset
-dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2])) 
+dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
 ```
 **Once the data are simulated, the estimation can be performed using the function `mcmcSAR`.**
 ```{r bayesard4s, eval=FALSE}
 mlinks       <- list(model = "latent space", estimates = estimates,
                      mlinks.data = list.trait, obsARD = obARD)
-out.lspa2    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none", 
+out.lspa2    <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0.obs = "none",
                         data = dataset, mlinks = mlinks, iteration = 2e4)
 summary(out.lspa2)
 ```
@@ -1427,13 +1427,13 @@ cat("0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
 
-The program successfully executed 
+The program successfully executed
 
-*************SUMMARY************* 
-Number of group        :  30 
-Iteration              :  20000 
-Elapsed time           :  7  HH  51  mm  0  ss 
- 
+*************SUMMARY*************
+Number of group        :  30
+Iteration              :  20000
+Elapsed time           :  7  HH  51  mm  0  ss
+
 Peer effects acceptance rate: 0.44075
 rho acceptance rate         : 0.2705733")
 ```-->
@@ -1447,7 +1447,7 @@ plot(out.lspa2, plot.type = "sim", mar = c(3, 2.1, 1, 1))
 # The selection bias issue {#SELECT}
 In many applications, missing links are not completely random. For example, an individual who has no friends is less likely to have missing value on their row in the adjacency matrix than someone who has a lot of links. Even regressing a logit/probit network formation model using the entries of the adjacency matrix that are correctly measured will not yield a consistent estimator due to the selection bias issue.
 
-Consider the case of missing links due to unmatched declared friends. This is for example the case of the network data collected by the National Longitudinal Study of Adolescent to Adult Health (Add Health). We know the *true* number of links for each individual. This information is crucial to address the selection bias issue. When an individual has missing links, we could doubt all the "zeros" on their row in the adjacency matrix. To consistently estimate the SAR model, we can simply assume that information from this row is not true, i.e, the row has "zeros" everywhere in the object `G0.obs`. Information from individuals without missing links can be used to estimate `rho` and doubtful rows in the adjacency matrix will be inferred. However, there is a selection bias issue because we do not use rows with missing links to estimate `rho`. These rows are likely to have a lot of `ones`. As a consequence, the network formation model estimating using rows with no unmatched friends will simulate fewer links than the true data-generating process (DGP). 
+Consider the case of missing links due to unmatched declared friends. This is for example the case of the network data collected by the National Longitudinal Study of Adolescent to Adult Health (Add Health). We know the *true* number of links for each individual. This information is crucial to address the selection bias issue. When an individual has missing links, we could doubt all the "zeros" on their row in the adjacency matrix. To consistently estimate the SAR model, we can simply assume that information from this row is not true, i.e, the row has "zeros" everywhere in the object `G0.obs`. Information from individuals without missing links can be used to estimate `rho` and doubtful rows in the adjacency matrix will be inferred. However, there is a selection bias issue because we do not use rows with missing links to estimate `rho`. These rows are likely to have a lot of `ones`. As a consequence, the network formation model estimating using rows with no unmatched friends will simulate fewer links than the true data-generating process (DGP).
 
 A straightforward approach to address the issue is to weight the selected rows that are used to estimate `rho` (see @manski1977estimation). Every selected row must be weighted by the inverse of the probability of having no unmatched links. To do so, the practitioner can include an input `weights` in the list `mlinks` which is an argument of the function `mcmcsar`. The input `weights` must be a vector of dimension the number of "ones" in `G0.obs`.
 
@@ -1550,15 +1550,15 @@ To control for the selection issue, we can weight selected individuals. The weig
 G0.obsvec     <- as.logical(mat.to.vec(G0.obs))
 Gvec          <- mat.to.vec(Gobs, ceiled = TRUE)[G0.obsvec]
 W             <- unlist(data.frame(nfriends = nfriends, nmislink = nmislink) %>%
-                       group_by(nfriends) %>% 
-                       summarise(w = length(nmislink)/sum(nmislink == 0)) %>% 
+                       group_by(nfriends) %>%
+                       summarise(w = length(nmislink)/sum(nmislink == 0)) %>%
                        select(w))
 W             <- lapply(1:M, function(x){
   matrix(rep(W[rowSums(G0[[x]]) + 1], each = N[x]), N[x], byrow = TRUE)})
 weights       <- mat.to.vec(W)[G0.obsvec]
 mlinks        <- list(model = "logit", mlinks.formula = ~ dX1 + dX2,
                       mlinks.data = as.data.frame(Xnet), weights = weights)
-out.selb2     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0 = Gobs, 
+out.selb2     <- mcmcSAR(formula = y ~ X1 + X2, contextual = TRUE, G0 = Gobs,
                          G0.obs = G0.obs, data = dataset, mlinks = mlinks,
                          iteration = 2e4)
 summary(out.selb2)

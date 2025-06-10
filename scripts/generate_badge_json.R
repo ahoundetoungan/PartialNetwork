@@ -3,7 +3,7 @@ library(cranlogs)
 library(jsonlite)
 
 pkg <- "PartialNetwork"
-downloads <- cran_downloads(pkg, from = "2023-01-01")
+downloads <- cran_downloads(pkg, from = "2023-08-22")
 total <- sum(downloads$count)
 
 # Format number
@@ -17,7 +17,7 @@ label <- if (total >= 1e6) {
 
 json <- list(
   schemaVersion = 1,
-  label = "CRAN",
+  label = "",
   message = paste0(label, " downloads"),
   color = "blue"
 )

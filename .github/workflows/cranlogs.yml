@@ -22,22 +22,11 @@ jobs:
         run: Rscript scripts/generate_badge_json.R
         shell: pwsh
 
-      - name: Package deploy folder
-        run: |
-          Remove-Item -Recurse -Force deploy -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Path deploy
-          Copy-Item -Recurse badges,deploy.ps1?* .\deploy\
-          # ensure .nojekyll is at root
-          Set-Content -Path deploy/.nojekyll -Value "# disable jekyll"
-
-          # sanity check
-          Get-ChildItem -Recurse deploy
-        shell: pwsh
-
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          publish_dir: deploy
-          publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_orphan: true
+          publish_dir: badges
+          publish_branch: gh-pages
+          destination_dir: badges
+          keep_files: true

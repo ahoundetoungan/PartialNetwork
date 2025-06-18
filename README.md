@@ -9,7 +9,7 @@
   [![CRAN](https://www.r-pkg.org/badges/version/PartialNetwork)](https://CRAN.R-project.org/package=PartialNetwork)
   [![CRAN Downloads](https://img.shields.io/endpoint?url=https://ahoundetoungan.github.io/cranlogs/badges/PartialNetwork.json)](https://cran.r-project.org/package=PartialNetwork)
 
-  [![Vignette](https://img.shields.io/badge/Vignette-blue.svg)](https://nbviewer.org/github/ahoundetoungan/PartialNetwork/blob/master/doc/PartialNetwork_vignette.pdf)
+  [![Vignette](https://img.shields.io/badge/Vignette-blue.svg)](https://docs.google.com/viewer?url=https://github.com/ahoundetoungan/PartialNetwork/raw/master/doc/PartialNetwork_vignette.pdf)
 
 <!-- badges: end -->
 
@@ -29,4 +29,4 @@ It may be possible that we updated the package without submitting the new versio
 remotes::install_github("ahoundetoungan/PartialNetwork", build_vignettes = TRUE)
 ```
 ## How to use the `PartialNetwork` package?
-See our [vignette in pdf](https://nbviewer.jupyter.org/github/ahoundetoungan/PartialNetwork/blob/master/doc/PartialNetwork_vignette.pdf).
+See our [vignette in pdf](https://docs.google.com/viewer?url=https://github.com/ahoundetoungan/PartialNetwork/raw/master/doc/PartialNetwork_vignette.pdf).

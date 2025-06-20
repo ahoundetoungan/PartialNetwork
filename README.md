@@ -7,6 +7,7 @@
 
   [![R-universe](https://ahoundetoungan.r-universe.dev/badges/PartialNetwork)](https://ahoundetoungan.r-universe.dev/PartialNetwork)
   [![CRAN](https://www.r-pkg.org/badges/version/PartialNetwork)](https://CRAN.R-project.org/package=PartialNetwork)
+  [![DOI](https://img.shields.io/badge/DOI-10.32614%2FCRAN.package.PartialNetwork-blue)](https://doi.org/10.32614/CRAN.package.PartialNetwork)
   [![CRAN Downloads](https://img.shields.io/endpoint?url=https://ahoundetoungan.github.io/cranlogs/badges/PartialNetwork.json)](https://cran.r-project.org/package=PartialNetwork)
 
   [![Vignette](https://img.shields.io/badge/Vignette-blue.svg)](https://docs.google.com/viewer?url=https://github.com/ahoundetoungan/PartialNetwork/raw/master/doc/PartialNetwork_vignette.pdf)

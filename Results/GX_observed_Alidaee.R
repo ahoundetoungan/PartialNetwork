@@ -6,6 +6,8 @@ rm(list = ls())
 library(doParallel)                   # To run the Monte Carlo in parallel
 library(foreach)                      # To run the Monte Carlo in parallel
 library(doRNG)                        # To run the Monte Carlo in parallel
+library(AER)                          # Applied Econometric with R
+library(nuclearARD)                   # Nuclear ARD
 ##################################################################################
 # our summary function
 our.sum <- function(x) {
@@ -172,7 +174,7 @@ f.mc <- function(l, kappa){
   lest1.1.1   <- c(sest1.1.1$coefficients[,1], sest1.1.1$diagnostics[,3])
   #smm
   W           <- solve(crossprod(cbind(1, Xall, GX1call, G2X1call))/sum(N))
-  sest1.1.2   <- smmSAR(Y1all ~ Xall | GY1all, dnetwork = ldistr, iv.power = 2L, W = W, smm.ctr  = list(R = 1),
+  sest1.1.2   <- smmSAR(Y1all ~ Xall | GY1all, dnetwork = ldistr, W = W, smm.ctr  = list(R = 1),
                         fixed.effects = F, contextual = F, cond.var = FALSE)$estimates
   lest1.1.2   <- c(sest1.1.2[-1], sest1.1.2[1])
   #if Gy is not observed
@@ -186,7 +188,7 @@ f.mc <- function(l, kappa){
   
   #smm
   W           <- solve(crossprod(cbind(1, Xall, GX1call, G2X1call))/sum(N))
-  sest1.2.3   <- smmSAR(Y1all ~ Xall, dnetwork = ldistr, iv.power = 2L, W = W, smm.ctr  = list(R = 1, S = 1, T = 1),
+  sest1.2.3   <- smmSAR(Y1all ~ Xall, dnetwork = ldistr, W = W, smm.ctr  = list(R = 1, S = 1, T = 1),
                         fixed.effects = F, contextual = F, cond.var = FALSE)$estimates
   lest1.2.3   <- c(sest1.2.3[-1], sest1.2.3[1])
   
@@ -199,7 +201,7 @@ f.mc <- function(l, kappa){
   
   #smm
   W           <- solve(crossprod(cbind(1, Xall, GXall, peer.avg(sim.network(ldistr, normalise = TRUE), GXall)))/sum(N))
-  sest2.1.2   <- smmSAR(Y2all ~ Xall | GY2all | GXall, dnetwork = ldistr, iv.power = 2L, W = W, smm.ctr  = list(R = 1),
+  sest2.1.2   <- smmSAR(Y2all ~ Xall | GY2all | GXall, dnetwork = ldistr, W = W, smm.ctr  = list(R = 1),
                         fixed.effects = F, contextual = T, cond.var = FALSE)$estimates
   lest2.1.2   <- c(sest2.1.2[-1], sest2.1.2[1])
   
@@ -210,7 +212,7 @@ f.mc <- function(l, kappa){
   
   #smm
   W           <- solve(crossprod(cbind(1, Xall, GXall, peer.avg(sim.network(ldistr, normalise = TRUE), GXall)))/sum(N))
-  sest2.2.2   <- smmSAR(Y2all ~ Xall || GXall, dnetwork = ldistr, iv.power = 2L, W = W, smm.ctr  = list(R = 1, S = 1, T = 1),
+  sest2.2.2   <- smmSAR(Y2all ~ Xall || GXall, dnetwork = ldistr, W = W, smm.ctr  = list(R = 1, S = 1, T = 1),
                         fixed.effects = F, contextual = T, cond.var = FALSE)$estimates
   lest2.2.2   <- c(sest2.2.2[-1], sest2.2.2[1])
   

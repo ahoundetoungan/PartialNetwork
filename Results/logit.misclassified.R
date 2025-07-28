@@ -382,7 +382,7 @@ data   <- data %>% mutate(Model = factor(spec, labels = unique(model)),
                           MC    = factor(MC, levels = unique(MC[order(MClas)])),
                           Which = "Misclassified links")
 
-(NOFE  <- ggplot(data %>% filter(FE == FALSE, spec %in% c(4, 8)), aes(x = MC, colour = Model)) +
+(NOFE  <- ggplot(data %>% filter(FE == FALSE, spec %in% c(4, 8), MClas %in% 1:4), aes(x = MC, colour = Model)) +
     geom_hline(yintercept = alpha, linetype = "dashed", color = "gray") +
     geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
                   position = position_dodge(width = 0.3)) +
@@ -394,9 +394,9 @@ data   <- data %>% mutate(Model = factor(spec, labels = unique(model)),
     xlab("False positive rate (first row) and false negative rate (second row)") + ylab("Peer effect estimate") +
     theme(legend.title = element_blank(), legend.position = "bottom") +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
-ggsave("mc_mclasNOFE.pdf", plot = NOFE, device = "pdf", width = 6, height = 3.5)
+ggsave("mc_mclasNOFE.pdf", plot = NOFE, device = "pdf", width = 5, height = 3)
 
-(WIFE  <- ggplot(data %>% filter(FE == TRUE, spec  %in% c(4, 8)), aes(x = MC, colour = Model)) +
+(WIFE  <- ggplot(data %>% filter(FE == TRUE, spec  %in% c(4, 8), MClas %in% 1:4), aes(x = MC, colour = Model)) +
     geom_hline(yintercept = alpha, linetype = "dashed", color = "gray") +
     geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
                   position = position_dodge(width = 0.3)) +
@@ -408,7 +408,7 @@ ggsave("mc_mclasNOFE.pdf", plot = NOFE, device = "pdf", width = 6, height = 3.5)
     xlab("False positive rate (first row) and false negative rate (second row)") + ylab("Peer effect estimate") +
     theme(legend.title = element_blank(), legend.position = "bottom") +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
-ggsave("mc_mclasWIFE.pdf", plot = WIFE, device = "pdf", width = 6, height = 3.5)
+ggsave("mc_mclasWIFE.pdf", plot = WIFE, device = "pdf", width = 5, height = 3)
 
 
 # Merge both graphs

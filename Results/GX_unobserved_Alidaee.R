@@ -6,6 +6,7 @@ rm(list = ls())
 library(doParallel)                   # To run the Monte Carlo in parallel
 library(foreach)                      # To run the Monte Carlo in parallel
 library(doRNG)                        # To run the Monte Carlo in parallel
+library(nuclearARD)                   # Nuclear ARD
 ##################################################################################
 # our summary function
 our.sum <- function(x) {
@@ -122,13 +123,13 @@ f.mc  <- function(l, kappa){
   
   # #GY is observed and GX is not observed
   # #smm
-  # sest2.3   <- smmSAR(Y2all ~ Xall | GY2all, dnetwork = ldistr, iv.power = 2L, W = W, smm.ctr  = list(R = 15, S = 15),
+  # sest2.3   <- smmSAR(Y2all ~ Xall | GY2all, dnetwork = ldistr, W = W, smm.ctr  = list(R = 15, S = 15),
   #                     fixed.effects = F, contextual = T)$estimates
   # lest2.3   <- c(sest2.3[-1], sest2.3[1])
 
   #GY is not observed and GX is not observed
   #smm
-  sest2.4   <- smmSAR(Y2all ~ Xall, dnetwork = ldistr, iv.power = 2L, W = W, smm.ctr  = list(R = 500),
+  sest2.4   <- smmSAR(Y2all ~ Xall, dnetwork = ldistr, W = W, smm.ctr  = list(R = 500),
                         fixed.effects = F, contextual = T)$estimates
   out       <- c(sest2.4[-1], sest2.4[1])
   cat(paste0(Sys.time(), " -- Iteration :", l), "\n")

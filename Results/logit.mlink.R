@@ -8,8 +8,7 @@ rm(list = ls())
 
 ## Work directory 
 ## possible root 
-proot <- c("~/Dropbox/Academy/1.Papers/Partial Network/Simulations/Monte Carlo",
-           "~/PartialNetwork/Monte Carlo")
+proot <- c("~/Dropbox/Academy/1.Papers/Partial Network/Simulations/Monte Carlo")
 root  <- sapply(proot, dir.exists)
 root  <- proot[root][1]
 setwd(root)
@@ -376,7 +375,7 @@ data   <- data %>% mutate(Model = factor(spec, labels = unique(model)),
     xlab("Proportion of missing links") + ylab("Peer effect estimate") +
     theme(legend.title = element_blank(), legend.position = "bottom") +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
-ggsave("mc_mlinkNOFE.pdf", plot = NOFE, device = "pdf", width = 6, height = 3.5)
+ggsave("mc_mlinkNOFE.pdf", plot = NOFE, device = "pdf", width = 5, height = 3)
 
 # Save Data to merge with Missclassified links data
 saveRDS(data, file = "Results/Missinggraph.RDS")
@@ -393,3 +392,4 @@ saveRDS(data, file = "Results/Missinggraph.RDS")
     xlab("Proportion of missing links") + ylab("Peer effect estimate") +
     theme(legend.title = element_blank(), legend.position = "bottom") +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
+ggsave("mc_mlinkWIFE.pdf", plot = NOFE, device = "pdf", width = 5, height = 3)

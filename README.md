@@ -11,7 +11,6 @@
   [![CRAN Downloads](https://img.shields.io/endpoint?url=https://ahoundetoungan.github.io/cranlogs/badges/PartialNetwork.json)](https://cran.r-project.org/package=PartialNetwork)
 
   [![Vignette](https://img.shields.io/badge/Vignette-blue.svg)](https://docs.google.com/viewer?url=https://github.com/ahoundetoungan/PartialNetwork/raw/master/doc/PartialNetwork_vignette.pdf)
-
 <!-- badges: end -->
 
 

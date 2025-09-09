@@ -86,8 +86,8 @@ jobs:
         if: runner.os != 'Windows'
         uses: r-lib/actions/check-r-package@v2
         with:
-          args: 'c("--as-cran")'
-          build_args: 'c("--compact-vignettes=gs+qpdf")'
+          args: 'c("--as-cran","--no-manual")'
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
           upload-snapshots: true
 
       - name: Run R CMD check (Windows - skip manual)

@@ -13,9 +13,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest, ubuntu-latest]
-        r: ['release', 'release', 'devel', 'release']
-        http-user-agent: ['', '', 'release', '']
+        config:
+          - { os: macos-latest,  r: 'release', http-user-agent: '' }
+          - { os: windows-latest, r: 'release', http-user-agent: '' }
+          - { os: ubuntu-latest,  r: 'devel',   http-user-agent: 'release' }
+          - { os: ubuntu-latest,  r: 'release', http-user-agent: '' }
 
     env:
       R_KEEP_PKG_SOURCE: yes

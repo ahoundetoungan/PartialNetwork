@@ -50,7 +50,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Aristide Houndetoungan \email{aristide.houndetoungan@ecn.ulaval.ca}
+\strong{Maintainer}: Aristide Houndetoungan \email{ahoundetoungan@ecn.ulaval.ca}
 
 Authors:
 \itemize{

@@ -2,17 +2,16 @@ library(PartialNetwork)
 library(CDatanet)
 library(doParallel)
 library(dplyr)
-library(ggplot2)
 library(openxlsx)
+library(ggplot2)
 rm(list = ls())
-
 ## Work directory 
 ## possible root 
-proot <- c("~/Dropbox/Academy/1.Papers/Partial Network/Simulations/Monte Carlo")
+proot <- c("A/B/C/Working_Directory")
 root  <- sapply(proot, dir.exists)
 root  <- proot[root][1]
 setwd(root)
-
+Rcpp::sourceCpp("CPP FUNCTIONS/CppFunctions.cpp")
 
 M        <- 100           # Number of groups
 N        <- rep(30,M)   # Group size
@@ -34,8 +33,8 @@ alpha    <- 0.5378
 rho      <- c(-2.348612, -0.699906, 0.403816)
 se       <- 0.707
 
-fMC      <- function(pobs){# pobs is the proportion of links observed
-  # pobs   <- 0.25
+fMC      <- function(pmisclass){# pmisclass includes the proportion of false positive and negative
+  type   <- ifelse(all(c("p0", "p1") %in% names(pmisclass)), 3, ifelse(names(pmisclass) == "p1", 1, 2))
   # Matrix X
   X        <- cbind(sample(agevalue, sum(N), replace = TRUE, prob = ageprob),
                     sample(femvalue, sum(N), replace = TRUE, prob = femprob))
@@ -78,16 +77,15 @@ fMC      <- function(pobs){# pobs is the proportion of links observed
   
   # Simulate y with fixed effects
   yf       <- simsar(~-1 + eff + X + GX, Glist = G0norm, 
-                     theta = c(alpha, 1, beta[-1], gamma, se))
+                     theta = c(alpha, 0.5, beta[-1], gamma, se))
   Gyf      <- yf$Gy
   yf       <- yf$y
   
   # Observed network
   nNet      <- nrow(Xnet) # network formation model sample size
-  Aobs      <- sort(sample(1:nNet, round((1 - pobs)*nNet))) #Observed entries
-  AOb       <- rep(0, nNet)
-  AOb[Aobs] <- ynet[Aobs] 
-  AOb       <- vec.to.mat(AOb, N, normalise = FALSE)
+  ynF       <- ifelse(runif(nNet) < ifelse(is.na(pmisclass["p1"]), 0, pmisclass["p1"]) & ynet == 1, 0, 
+                      ifelse(runif(nNet) <  ifelse(is.na(pmisclass["p0"]), 0, pmisclass["p0"]) & ynet == 0, 1, ynet))# The fake ynet
+  AOb       <- vec.to.mat(ynF, N, normalise = FALSE)
   GOb       <- norm.network(AOb)
   GOby      <- peer.avg(GOb, y)
   GObyf     <- peer.avg(GOb, yf)
@@ -98,7 +96,7 @@ fMC      <- function(pobs){# pobs is the proportion of links observed
   
   # Put y, yf, Gy, Gyf, GX, GOby, GObyf, and GObX in the same dataset
   dataset           <- as.data.frame(cbind(y, yf, X, Gy, Gyf, GX, GOby, GObyf, GObX)) 
-  colnames(dataset) <- c("y", "yf","X1","X2", "Gy", "Gyf", "GX1", "GX2", "GOby", "GObyf", "GObX1", "GObX2") 
+  colnames(dataset) <- c("y", "yf","X1","X2", "Gy", "Gyf", "GX1", "GX2", "GOby", "GObyf", "GObX1", "GObX2")  
   
   # Estimation the peer effect model using the observed network where Gy and GX are observed 
   # Without fixed effects
@@ -182,12 +180,14 @@ fMC      <- function(pobs){# pobs is the proportion of links observed
   names(gmmf4) <- paste0("gmmf-GyGXunobs", names(gmmf4))
   
   # Estimation of the network distribution
-  logestim  <- glm(ynet[Aobs] ~ -1 + Xnet[Aobs,], family = binomial(link = "logit"))
-  slogestim <- summary(logestim)
-  rho.est   <- logestim$coefficients
+  estLog    <- flogistmisclassify(c(0.999 - pmisclass, rho), y = ynF, X = Xnet, type = type)
+  p00.est   <- ifelse(type == 1, 1, estLog$estimate[1]) # Specificity estimate
+  p11.est   <- ifelse(type == 1, estLog$estimate[1], ifelse(type == 2, 1, estLog$estimate[2])) # Sensitivity estimate
+  rho.est   <- estLog$estimate[-c(1, ifelse(type == 3, 2, 1))]    
   hpl       <- c(1/(1 + exp(-as.matrix(Xnet)%*%rho.est)))
-  hpl[Aobs] <- ynet[Aobs]
-  d.logit   <- vec.to.mat(hpl, N)
+  d.logit   <- ifelse(ynF == 0, (1 - p11.est)*hpl/((1 - p11.est)*hpl + p00.est*(1 - hpl)),
+                      p11.est*hpl/(p11.est*hpl + (1 - p00.est)*(1 - hpl)))
+  d.logit   <- vec.to.mat(d.logit, N, normalise = FALSE)
   
   # Cumpute GX and GGX using simulated network 
   Gsim        <- sim.network(d.logit, normalise = TRUE)
@@ -245,27 +245,36 @@ fMC      <- function(pobs){# pobs is the proportion of links observed
   c(gmm1, gmmf1, gmm2, gmmf2, gmm3, gmmf3, gmm4, gmmf4, smm1, smm1f, smm2, smm2f, smm3, smm3f, smm4, smm4f)
 }
 
-fsimu  <- function(pobs, mc.cores){
-  out  <- do.call(rbind, mclapply(1:1e3, function(i) fMC(pobs), mc.cores = mc.cores))
-  saveRDS(out, file = paste0("Results/logit.mlink.pobs=", pobs, ".RDS"))
+fsimu  <- function(pmisclass, mc.cores){
+  out  <- do.call(rbind, mclapply(1:1e3, function(i) fMC(pmisclass), mc.cores = mc.cores))
+  saveRDS(out, file = paste0("Results/logit.misclass.p0=", ifelse(is.na(pmisclass["p0"]), 0, pmisclass["p0"]), 
+                             ".p1=", ifelse(is.na(pmisclass["p1"]), 0, pmisclass["p1"]), ".RDS"))
 }
 set.seed(123)
-fsimu(0, 15)
-fsimu(0.25, 15)
-fsimu(0.50, 15)
-fsimu(0.75, 15)
+fsimu(c("p1" = 0.15), 15)
+fsimu(c("p1" = 0.30), 15)
+fsimu(c("p0" = 0.15), 15)
+fsimu(c("p0" = 0.15, "p1" = 0.15), 15)
+fsimu(c("p0" = 0.30), 15)
+fsimu(c("p0" = 0.30, "p1" = 0.30), 15)
 
-## Export result toward Excel
-out <- cbind(t(apply(readRDS("Results/logit.mlink.pobs=0.RDS"), 2, function(x) c(mean(x), sd(x)))),
-             t(apply(readRDS("Results/logit.mlink.pobs=0.25.RDS"), 2, function(x) c(mean(x), sd(x)))),
-             t(apply(readRDS("Results/logit.mlink.pobs=0.5.RDS"), 2, function(x) c(mean(x), sd(x)))),
-             t(apply(readRDS("Results/logit.mlink.pobs=0.75.RDS"), 2, function(x) c(mean(x), sd(x)))))
-colnames(out) <- paste0(rep(c("mean.pobs.", "sd.pobs."), 4),
-                        rep(c("0", "25", "50", "75"), each = 2))
+out <- cbind(t(apply(readRDS("Results/logit.misclass.p0=0.p1=0.15.RDS"), 2, function(x) c(mean(x), sd(x)))),
+             t(apply(readRDS("Results/logit.misclass.p0=0.p1=0.3.RDS"), 2, function(x) c(mean(x), sd(x)))),
+             t(apply(readRDS("Results/logit.misclass.p0=0.15.p1=0.RDS"), 2, function(x) c(mean(x), sd(x)))),
+             t(apply(readRDS("Results/logit.misclass.p0=0.15.p1=0.15.RDS"), 2, function(x) c(mean(x), sd(x)))),
+             t(apply(readRDS("Results/logit.misclass.p0=0.3.p1=0.15.RDS"), 2, function(x) c(mean(x), sd(x)))),
+             t(apply(readRDS("Results/logit.misclass.p0=0.3.p1=0.3.RDS"), 2, function(x) c(mean(x), sd(x)))))
+
+colnames(out) <- paste0(rep(c("mean.", "sd."), ncol(out)/2),
+                        rep(c("p0.0.p1.15", "p0.0.p1.30", 
+                              "p0.15.p1.0", "p0.15.p1.15", 
+                              "p0.30.p1.15", "p0.30.p1.30"), each = 2))
 
 ## Table for the model without FE
 outNOFE       <- out[c(sapply(c(12, seq(34, 78, 11)), function(x) x + 0:5)),
-                     paste0(rep(c("mean.pobs.", "sd.pobs."), 2), rep(c(0, 25, 50, 75), each = 2))]
+                     paste0(rep(c("mean.", "sd."), 2), rep(c("p0.0.p1.15", "p0.0.p1.30", 
+                                                             "p0.15.p1.0", "p0.15.p1.15", 
+                                                             "p0.30.p1.15", "p0.30.p1.30"), each = 2))]
 outNOFE       <- data.frame(Var = rownames(outNOFE), outNOFE)
 outNOFE$Var   <- rep(paste0(c("$\\alpha = ", "$c = ", "$\\beta_1 = ", "$\\beta_2 = ", "$\\gamma_1 = ", "$\\gamma_2 = "), 
                             sprintf("%.3f", c(alpha, beta, gamma)), "$"), 6)
@@ -281,14 +290,16 @@ for (s in 6:1) {
   tpV$Var     <- tp[s]
   outNOFE     <- outNOFE %>% add_row(tpV, .before = 1 + 6*(s - 1))
 }
-outNOFE       <- outNOFE %>% mutate(across(all_of(paste0("mean.pobs.", c(0, 25, 50, 75))),
+outNOFE       <- outNOFE %>% mutate(across(all_of(paste0("mean.", c("p0.0.p1.15", "p0.0.p1.30", "p0.15.p1.0", "p0.15.p1.15", "p0.30.p1.15", "p0.30.p1.30"))),
                                            ~ ifelse(is.na(.), NA, sprintf("%.3f", .))),
-                                    across(all_of(paste0("sd.pobs.", c(0, 25, 50, 75))),
+                                    across(all_of(paste0("sd.", c("p0.0.p1.15", "p0.0.p1.30", "p0.15.p1.0", "p0.15.p1.15", "p0.30.p1.15", "p0.30.p1.30"))),
                                            ~ ifelse(is.na(.), ., paste0("(", sprintf("%.3f", .), ")"))))
 
 ## Table for the model FE
 outFE         <- out[c(sapply(c(12, seq(34, 78, 11)), function(x) x + 6:10)),
-                     paste0(rep(c("mean.pobs.", "sd.pobs."), 2), rep(c(0, 25, 50, 75), each = 2))]
+                     paste0(rep(c("mean.", "sd."), 2), rep(c("p0.0.p1.15", "p0.0.p1.30", 
+                                                             "p0.15.p1.0", "p0.15.p1.15", 
+                                                             "p0.30.p1.15", "p0.30.p1.30"), each = 2))]
 outFE         <- data.frame(Var = rownames(outFE), outFE)
 outFE$Var     <- rep(paste0(c("$\\alpha = ", "$\\beta_1 = ", "$\\beta_2 = ", "$\\gamma_1 = ", "$\\gamma_2 = "), 
                             sprintf("%.3f", c(alpha, beta[-1], gamma)), "$"), 6)
@@ -304,9 +315,9 @@ for (s in 6:1) {
   tpV$Var     <- tp[s]
   outFE       <- outFE %>% add_row(tpV, .before = 1 + 5*(s - 1))
 }
-outFE         <- outFE %>% mutate(across(all_of(paste0("mean.pobs.", c(0, 25, 50, 75))),
+outFE         <- outFE %>% mutate(across(all_of(paste0("mean.", c("p0.0.p1.15", "p0.0.p1.30", "p0.15.p1.0", "p0.15.p1.15", "p0.30.p1.15", "p0.30.p1.30"))),
                                          ~ ifelse(is.na(.), NA, sprintf("%.3f", .))),
-                                  across(all_of(paste0("sd.pobs.", c(0, 25, 50, 75))),
+                                  across(all_of(paste0("sd.", c("p0.0.p1.15", "p0.0.p1.30", "p0.15.p1.0", "p0.15.p1.15", "p0.30.p1.15", "p0.30.p1.30"))),
                                          ~ ifelse(is.na(.), NA, paste0("(", sprintf("%.3f", .), ")"))))
 # Create a new workbook
 wb            <- createWorkbook()
@@ -314,15 +325,21 @@ wb            <- createWorkbook()
 addWorksheet(wb, "FullResult"); writeData(wb, sheet = "FullResult", x = data.frame(Var = rownames(out), out))
 addWorksheet(wb, "NOFE"); writeData(wb, sheet = "NOFE", x = outNOFE)
 addWorksheet(wb, "FE"); writeData(wb, sheet = "FE", x = outFE)
-saveWorkbook(wb, "Results/logit.mlink.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "Results/logit.misclassified.xlsx", overwrite = TRUE)
 
 # Graph
-mobs <- c(0, 0.25, 0.5, 0.75)
-vmis <- c("0%", "25%", "50%", "75%")
-data <- do.call(rbind, lapply(1:length(mobs), function(k) {
-  est  <- apply(readRDS(paste0("Results/logit.mlink.pobs=", mobs[k], ".RDS")),
+library(ggplot2)
+library(dplyr)
+FPR  <- c(rep(0, 2), rep(0.15, 2), rep(0.30, 2))
+FNR  <- c(0.15, 0.3, 0, 0.15, 0.15, 0.3)
+FPRL <- c(rep("0%", 2), rep("15%", 2), rep("30%", 2))
+FNRL <- c("15%", "30%", "0%", "15%", "15%", "30%")
+data <- do.call(rbind, lapply(1:length(FPR), function(k) {
+  est  <- apply(readRDS(paste0("Results/logit.misclass.p0=", FPR[k], ".p1=", FNR[k], ".RDS")),
                 2, function(x) c(mean(x), quantile(x, prob = c(0.025, 0.975))))
-  data.frame(pmis  = vmis[k],
+  data.frame(FPR   = FPRL[k],
+             FNR   = FNRL[k],
+             MClas = k,
              spec  = rep(1:8, each = 2),
              model = c(rep("Classical IV: Gy, GX observed", 2),
                        rep("Classical IV: Gy observed, GX unobserved", 2),
@@ -360,36 +377,57 @@ data <- do.call(rbind, lapply(1:length(mobs), function(k) {
 }))
 
 data   <- data %>% mutate(Model = factor(spec, labels = unique(model)),
-                          Which = "Missing links")
+                          MC    = paste0(FPR, "\n", FNR),
+                          MC    = factor(MC, levels = unique(MC[order(MClas)])),
+                          Which = "Misclassified links")
 
-
-(NOFE  <- ggplot(data %>% filter(FE == FALSE, spec %in% c(4, 8)), aes(x = pmis, colour = Model)) +
+(NOFE  <- ggplot(data %>% filter(FE == FALSE, spec %in% c(4, 8), MClas %in% 1:4), aes(x = MC, colour = Model)) +
     geom_hline(yintercept = alpha, linetype = "dashed", color = "gray") +
     geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
                   position = position_dodge(width = 0.3)) +
     geom_point(aes(y = coef, shape = Model), position = position_dodge(width = 0.3)) +
     theme_bw() +
     facet_wrap(~Which) +
-    annotate("text", x = 0.42, y = alpha, label = bquote(alpha[0] == .(round(alpha, 3))), 
-             hjust = 0, vjust = -0.2, size = 2.8, color = "#333") +
-    xlab("Proportion of missing links") + ylab("Peer effect estimate") +
+    annotate("text", x = 0.15, y = alpha, label = bquote(alpha[0] == .(round(alpha, 3))), 
+             hjust = -0.1, vjust = -0.2, size = 2.8, color = "#333") +
+    xlab("False positive rate (first row) and false negative rate (second row)") + ylab("Peer effect estimate") +
     theme(legend.title = element_blank(), legend.position = "bottom") +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
-ggsave("mc_mlinkNOFE.pdf", plot = NOFE, device = "pdf", width = 5, height = 3)
+ggsave("mc_mclasNOFE.pdf", plot = NOFE, device = "pdf", width = 5, height = 3)
 
-# Save Data to merge with Missclassified links data
-saveRDS(data, file = "Results/Missinggraph.RDS")
-
-(WIFE  <- ggplot(data %>% filter(FE == TRUE, spec %in% c(4, 8)), aes(x = pmis, colour = Model)) +
+(WIFE  <- ggplot(data %>% filter(FE == TRUE, spec  %in% c(4, 8), MClas %in% 1:4), aes(x = MC, colour = Model)) +
     geom_hline(yintercept = alpha, linetype = "dashed", color = "gray") +
     geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
                   position = position_dodge(width = 0.3)) +
     geom_point(aes(y = coef, shape = Model), position = position_dodge(width = 0.3)) +
     theme_bw() +
     facet_wrap(~Which) +
-    annotate("text", x = 0.42, y = alpha, label = bquote(alpha[0] == .(round(alpha, 3))), 
-             hjust = 0, vjust = -0.2, size = 2.8, color = "#333") +
-    xlab("Proportion of missing links") + ylab("Peer effect estimate") +
+    annotate("text", x = 0.15, y = alpha, label = bquote(alpha[0] == .(round(alpha, 3))), 
+             hjust = -0.1, vjust = -0.2, size = 2.8, color = "#333") +
+    xlab("False positive rate (first row) and false negative rate (second row)") + ylab("Peer effect estimate") +
     theme(legend.title = element_blank(), legend.position = "bottom") +
     guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
-ggsave("mc_mlinkWIFE.pdf", plot = NOFE, device = "pdf", width = 5, height = 3)
+ggsave("mc_mclasWIFE.pdf", plot = WIFE, device = "pdf", width = 5, height = 3)
+
+
+# Merge both graphs
+dataMerge   <- data %>% bind_rows(readRDS("Results/Missinggraph.RDS")) %>%
+  mutate(X = ifelse(is.na(MC), as.character(pmis), as.character(MC)),
+         Which = factor(Which, levels = c("Missing links", "Misclassified links"), 
+                           label = c("Missing links", "Misclassified links")))
+
+(BOTH <- ggplot(dataMerge %>% filter(MClas %in% 1:4 | pmis %in% c("0%", "25%", "50%", "75%"),
+                       FE == TRUE, spec  %in% c(4, 8)), aes(x = X, colour = Model)) +
+  geom_hline(yintercept = alpha, linetype = "dashed", color = "gray") +
+  geom_errorbar(width=.2, aes(ymin = IC1, ymax = IC2),
+                position = position_dodge(width = 0.3)) +
+  geom_point(aes(y = coef, shape = Model), position = position_dodge(width = 0.3)) +
+  theme_bw() +
+  facet_wrap(~Which, scales = "free_x") +
+  annotate("text", x = -0.1, y = alpha, label = as.expression(bquote(alpha[0] == .(round(alpha, 3)))), 
+           hjust = -0.1, vjust = -0.2, size = 3, color = "#333") +
+    xlab("Left: Proportion of missing links\nRight: False positive rate (top) and false negative rate (bottom)") + 
+    ylab("Peer effect estimate") +
+  theme(legend.title = element_blank(), legend.position = "bottom", axis.title = element_text(size = 9)) +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)))
+ggsave("mc_BOTH.pdf", plot = BOTH, device = "pdf", width = 7, height = 3.5)

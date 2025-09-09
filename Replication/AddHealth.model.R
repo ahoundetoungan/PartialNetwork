@@ -7,11 +7,10 @@ library(PartialNetwork)
 library(stargazer)
 library(AER)
 library(dplyr)
-Rcpp::sourceCpp("CppFunctions.cpp")
+Rcpp::sourceCpp("CPP FUNCTIONS/CppFunctions.cpp")
 
-InDataPath    <- "~/Dropbox/Data/AHdata/" # Where Add Health data are saved (/ at the end is important)
-OutDataPath   <- "~/Dropbox/Data/AHdata/CleanData/" # Where prepared data for each outcome are saved (/ at the end is important)
-OutResultPath <- "~/Dropbox/Academy/1.Papers/Partial Network/AddHealth/" # Where results will be saved (/ at the end is important)
+OutDataPath   <- "A/B/C/PATH_TO_DATAOUT/" # Where prepared data for each outcome are saved (/ at the end is important)
+OutResultPath <- "A/B/CPATH_TO_RESULTS/" # Where results will be saved (/ at the end is important)
 
 load(paste0(OutDataPath, "DataPartialNetwork.rda")) # Load data prepared using the script AddHealth.data.R
 
@@ -124,7 +123,7 @@ obs.bayes.est    <- mcmcSAR(formula    = Model,
                             hyperparms = hyperp,
                             data       = dataset,
                             iteration  = 2e4)
-saveRDS(obs.bayes.est, file = "obs.bayes.est.RDS")
+saveRDS(obs.bayes.est, paste0(OutResultPath, "obs.bayes.est.RDS"))
 summary(obs.bayes.est)
 plot(obs.bayes.est, mar = c(2, 2, 1, 1))
 plot(obs.bayes.est, plot.type = "dens", mar = c(2, 2, 1, 1))
@@ -140,7 +139,7 @@ obs.sgmm.est1    <- smmSAR(formula    = Model,
                            smm.ctr    = list(R = 1L, iv.power = 2L, opt.tol = 1e-7, print = TRUE),
                            data       = dataset)
 summary(obs.sgmm.est1)
-saveRDS(obs.sgmm.est1, file = "obs.sgmm.est1.RDS")
+saveRDS(obs.sgmm.est1, file = paste0(OutResultPath, "obs.sgmm.est1.RDS"))
 
 # write.csv(print(summary(obs.sgmm.est1))$coefficients, file = "tmp.csv")
 
@@ -157,7 +156,7 @@ obs.sgmm.est2    <- smmSAR(formula    = Model,
                            smm.ctr    = list(R = 1L, iv.power = 2L, opt.tol = 1e-7, print = TRUE),
                            data       = dataset)
 summary(obs.sgmm.est2)
-saveRDS(obs.sgmm.est2, file = "obs.sgmm.est2.RDS")
+saveRDS(obs.sgmm.est2, file = paste0(OutResultPath, "obs.sgmm.est2.RDS"))
 # write.csv(print(summary(obs.sgmm.est2))$coefficients, file = "tmp.csv")
 
 ####################################  Reconstructed network
@@ -197,7 +196,7 @@ miss.bayes.est   <- mcmcSAR(formula    = Model,
                             mlinks     = mlinks,
                             data       = dataset,
                             iteration  = 2e4)
-saveRDS(miss.bayes.est, file = "miss.bayes.est.RDS")
+saveRDS(miss.bayes.est, file = paste0(OutResultPath, "miss.bayes.est.RDS"))
 summary(miss.bayes.est)
 plot(miss.bayes.est, mar = c(2, 2, 1, 1))
 
@@ -211,7 +210,7 @@ miss.logit        <- glm(Aobs.mis ~ Xlogit.mis, family = binomial(link = "logit"
 summary(miss.logit)
 rho.mis           <- miss.logit$coefficients
 var.rho           <- summary(miss.logit)$cov.unscaled
-saveRDS(miss.logit, file = "miss.logit.RDS")
+saveRDS(miss.logit, file = paste0(OutResultPath, "miss.logit.RDS"))
 # write.csv(summary(miss.logit)$coefficients, file = "tmp.csv")
 
 # estimated distribution for unobserved links
@@ -226,7 +225,7 @@ miss.sgmm.est1     <- smmSAR(formula    = Model,
                              smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
                              data       = dataset)
 summary(miss.sgmm.est1)
-saveRDS(miss.sgmm.est1, file = "miss.sgmm.est1.RDS")
+saveRDS(miss.sgmm.est1, file = paste0(OutResultPath, "miss.sgmm.est1.RDS"))
 
 # variance computation
 fdist.miss        <- function(rho.mis, var.rho, Xlogit, G, Gobmis){
@@ -240,7 +239,7 @@ fdist_args        <- list(rho.mis = rho.mis, var.rho = var.rho, Xlogit = Xlogit,
 smiss.sgmm.est1    <- summary(miss.sgmm.est1, dnetwork = dnetwork.miss, data = dataset, 
                               .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 5L)
 print(smiss.sgmm.est1)
-saveRDS(smiss.sgmm.est1, file = "smiss.sgmm.est1.RDS")
+saveRDS(smiss.sgmm.est1, file = paste0(OutResultPath, "smiss.sgmm.est1.RDS"))
 
 # write.csv(print(smiss.sgmm.est1)$coefficients, file = "tmp.csv")
 
@@ -256,12 +255,12 @@ miss.sgmm.est2     <- smmSAR(formula    = Model,
                              W          = W,
                              smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
                              data       = dataset)
-saveRDS(miss.sgmm.est2, file = "miss.sgmm.est2.RDS")
+saveRDS(miss.sgmm.est2, file = paste0(OutResultPath, "miss.sgmm.est2.RDS"))
 summary(miss.sgmm.est2)
 smiss.sgmm.est2    <- summary(miss.sgmm.est2, dnetwork = dnetwork.miss, data = dataset, 
                               .fun = fdist.miss, .args = fdist_args, sim = 500L, ncores = 5L)
 print(smiss.sgmm.est2)
-saveRDS(smiss.sgmm.est2, file = "smiss.sgmm.est2.RDS")
+saveRDS(smiss.sgmm.est2, file = paste0(OutResultPath, "smiss.sgmm.est2.RDS"))
 
 # write.csv(print(smiss.sgmm.est2)$coefficients, file = "tmp.csv")
 
@@ -285,11 +284,11 @@ poisson.optin2    <- nlm(p = poisson.optin1$par, f = f_rcpoisson, iterlim = 1e9,
 est.nfriends      <- expy(beta = poisson.optin2$estimate, X = Xpoisson, lcensure = lcensure, rcensure = rcensure)
 est.nfriendm      <- ifelse(friendmall < 5, friendmall, ifelse(friendfall < 5, est.nfriends - friendfall, est.nfriends/2))
 est.nfriendf      <- ifelse(friendfall < 5, friendfall, ifelse(friendmall < 5, est.nfriends - friendmall, est.nfriends/2))
-save(est.nfriends, est.nfriendm, est.nfriendf, file = "~/Dropbox/Papers - In progress/Partial Network/AddHealth/est.nfriend.rda")
+save(est.nfriends, est.nfriendm, est.nfriendf, file = paste0(OutResultPath, "est.nfriend.rda"))
 
 # Weights to fix the selection issue
 # We use all the student. Links are weighed to address the selection issue
-load("est.nfriend.rda")
+load(paste0(OutResultPath, "est.nfriend.rda"))
 est.nfriendm <- floor(est.nfriendm)
 est.nfriendf <- floor(est.nfriendf)
 
@@ -336,7 +335,7 @@ tmiss.logit       <- glm(Aobs.tmis ~ Xlogit.tmis, family = binomial(link = "logi
 summary(tmiss.logit)
 rho.tmis          <- tmiss.logit$coefficients
 var.rho           <- summary(tmiss.logit)$cov.unscaled
-saveRDS(tmiss.logit, file = "tmiss.logit.RDS")
+saveRDS(tmiss.logit, file = paste0(OutResultPath, "tmiss.logit.RDS"))
 # write.csv(summary(tmiss.logit)$coefficients, file = "tmp.csv")
 
 # Beyesian estimator
@@ -355,7 +354,7 @@ tmiss.bayes.est  <- mcmcSAR(formula    = Model,
                             mlinks     = mlinks,
                             data       = dataset,
                             iteration  = 2e4)
-saveRDS(tmiss.bayes.est, file = "tmiss.bayes.est.RDS")
+saveRDS(tmiss.bayes.est, file = paste0(OutResultPath, "tmiss.bayes.est.RDS"))
 summary(tmiss.bayes.est)
 plot(tmiss.bayes.est, mar = c(2, 2, 1, 1))
 
@@ -373,7 +372,7 @@ tmiss.sgmm.est1   <- smmSAR(formula    = Model,
                             smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
                             data       = dataset)
 summary(tmiss.sgmm.est1)
-saveRDS(tmiss.sgmm.est1, file = "tmiss.sgmm.est1.RDS")
+saveRDS(tmiss.sgmm.est1, file = paste0(OutResultPath, "tmiss.sgmm.est1.RDS"))
 
 # variance computation
 fdist.tmiss       <- function(rho.tmis, var.rho, Xlogit, G, Gobtmis){
@@ -387,7 +386,7 @@ fdist_args        <- list(rho.tmis = rho.tmis, var.rho = var.rho, Xlogit = Xlogi
 
 stmiss.sgmm.est1  <- summary(tmiss.sgmm.est1, dnetwork = dnetwork.tmiss, data = dataset, 
                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 5L)
-saveRDS(stmiss.sgmm.est1, file = "stmiss.sgmm.est1.RDS")
+saveRDS(stmiss.sgmm.est1, file = paste0(OutResultPath, "stmiss.sgmm.est1.RDS"))
 print(stmiss.sgmm.est1)
 
 # write.csv(print(stmiss.sgmm.est1)$coefficients, file = "tmp.csv")
@@ -404,12 +403,12 @@ tmiss.sgmm.est2   <- smmSAR(formula    = Model,
                             W          = W,
                             smm.ctr    = list(R = 1000L, iv.power = 2L, opt.tol = 1e-4, print = TRUE),
                             data       = dataset)
-saveRDS(tmiss.sgmm.est2, file = "tmiss.sgmm.est2.RDS")
+saveRDS(tmiss.sgmm.est2, file = paste0(OutResultPath, "tmiss.sgmm.est2.RDS"))
 summary(tmiss.sgmm.est2)
 
 stmiss.sgmm.est2  <- summary(tmiss.sgmm.est2, dnetwork = dnetwork.tmiss, data = dataset, 
                              .fun = fdist.tmiss, .args = fdist_args, sim = 500L, ncores = 5L)
-saveRDS(stmiss.sgmm.est2, file = "stmiss.sgmm.est2.RDS")
+saveRDS(stmiss.sgmm.est2, file = paste0(OutResultPath, "stmiss.sgmm.est2.RDS"))
 print(stmiss.sgmm.est2)
 
 # write.csv(print(stmiss.sgmm.est2)$coefficients, file = "tmp.csv")
@@ -616,7 +615,7 @@ scent.tmiss <- apply(as.data.frame(cent.tmiss), 1, mean)
 
 centrality <- data.frame(observed = scent.obs, missing = scent.miss, top.missing = scent.tmiss)
 
-saveRDS(centrality, file = "centrality.RDS")
+saveRDS(centrality, file = paste0(OutResultPath, "centrality.RDS"))
 
 # scatter plot
 ggplot(data = centrality, aes(x = observed, y = top.missing)) + geom_point(colour = "#505050", size = 1) + theme_bw() + 

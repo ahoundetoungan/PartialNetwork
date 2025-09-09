@@ -6,8 +6,8 @@ library(dplyr)
 library(PartialNetwork)
 library(haven)
 
-InDataPath  <- "~/Dropbox/Data/AHdata/" # Where Add Health data are saved (/ at the end is important)
-OutDataPath <- "~/Dropbox/Data/AHdata/CleanData/" # Where prepared data for each outcome are saved (/ at the end is important)
+InDataPath  <- "A/B/C/PATH_TO_DATAIN/" # Where Add Health data are saved (/ at the end is important)
+OutDataPath <- "A/B/C/PATH_TO_DATAOUT/" # Where prepared data for each outcome are saved (/ at the end is important)
 
 # Importing data sets
 # Friendship data set (WAVE I)

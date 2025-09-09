@@ -2,7 +2,7 @@
 ^Meta$
 ^test$
 ^archives$
-^Results$
+^Replication$
 ^scripts$
 ^.github$
 ^\.travis\.yml$

@@ -15,7 +15,7 @@
 <!-- badges: end -->
 
 
-The **PartialNetwork** package includes all functions for the replication of the results in Boucher and Houndetoungan (2023). The exact replication codes are located in the folder [**Results**](https://github.com/ahoundetoungan/PartialNetwork/tree/master/Results). Below, we also provide detailed examples on how to use the estimators described in the paper.
+The **PartialNetwork** package includes all functions for the replication of the results in Boucher and Houndetoungan (2025). The exact replication codes are located in the folder [**Replication**](https://github.com/ahoundetoungan/PartialNetwork/tree/master/Replication). Below, we also provide detailed examples on how to use the estimators described in the paper.
 
 ## Installation
 ### CRAN version

@@ -1,13 +1,20 @@
 ##################################################################################
 # This code replicates the Monte Carlo simulations when GX is observed and       #
-# the network is estimated using latent  space model with ARD (section 3.1).     #
 #####################################Headline#####################################
 rm(list = ls())
 library(doParallel)                   # To run the Monte Carlo in parallel
 library(foreach)                      # To run the Monte Carlo in parallel
 library(doRNG)                        # To run the Monte Carlo in parallel
 library(AER)                          # Applied Econometric with R
+library(nuclearARD)                   # Nuclear ARD
 ##################################################################################
+## Work directory 
+## possible root 
+proot <- c("A/B/C/Working_Directory")
+root  <- sapply(proot, dir.exists)
+root  <- proot[root][1]
+setwd(root)
+
 # our summary function
 our.sum <- function(x) {
   out <- c(mean(x, na.rm = TRUE),
@@ -19,10 +26,14 @@ our.sum <- function(x) {
   return(out)
 }
 
+
 # function to perform the simulation
 # l stands for the l-th simulation
 # kappa is the concentration parameter
-f.mc  <- function(l, kappa){
+# parlambda is the tuning parameter for 
+# nuclear estimation see Alidaee, H., E. Auerbach, and M. P. Leung (2020):
+# “Recovering Network Structure from Aggregated Relational Data using Penalized Regression,” 
+f.mc <- function(l, kappa){
   M         <- 20           # Number of groups
   N         <- rep(250,M)   # Group size
   # Parameters
@@ -36,82 +47,60 @@ f.mc  <- function(l, kappa){
   gamma     <- c(5,-3)
   alpha     <- 0.4
   se        <- 1
-
   
   # Some useful variables
   W     <- Y1    <- Y2     <- X        <- GY1   <- GY2   <- GX <-  GY1c   <- GY2c   <- GX1c   <- list(M)
   G2X1c <- GX1c0 <- G2X1c0 <- indexall <- GX2c  <- G2X2c <-GX2c0 <- G2X2c0 <- ldistr <- list(M)
-  
-  #loop over group to estimate dnetwork
+
+  #loop over groups
   for (m in 1:M) {
-    #1- Generate z
-    genz  <- rvMF(N[m], kappa*rvMF(1, rep(0, P)))
-    #2- Genetate nu  from a Normal distribution with parameters mu and sigma
-    gennu <- rnorm(N[m], mu, sigma)
-    #3- Generate a graph G
-    #Before, let's compute d
-    gend  <- N[m] * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * exp(logCpvMF(P, 0) - logCpvMF(P, genzeta))
-    
-    #Link probabilities
-    Probabilities     <- sim.dnetwork(nu = gennu, d = gend, zeta = genzeta, z = genz) 
-    
-    #The complete graph
-    G                 <- sim.network(Probabilities)
-    
-    #4a Generate vk
-    genv              <- rvMF(K, rep(0, P))
-    
-    #fix some vk distant
-    genv[1, ]         <- c(1, 0, 0)
-    genv[2, ]         <- c(0, 1, 0)
-    genv[3, ]         <- c(0, 0, 1)
-    
-    #4b set eta
-    geneta            <- abs(rnorm(K, 4, 1))
-    
-    #4c Build Features matrix
-    densityatz        <- matrix(0, N[m], K)
-    for (k in 1:K) {
-      densityatz[, k] <- dvMF(genz, genv[k, ] * geneta[k])
-    }
-    
-    trait             <- matrix(0, N[m], K)
-    
-    NK                <- floor(runif(K, 0.8, 0.95) * colSums(densityatz) / unlist(lapply(1:K, function(w){max(densityatz[,w])}))) 
-    
-    for (k in 1:K) {
-      trait[,k]       <- rbinom(N[m], 1, NK[k] * densityatz[,k] / sum(densityatz[,k]))
-    } 
-    
-    #5 construct ADR
-    ARD               <- G %*% trait
-    
-    #generate b
-    genb              <- numeric(K)
-    for (k in 1:K) {
-      genb[k]         <- sum(G[, trait[, k] == 1]) / sum(G) + 1e-8
-    }
-    ###### Fit Breza et al. (2017) parameter #####
-    # We should fix one bk
-    vfixcolumn       <- 1:5
-    bfixcolumn       <- c(1, 3, 5, 7, 11)
-    
-    # Initialization
-    # We initialize using the true parameter in order to run just few MCMC steps
-    start      <-list("z"    = genz,
-                      "v"    = genv,
-                      "d"    = gend,
-                      "b"    = genb,
-                      "eta"  = geneta,
-                      "zeta" = genzeta)
-    
-    # fit the parameters
-    # we consider the model with zeta = 1
-    Gparms   <- mcmcARD(ARD, trait, start, vfixcolumn, bfixcolumn, iteration = 1000L,
-                        ctrl.mcmc = list(print = FALSE))
-    #Estimate the network distribution
-    distr    <- fit.dnetwork(Gparms, print = FALSE)$dnetwork; ldistr[[m]] <- distr
-    
+    distr <- NULL
+    while(is.null(distr)){try({
+      #1- Generate z
+      genz  <- rvMF(N[m], kappa*rvMF(1, rep(0, P)))
+      #2- Genetate nu  from a Normal distribution with parameters mu and sigma
+      gennu <- rnorm(N[m], mu, sigma)
+      #3- Generate a graph G
+      #Before, let's compute d
+      gend  <- N[m] * exp(gennu) * exp(mu + 0.5 * sigma ^ 2) * exp(logCpvMF(P, 0) - logCpvMF(P, genzeta))
+      
+      #Link probabilities
+      Probabilities     <- sim.dnetwork(nu = gennu, d = gend, zeta = genzeta, z = genz) 
+      
+      #The complete graph
+      G                 <- sim.network(Probabilities)
+      
+      #4a Generate vk
+      genv              <- rvMF(K, rep(0, P))
+      
+      #fix some vk distant
+      genv[1, ]         <- c(1, 0, 0)
+      genv[2, ]         <- c(0, 1, 0)
+      genv[3, ]         <- c(0, 0, 1)
+      
+      #4b set eta
+      geneta            <- abs(rnorm(K, 4, 1))
+      
+      #4c Build Features matrix
+      densityatz        <- matrix(0, N[m], K)
+      for (k in 1:K) {
+        densityatz[, k] <- dvMF(genz, genv[k, ] * geneta[k])
+      }
+      
+      trait             <- matrix(0, N[m], K)
+      
+      NK                <- floor(runif(K, 0.8, 0.95) * colSums(densityatz) / unlist(lapply(1:K, function(w){max(densityatz[,w])}))) 
+      
+      for (k in 1:K) {
+        trait[,k]       <- rbinom(N[m], 1, NK[k] * densityatz[,k] / sum(densityatz[,k]))
+      } 
+      
+      #5 contruct ADR
+      ARD               <- G %*% trait
+      
+      #Estimate the network distribution
+      distr             <- accel_nuclear_gradient(inputs = t(trait), outputs = t(ARD), lambda = 600); ldistr[[m]] <- distr
+    })}
     #True network row normalized
     W[[m]]   <- norm.network(G)
     
@@ -250,16 +239,16 @@ set.seed(123)
 out.mc        <- list()
 for (x in 1:n.kappa) {
   # Construct cluster
-  cl         <- makeCluster(3L)
+  cl          <- makeCluster(10L)
   # After the function is run, close the cluster.
   on.exit(stopCluster(cl))
   # Register parallel backend
   registerDoParallel(cl)
   fn          <- paste0("log.kappa=", kappa[x], ".txt")
   if (file.exists(fn)) {file.remove(fn)}
-  out.mc[[x]] <- foreach(l = 1:iteration, .combine = rbind, .packages = c("AER", "PartialNetwork")) %dorng% 
+  out.mc[[x]] <- foreach(l = 1:iteration, .combine = rbind, .packages = c("nuclearARD", "AER", "PartialNetwork")) %dorng% 
     {sink(fn, append = TRUE); outx <- f.mc(l, kappa = kappa[x]); sink(); outx}
-  save(out.mc, file = "mc.gx_observed_Breza.Rda")
+  save(out.mc, file = "mc.gx_observed_Alidaee.Rda")
 }
 
 # the colnames
@@ -290,5 +279,5 @@ print(results[[3]])
 print(results[[4]])
 
 for (x in 1:n.kappa) {
-  write.csv(results[[x]], file = paste0("~/Dropbox/Papers - In progress/Partial Network/Simulations/Monte Carlo/Results/Gx_observed_Breza_kappa=", kappa[x], ".csv"))
+  write.csv(results[[x]], file = paste0("Gx_observed_Alidaee_kappa=", kappa[x], ".csv"))
 }

@@ -8,8 +8,8 @@ on:
 
 jobs:
   R-CMD-check:
-    name: R CMD check on ${{ matrix.config.os }} (R ${{ matrix.config.r }})
-    runs-on: ${{ matrix.config.os }}
+    name: R CMD check on ${{ matrix.os }} (R ${{ matrix.r }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:

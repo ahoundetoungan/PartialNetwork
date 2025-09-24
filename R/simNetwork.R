@@ -5,7 +5,7 @@
 #' @examples 
 #' # Generate a list of adjacency matrices
 #' ## sub-network size
-#' N         <- c(250, 370, 120)  
+#' N         <- c(250, 370, 120)   
 #' ## distribution
 #' dnetwork  <- lapply(N, function(x) matrix(runif(x^2), x))
 #' ## network

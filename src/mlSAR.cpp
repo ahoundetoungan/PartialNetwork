@@ -81,7 +81,7 @@ public:
     }
     
     sigma2 = ee/sumN;
-    dsigma2 = arma::conv_to<double>::from(sA + sB*(beta + alpha*dbeta) + (beta.t()*sC - sD)*dbeta);
+    dsigma2 = arma::as_scalar(sA + sB*(beta + alpha*dbeta) + (beta.t()*sC - sD)*dbeta);
     
     double llh=0.0;
     double E=0.0;

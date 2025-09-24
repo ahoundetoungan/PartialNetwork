@@ -16,6 +16,7 @@
 ^datavignettes$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^QuantilePeer\.Rproj, README\.md$
+^*\.Rproj, README\.md$
 ^\.tar\.gz$
 ^vignettes/\.pdf$
+^/[^/]*.R

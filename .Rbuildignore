@@ -9,14 +9,13 @@
 ^\.gitignore$
 ^\.Rbuildignore$
 ^\.Rhistory$
-^PartialNetwork\.Rproj, README\.md$
+^.*\.Rproj$          
+^README\.md$
 ^vignettes/\.gitignore$
-^scr/*\.so$
-^scr/*\.o$
-^datavignettes$
-^.*\.Rproj$
+^src/.*\.so$
+^src/.*\.o$
+^datavignettes/
 ^\.Rproj\.user$
-^*\.Rproj, README\.md$
-^\.tar\.gz$
-^vignettes/\.pdf$
-^/[^/]*.R
+^.*\.tar\.gz$
+^vignettes/.*\.pdf$
+^[^/]*\.R$

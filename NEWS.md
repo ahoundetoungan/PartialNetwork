@@ -19,3 +19,6 @@ Adjustments with CDatanet 2.2.0
 ## Changes in Version 1.1.0
 - `remove.ids` function is added.
 - The moment function in `smmSAR` when `GX` is observed is corrected following the revision of the paper in March 2025.
+
+## Changes in Version 1.1.1
+- Accommodate changes in Armadillo 13

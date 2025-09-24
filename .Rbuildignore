@@ -9,7 +9,6 @@
 ^\.gitignore$
 ^\.Rbuildignore$
 ^\.Rhistory$
-^.*\.Rproj$          
 ^README\.md$
 ^vignettes/\.gitignore$
 ^src/.*\.so$
@@ -19,3 +18,4 @@
 ^.*\.tar\.gz$
 ^vignettes/.*\.pdf$
 ^[^/]*\.R$
+^.*\.Rproj$

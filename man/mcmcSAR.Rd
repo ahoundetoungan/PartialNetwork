@@ -211,8 +211,9 @@ G0            <- sim.network(prior)
 G0norm        <- norm.network(G0)
 GX            <- peer.avg(G0norm, X)
 # simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
+y             <- simSAR(~ X + GX, Glist = G0norm,
+                        parms = c(alpha, beta, gamma), 
+                        epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))

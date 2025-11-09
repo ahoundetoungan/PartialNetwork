@@ -11,17 +11,19 @@ First release
 - We allows the use of an initial probit/logit estimate of  $\rho$, where the observed part of the network is assumed non-stochastic in the MCMC. This is a quite different from using an initial probit/logit estimate as prior distribution of $\rho$. In this latter case, $\rho$ is updated using, among others, information from the observed part of the network. In the first case, $\rho$ and the unobserved part of the network are updated using information in $y$, where the initial estimate acts as prior distribution of $\rho$. Information from the observed part of the network is not used to update $\rho$. This information is included in the initial estimate.
 
 ## Changes in Version 1.0.3
-Adjustments with Eigen 3.4
+- Adjustments with Eigen 3.4
 
 ## Changes in Version 1.0.4
-Adjustments with CDatanet 2.2.0
+- Adjustments with CDatanet 2.2.0
 
 ## Changes in Version 1.1.0
 - `remove.ids` function is added.
 - The moment function in `smmSAR` when `GX` is observed is corrected following the revision of the paper in March 2025.
 
 ## Changes in Version 1.1.1
-- Nothing. We accommodate changes in Armadillo 13
+- Nothing. We accommodate changes in Armadillo 13.
 
-## Changes in Version 1.1.1
-- Nothing. We avoid the use of the ddpcr package
+## Changes in Version 1.1.2
+- We added a new function `simSAR`, which simulates the linear peer effect model. 
+In the previous versions, those simulations were performed using the CDatanet package.
+This package is no longer required from this version.

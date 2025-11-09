@@ -15,5 +15,5 @@ Imports: Rcpp (>= 1.0.0), Formula, formula.tools, abind, Matrix, parallel, doPar
 LinkingTo: Rcpp, RcppArmadillo(>= 0.11.4.4.0), RcppEigen, RcppNumerical, RcppProgress
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
-Suggests: AER, knitr, rmarkdown, CDatanet, ggplot2, MASS
+Suggests: AER, knitr, rmarkdown, ggplot2, MASS
 VignetteBuilder: knitr

@@ -57,8 +57,9 @@ X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 G0            <- sim.network(distr)
 # normalise
 G0norm        <- norm.network(G0)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X, Glist = G0norm, theta = c(alpha, beta, se))
+# simulate dependent variable
+y             <- simSAR(~ X, Glist = G0norm, parms = c(alpha, beta), 
+                        epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # generate instruments
 instr         <- sim.IV(distr, X, y, replication = 1, power = 1)
@@ -128,9 +129,9 @@ G0            <- sim.network(distr)
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta, gamma), 
+                        epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # generate instruments
 # we need power = 2 for models with contextual effetcs
@@ -201,8 +202,9 @@ G0            <- sim.network(distr)
 G0norm        <- norm.network(G0)
 # Matrix GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm, theta = c(alpha, beta, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta), 
+                        epsilon = rnorm(sum(N), sd = se))
 Gy            <- y$Gy
 y             <- y$y
 # build dataset
@@ -297,9 +299,9 @@ G0            <- sim.network(distr)
 G0norm        <- norm.network(G0)
 # Matrix GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ -1 + eff + X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, se))
+# simulate dependent variable 
+y             <- simSAR(~ -1 + eff + X + GX, Glist = G0norm, parms = c(alpha, beta), 
+                        epsilon = rnorm(sum(N), sd = se))
 Gy            <- y$Gy
 y             <- y$y
 # build dataset
@@ -377,9 +379,9 @@ fMC <- function(...){
   G0norm        <- norm.network(G0)
   # Matrix GX
   GX            <- peer.avg(G0norm, X)
-  # simulate dependent variable use an external package
-  y             <- CDatanet::simsar(~ -1 + eff + X + GX, Glist = G0norm,
-                                    theta = c(alpha, beta, se))
+  # simulate dependent variable
+  y             <- simSAR(~ -1 + eff + X + GX, Glist = G0norm, 
+                          parms = c(alpha, beta), epsilon = rnorm(sum(N), sd = se))
   Gy            <- y$Gy
   y             <- y$y
   # build dataset
@@ -469,8 +471,9 @@ G0       <- vec.to.mat(ynet, N, normalise = FALSE)
 G0norm   <- norm.network(G0)
 # Matrix GX
 GX       <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y        <- CDatanet::simsar(~ X + GX, Glist = G0norm, theta = c(alpha, beta, se))
+# simulate dependent variable
+y        <- simSAR(~ X +  GX, Glist = G0norm, parms = c(alpha, beta), 
+                   epsilon = rnorm(sum(N), sd = se))
 Gy       <- y$Gy
 y        <- y$y
 # build dataset
@@ -582,9 +585,9 @@ G0            <- sim.network(distr)
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta, gamma), 
+                   epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
@@ -787,9 +790,9 @@ G0            <- vec.to.mat(ynet, N, normalise = FALSE)
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                     theta = c(alpha, beta, gamma, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta, gamma), 
+                   epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
@@ -1265,9 +1268,9 @@ X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta, gamma), 
+                   epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
@@ -1407,9 +1410,9 @@ X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta, gamma), 
+                   epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # dataset
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))
@@ -1520,9 +1523,9 @@ for(x in 1:M){
 G0norm        <- norm.network(G0)
 # GX
 GX            <- peer.avg(G0norm, X)
-# simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-                                  theta = c(alpha, beta, gamma, se))
+# simulate dependent variable
+y             <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta, gamma), 
+                   epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # data set
 dataset       <- as.data.frame(cbind(y, X1 = X[,1], X2 = X[,2]))

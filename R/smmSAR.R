@@ -69,8 +69,8 @@
 #' # Matrix GX
 #' GX       <- peer.avg(G0norm, X)
 #' # simulate the dependent variable use an external package
-#' y        <- CDatanet::simsar(~ X + GX, Glist = G0norm,
-#'                              theta = c(alpha, beta, se))
+#' y        <- simSAR(~ X + GX, Glist = G0norm, parms = c(alpha, beta), 
+#'                    epsilon = rnorm(sum(N), sd = se))
 #' Gy       <- y$Gy
 #' y        <- y$y
 #' # build dataset

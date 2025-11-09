@@ -113,6 +113,10 @@ rem_non_fin <- function(net) {
     .Call(`_PartialNetwork_rem_non_fin`, net)
 }
 
+fylim <- function(G, talpha, igroup, nvec, ngroup, lambda, n, nthreads) {
+    .Call(`_PartialNetwork_fylim`, G, talpha, igroup, nvec, ngroup, lambda, n, nthreads)
+}
+
 falbeta0 <- function(R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum) {
     .Call(`_PartialNetwork_falbeta0`, R, distr, y, Gy, GX2, V, W, smoother, hN, Kx1, Kx2, ninstr, M, N, Pm, Ncum)
 }

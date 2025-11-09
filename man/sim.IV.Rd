@@ -74,8 +74,8 @@ G0            <- sim.network(prior)
 # normalise 
 G0norm        <- norm.network(G0)
 # simulate dependent variable use an external package
-y             <- CDatanet::simsar(~ X, Glist = G0norm,
-                                  theta = c(alpha, beta, se))
+y             <- simSAR(~ X, Glist = G0norm, parms = c(alpha, beta), 
+                        epsilon = rnorm(sum(N), sd = se))
 y             <- y$y
 # generate instruments 
 instr         <- sim.IV(prior, X, y, replication = 1, power = 1)

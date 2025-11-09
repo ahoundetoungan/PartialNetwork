@@ -21,4 +21,7 @@ Adjustments with CDatanet 2.2.0
 - The moment function in `smmSAR` when `GX` is observed is corrected following the revision of the paper in March 2025.
 
 ## Changes in Version 1.1.1
-- Accommodate changes in Armadillo 13
+- Nothing. We accommodate changes in Armadillo 13
+
+## Changes in Version 1.1.1
+- Nothing. We avoid the use of the ddpcr package

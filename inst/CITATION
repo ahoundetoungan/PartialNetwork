@@ -1,0 +1,12 @@
+citHeader("The PartialNetwork package includes all functions for replicating the results in Boucher and Houndetoungan (2025). To cite the paper or the package, please use:")
+
+bibentry(
+  bibtype   = "Article",
+  title     = "Estimating peer effects using partial network data",
+  author    = c(as.person("Vincent Boucher"), as.person("Aristide Houndetoungan")),
+  journal   = "Review of Economics and Statistics",
+  year      = "2025",
+  pages     = "1--48",
+  doi       = "10.1162/REST.a.1630",
+  publisher = "MIT Press, 255 Main Street, 9th Floor, Cambridge, Massachusetts 02142, USA"
+)

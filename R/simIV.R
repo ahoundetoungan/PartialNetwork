@@ -29,48 +29,52 @@
 #' `G1y` and `G1X` computed with the same network and `G2X` computed with another network, which can be used in order to approximate the instruments.
 #' This process can be replicated several times and the argument `replication` can be used to set the number of replications desired.
 #' @examples 
-#' library(AER)
-#' # Number of groups
-#' M             <- 30
-#' # size of each group
-#' N             <- rep(50,M)
-#' # individual effects
-#' beta          <- c(2,1,1.5) 
-#' # endogenous effects
-#' alpha         <- 0.4
-#' # std-dev errors
-#' se            <- 2 
-#' # prior distribution
-#' prior         <- runif(sum(N*(N-1)))
-#' prior         <- vec.to.mat(prior, N, normalise = FALSE)
-#' # covariates
-#' X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
-#' # true network
-#' G0            <- sim.network(prior)
-#' # normalise 
-#' G0norm        <- norm.network(G0)
-#' # simulate dependent variable use an external package
-#' y             <- simSAR(~ X, Glist = G0norm, parms = c(alpha, beta), 
-#'                         epsilon = rnorm(sum(N), sd = se))
-#' y             <- y$y
-#' # generate instruments 
-#' instr         <- sim.IV(prior, X, y, replication = 1, power = 1)
-#' 
-#' GY1c1         <- instr[[1]]$G1y       # proxy for Gy (draw 1)
-#' GXc1          <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)
-#' GXc2          <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
-#' # build dataset
-#' # keep only instrument constructed using a different draw than the one used to proxy Gy
-#' dataset           <- as.data.frame(cbind(y, X, GY1c1, GXc1, GXc2)) 
-#' colnames(dataset) <- c("y","X1","X2","G1y", "G1X1", "G1X2", "G2X1", "G2X2") 
-#' 
-#' # Same draws
-#' out.iv1           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G1X1 + G1X2, data = dataset)
-#' summary(out.iv1)
-#' 
-#' # Different draws
-#' out.iv2           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G2X1 + G2X2, data = dataset)
-#' summary(out.iv2)
+#' if (requireNamespace("ivreg", quietly = TRUE)) {
+#'   library(ivreg)
+#'   # Number of groups
+#'   M             <- 30
+#'   # size of each group
+#'   N             <- rep(50,M)
+#'   # individual effects
+#'   beta          <- c(2,1,1.5)
+#'   # endogenous effects
+#'   alpha         <- 0.4
+#'   # std-dev errors
+#'   se            <- 2
+#'   # prior distribution
+#'   prior         <- runif(sum(N*(N-1)))
+#'   prior         <- vec.to.mat(prior, N, normalise = FALSE)
+#'   # covariates
+#'   X             <- cbind(rnorm(sum(N),0,5),rpois(sum(N),7))
+#'   # true network
+#'   G0            <- sim.network(prior)
+#'   # normalise
+#'   G0norm        <- norm.network(G0)
+#'   # simulate dependent variable use an external package
+#'   y             <- simSAR(~ X, Glist = G0norm, parms = c(alpha, beta),
+#'                           epsilon = rnorm(sum(N), sd = se))
+#'   y             <- y$y
+#'   # generate instruments
+#'   instr         <- sim.IV(prior, X, y, replication = 1, power = 1)
+#'   
+#'   GY1c1         <- instr[[1]]$G1y       # proxy for Gy (draw 1)
+#'   GXc1          <- instr[[1]]$G1X[,,1]  # proxy for GX (draw 1)
+#'   GXc2          <- instr[[1]]$G2X[,,1]  # proxy for GX (draw 2)
+#'   # build dataset
+#'   # keep only instrument constructed using a different draw than the one used to proxy Gy
+#'   dataset           <- as.data.frame(cbind(y, X, GY1c1, GXc1, GXc2))
+#'   colnames(dataset) <- c("y","X1","X2","G1y", "G1X1", "G1X2", "G2X1", "G2X2")
+#'   
+#'   # Same draws
+#'   out.iv1           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G1X1 + G1X2, data = dataset)
+#'   summary(out.iv1)
+#'   
+#'   # Different draws
+#'   out.iv2           <- ivreg(y ~ X1 + X2 + G1y | X1 + X2 + G2X1 + G2X2, data = dataset)
+#'   summary(out.iv2)
+#' } else {
+#'   message("Suggested package 'ivreg' not available, skipping example.")
+#' }
 #' @seealso 
 #' \code{\link{mcmcSAR}}
 #' @importFrom abind abind

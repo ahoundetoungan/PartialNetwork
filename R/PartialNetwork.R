@@ -14,7 +14,7 @@
 #' @references 
 #' Atchade, Y. F., & Rosenthal, J. S., 2005, On adaptive markov chain monte carlo algorithms, \emph{Bernoulli}, 11(5), 815-828, \doi{10.3150/bj/1130077595}.
 #' @references 
-#' Boucher, V., & Houndetoungan, A., 2025. Estimating peer effects using partial network data. \emph{arXiv preprint arXiv:2509.08145}.
+#' Boucher, V., & Houndetoungan, A., 2025. Estimating peer effects using partial network data. \emph{Review of Economics and Statistics}, 1-48, \doi{10.1162/REST.a.1630}.
 #' @references 
 #' Bramoulle, Y., Djebbari, H., & Fortin, B., 2009, Identification of peer effects through social networks, \emph{Journal of econometrics}, 150(1), 41-55, \doi{10.1016/j.jeconom.2008.12.021}.
 #' @references Breza, E., Chandrasekhar, A. G., McCormick, T. H., & Pan, M., 2020, Using aggregated relational data to feasibly identify network structure without network data, \emph{American Economic Review}, 110(8), 2454-84, \doi{10.1257/aer.20170861}

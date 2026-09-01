@@ -5,8 +5,8 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![R-CMD-check](https://github.com/ahoundetoungan/PartialNetwork/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/ahoundetoungan/PartialNetwork/actions/workflows/R-CMD-check.yml)
 
-  [![R-universe](https://ahoundetoungan.r-universe.dev/badges/PartialNetwork)](https://ahoundetoungan.r-universe.dev/PartialNetwork)
   [![CRAN](https://www.r-pkg.org/badges/version/PartialNetwork)](https://CRAN.R-project.org/package=PartialNetwork)
+  [![R-universe](https://ahoundetoungan.r-universe.dev/badges/PartialNetwork)](https://ahoundetoungan.r-universe.dev/PartialNetwork)
   [![DOI](https://img.shields.io/badge/DOI-10.32614%2FCRAN.package.PartialNetwork-blue)](https://doi.org/10.32614/CRAN.package.PartialNetwork)
   [![CRAN Downloads](https://img.shields.io/endpoint?url=https://ahoundetoungan.github.io/cranlogs/badges/PartialNetwork.json)](https://cran.r-project.org/package=PartialNetwork)
 
